@@ -1,4 +1,4 @@
-## 🎓 University Course Enrollment System
+## 🎓 Skedjuli
 
 A **web-based application** designed for managing course enrollment in a university setting.  
 The system supports different types of users with specific roles and permissions, including **students**, **lecturers**, and **administrators**.
