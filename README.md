@@ -1,63 +1,63 @@
 # Skedjuli
 A web-based application designed for managing course enrollment in a university setting. The system supports different types of users with specific roles and permissions, including students, lecturers, and administrators.
 
-Features
-👩‍🎓 Student
+Features<br>
+👩‍🎓 Student:
 
-Create an enrollment form
+-Create an enrollment form
 
-View previous enrollment forms
+-View previous enrollment forms
 
-View completed courses and available courses for enrollment, including:
+-View completed courses and available courses for enrollment, including:
 
-Lecturer information
+  -Lecturer information
 
-Enrollment prerequisites
+  -Enrollment prerequisites
 
-Course type (elective/mandatory)
+  -Course type (elective/mandatory)
 
-View personal data
+  -View personal data
 
-👨‍🏫 Lecturer
+👨‍🏫 Lecturer:
 
-Add new courses
+-Add new courses
 
-Modify:
+-Modify:
 
-Course prerequisites
+  -Course prerequisites
 
-ECTS credits
+  -ECTS credits
 
-Course type
+  -Course type
 
-Set:
+-Set:
 
-Enrollment limits
+  -Enrollment limits
 
-Prerequisites for enrollment
+  -Prerequisites for enrollment
 
-View list of enrolled students (after the enrollment form is locked)
+  -View list of enrolled students (after the enrollment form is locked)
 
-👩‍💼 Admin
+👩‍💼 Admin:
 
-Full system access with permissions to modify all data
+-Full system access with permissions to modify all data
 
-Manually add students to courses
+-Manually add students to courses
 
-Add new:
+-Add new:
 
-Study programs
+  -Study programs
 
-Academic years
+  -Academic years
 
-Courses
+  -Courses
 
-Possible Additional Features (TBD)
+Possible Additional Features (TBD):
 
-Notifications for enrollment deadlines
+-Notifications for enrollment deadlines
 
-Automatic prerequisite validation
+-Automatic prerequisite validation
 
-PDF export of enrollment forms
+-PDF export of enrollment forms
 
 Student performance analytics
