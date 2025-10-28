@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">Skedjuli</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${message}">Dobrodošli</h1>
+    <p>Aplikacija Skedjuli je uspješno pokrenuta! 🎉</p>
+    <div class="status">
+        <p>Spring Boot ✓</p>
+        <p>Thymeleaf ✓</p>
+        <p>Flyway ✓</p>
+    </div>
+</div>
+</body>
+</html>
