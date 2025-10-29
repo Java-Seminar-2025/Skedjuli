@@ -1,5 +1,13 @@
 -- V1__init.sql
 
+CREATE DATABASE IF NOT EXISTS skedjuli;
+USE skedjuli;
+
+CREATE USER IF NOT EXISTS 'skeduser'@'%' IDENTIFIED BY 'skedpass';
+GRANT ALL PRIVILEGES ON skedjuli.* TO 'skeduser'@'%';
+FLUSH PRIVILEGES;
+
+
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
