@@ -9,7 +9,7 @@ services:
       MYSQL_USER: skeduser
       MYSQL_PASSWORD: skedpass
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - skedjuli-db-data:/var/lib/mysql
       - ./db/baseline.sql:/docker-entrypoint-initdb.d/baseline.sql:ro
