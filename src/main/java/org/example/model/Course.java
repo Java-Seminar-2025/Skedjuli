@@ -31,21 +31,16 @@ public class Course {
     @Column(name = "enrollment_limit")
     private Integer enrollmentLimit;
 
-    // -----------------------------
     // Relationships
-    // -----------------------------
 
-    // Lecturer who teaches this course
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
 
-    // Study program this course belongs to
     @ManyToOne
     @JoinColumn(name = "study_program_id")
     private StudyProgram studyProgram;
 
-    // Academic year in which the course is offered
     @ManyToOne
     @JoinColumn(name = "academic_year_id")
     private AcademicYear academicYear;
@@ -62,9 +57,7 @@ public class Course {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // -----------------------------
     // Relationships: prerequisites (course_req)
-    // -----------------------------
 
     @ManyToMany
     @JoinTable(
@@ -74,19 +67,14 @@ public class Course {
     )
     private Set<Course> prerequisites = new HashSet<>();
 
-    // Reverse mapping (optional — for finding all courses that depend on this one)
     @ManyToMany(mappedBy = "prerequisites")
     private Set<Course> dependentCourses = new HashSet<>();
 
-    // -----------------------------
     // Constructors
-    // -----------------------------
 
     public Course() {}
 
-    // -----------------------------
     // Getters & Setters
-    // -----------------------------
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

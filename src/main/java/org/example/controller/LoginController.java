@@ -43,15 +43,12 @@ public class LoginController {
         System.out.println("Last name: " + req.getLastName());
 
         try {
-            // Call your service
             AuthResponse response = authService.register(req);
 
-            // Send success message to Thymeleaf
             model.addAttribute("success", "User registered successfully! Email: " + response.getEmail());
             return "register"; // same page, show success message
 
         } catch (RuntimeException e) {
-            // Send error message to Thymeleaf
             model.addAttribute("error", e.getMessage());
             return "register";
         }

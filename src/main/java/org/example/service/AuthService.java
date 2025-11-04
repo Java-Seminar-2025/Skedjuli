@@ -34,7 +34,6 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest req) {
 
-        // 1️⃣ Basic validations
         if (req.getEmail() == null || req.getEmail().isBlank()) {
             throw new RuntimeException("Email cannot be empty");
         }
@@ -46,7 +45,6 @@ public class AuthService {
             throw new RuntimeException("First name and last name are required");
         }
 
-        // 2️⃣ Check if user exists
         if (userRepository.existsByEmail(req.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
@@ -54,10 +52,8 @@ public class AuthService {
             throw new RuntimeException("Username already exists");
         }
 
-        // 3️⃣ Determine role
         int role = "professor".equalsIgnoreCase(req.getRole()) ? 2 : 1;  // 2 = lecturer, 1 = student
 
-        // 4️⃣ Create User
         User user = new User();
         user.setUsername(req.getEmail());
         user.setEmail(req.getEmail());
@@ -66,7 +62,6 @@ public class AuthService {
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(req.getPassword()));
 
-        // 4a️⃣ Optional date of birth
         if (req.getDateOfBirth() != null) {
             try {
                 user.setDateOfBirth(req.getDateOfBirth());
@@ -75,14 +70,12 @@ public class AuthService {
             }
         }
 
-        // 4b️⃣ Timestamps
         LocalDateTime now = LocalDateTime.now();
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
 
         User savedUser = userRepository.save(user);
 
-        // 5️⃣ Create Student or Lecturer
         if (role == 1) { // student
             Student student = new Student();
             student.setUserId(savedUser.getId());
@@ -104,7 +97,6 @@ public class AuthService {
             lecturerRepository.save(lecturer);
         }
 
-        // 6️⃣ Generate JWT token
         String token = jwtService.generateToken(savedUser.getEmail());
         return new AuthResponse(token, savedUser.getEmail());
     }

@@ -38,19 +38,14 @@ public class AcademicYear {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Reverse relation — all courses in this academic year
     @OneToMany(mappedBy = "academicYear", fetch = FetchType.LAZY)
     private Set<Course> courses = new HashSet<>();
 
-    // -------------------------
     // Constructors
-    // -------------------------
 
     public AcademicYear() {}
 
-    // -------------------------
     // Getters & Setters
-    // -------------------------
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

@@ -37,19 +37,14 @@ public class StudyProgram {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Reverse relation — all courses under this program
     @OneToMany(mappedBy = "studyProgram", fetch = FetchType.LAZY)
     private Set<Course> courses = new HashSet<>();
 
-    // -------------------------
     // Constructors
-    // -------------------------
 
     public StudyProgram() {}
 
-    // -------------------------
     // Getters & Setters
-    // -------------------------
 
     public Long getId() { return id; }
 

@@ -21,7 +21,7 @@ public class RegisterRequest {
 
     private LocalDate dateOfBirth;
 
-    // ---- Getters & Setters ----
+    //  Getters & Setters
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }

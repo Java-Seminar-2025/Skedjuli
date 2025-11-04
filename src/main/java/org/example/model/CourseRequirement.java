@@ -12,12 +12,10 @@ public class CourseRequirement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // The course that has a requirement
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    // The course that is required as a prerequisite
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "req_course_id", nullable = false)
     private Course requiredCourse;
@@ -25,9 +23,7 @@ public class CourseRequirement {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // --------------------------------
     // Constructors
-    // --------------------------------
 
     public CourseRequirement() {}
 
@@ -36,9 +32,7 @@ public class CourseRequirement {
         this.requiredCourse = requiredCourse;
     }
 
-    // --------------------------------
     // Getters & Setters
-    // --------------------------------
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
