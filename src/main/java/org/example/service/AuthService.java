@@ -5,7 +5,6 @@ import org.example.repository.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -31,66 +30,83 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    //regiseer
+    //register
     @Transactional
     public AuthResponse register(RegisterRequest req) {
 
-        if (userRepository.existsByEmail(req.email)) {
+        // 1️⃣ Basic validations
+        if (req.getEmail() == null || req.getEmail().isBlank()) {
+            throw new RuntimeException("Email cannot be empty");
+        }
+        if (req.getPassword() == null || req.getPassword().isBlank()) {
+            throw new RuntimeException("Password cannot be empty");
+        }
+        if (req.getFirstName() == null || req.getFirstName().isBlank() ||
+                req.getLastName() == null || req.getLastName().isBlank()) {
+            throw new RuntimeException("First name and last name are required");
+        }
+
+        // 2️⃣ Check if user exists
+        if (userRepository.existsByEmail(req.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
-        if (userRepository.existsByUsername(req.email)) {
+        if (userRepository.existsByUsername(req.getEmail())) {  // using email as username
             throw new RuntimeException("Username already exists");
         }
 
-        //   professor -> LECTURER, else STUDENT
-        User.Role role = "professor".equalsIgnoreCase(req.role)
-                ? User.Role.lecturer
-                : User.Role.student;
+        // 3️⃣ Determine role
+        int role = "professor".equalsIgnoreCase(req.getRole()) ? 2 : 1;  // 2 = lecturer, 1 = student
 
-        // create user
-        User u = new User();
-        u.setUsername(req.email);
-        u.setEmail(req.email);
-        u.setFirstName(req.firstName);
-        u.setLastName(req.lastName);
-        u.setRole(role);
-        u.setPassword(passwordEncoder.encode(req.password));
-        if (req.dateOfBirth != null && !req.dateOfBirth.isBlank()) {
+        // 4️⃣ Create User
+        User user = new User();
+        user.setUsername(req.getEmail());
+        user.setEmail(req.getEmail());
+        user.setFirstName(req.getFirstName());
+        user.setLastName(req.getLastName());
+        user.setRole(role);
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
+
+        // 4a️⃣ Optional date of birth
+        if (req.getDateOfBirth() != null) {
             try {
-                u.setDateOfBirth(LocalDate.parse(req.dateOfBirth)); // "yyyy-MM-dd"
-            } catch (Exception ignored) { /* ostavi null ako format nije dobar */ }
-        }
-        u.setCreatedAt(LocalDateTime.now());
-        u.setUpdatedAt(LocalDateTime.now());
-
-        User saved = userRepository.save(u);
-
-        //student
-        if (role == User.Role.student) {
-            Student s = new Student();
-            s.userId = saved.getId();
-            s.studyProgramId = req.studyProgramId;
-            s.enrollmentYear = req.enrollmentYear;
-            s.currentYear = req.currentYear;
-            s.isActive = true;
-            studentRepository.save(s);
-        } else {
-            // lecturer
-            Lecturer l = new Lecturer();
-            l.userId = saved.getId();
-            l.department = req.department;
-            l.academicTitle = req.academicTitle;
-            l.officeLocation = req.officeLocation;
-            l.phoneNumber = req.phoneNumber;
-            l.isActive = true;
-            lecturerRepository.save(l);
+                user.setDateOfBirth(req.getDateOfBirth());
+            } catch (Exception ignored) {
+                user.setDateOfBirth(null);
+            }
         }
 
-        //jwt
-        String token = jwtService.generateToken(saved.getEmail());
-        return new AuthResponse(token, saved.getEmail());
+        // 4b️⃣ Timestamps
+        LocalDateTime now = LocalDateTime.now();
+        user.setCreatedAt(now);
+        user.setUpdatedAt(now);
 
+        User savedUser = userRepository.save(user);
 
+        // 5️⃣ Create Student or Lecturer
+        if (role == 1) { // student
+            Student student = new Student();
+            student.setUserId(savedUser.getId());
+            student.setStudyProgramId(req.getStudyProgramId());
+            student.setEnrollmentYear(req.getEnrollmentYear());
+            student.setCurrentYear(req.getCurrentYear());
+            student.setIsActive(true);
+            student.setCreatedAt(now);
+            studentRepository.save(student);
+        } else { // lecturer
+            Lecturer lecturer = new Lecturer();
+            lecturer.setUserId(savedUser.getId());
+            lecturer.setDepartment(req.getDepartment());
+            lecturer.setAcademicTitle(req.getAcademicTitle());
+            lecturer.setOfficeLocation(req.getOfficeLocation());
+            lecturer.setPhoneNumber(req.getPhoneNumber());
+            lecturer.setIsActive(true);
+            lecturer.setCreatedAt(now);
+            lecturerRepository.save(lecturer);
+        }
+
+        // 6️⃣ Generate JWT token
+        String token = jwtService.generateToken(savedUser.getEmail());
+        return new AuthResponse(token, savedUser.getEmail());
     }
 
     //login

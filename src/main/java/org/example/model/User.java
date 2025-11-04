@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,9 +27,8 @@ public class User {
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role;
+    private Integer role;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
@@ -38,11 +38,6 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    // Enum za role
-    public enum Role {
-        student, lecturer, admin
-    }
 
     // Constructors
     public User() {}
@@ -66,8 +61,8 @@ public class User {
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
+    public Integer getRole() { return role; }
+    public void setRole(Integer role) { this.role = role; }
 
     public LocalDate getDateOfBirth() { return dateOfBirth; }
     public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }

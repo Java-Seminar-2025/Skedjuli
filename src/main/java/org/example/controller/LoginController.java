@@ -2,11 +2,13 @@ package org.example.controller;
 
 import org.example.model.AuthRequest;
 import org.example.model.AuthResponse;
+import org.example.model.RegisterRequest;
 import org.example.model.User;
 import org.example.service.AuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,7 +22,8 @@ public class LoginController {
     }
 
     @GetMapping("/register")
-    public String showRegisterForm() {
+    public String showRegisterForm(Model model) {
+        model.addAttribute("registerRequest", new RegisterRequest());
         return "register";
     }
 
@@ -30,13 +33,26 @@ public class LoginController {
     }
 
     @PostMapping("/register")
-    public String registerUser(org.example.model.RegisterRequest req, Model model) {
+    public String registerUser(@ModelAttribute("registerRequest") RegisterRequest req, Model model) {
+
+        // Debug logging
+        System.out.println("Received registration:");
+        System.out.println("Email: " + req.getEmail());
+        System.out.println("Role: " + req.getRole());
+        System.out.println("First name: " + req.getFirstName());
+        System.out.println("Last name: " + req.getLastName());
+
         try {
-            authService.register(req);   // sending reg req
-            model.addAttribute("success", "Registration successful! You can now login.");
-            return "register";
-        } catch (Exception e) {
-            model.addAttribute("error", "Registration failed: " + e.getMessage());
+            // Call your service
+            AuthResponse response = authService.register(req);
+
+            // Send success message to Thymeleaf
+            model.addAttribute("success", "User registered successfully! Email: " + response.getEmail());
+            return "register"; // same page, show success message
+
+        } catch (RuntimeException e) {
+            // Send error message to Thymeleaf
+            model.addAttribute("error", e.getMessage());
             return "register";
         }
     }
