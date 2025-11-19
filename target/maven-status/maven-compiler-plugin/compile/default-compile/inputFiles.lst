@@ -1,6 +1,7 @@
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\config\JwtAuthenticationFilter.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\config\SecurityConfig.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\AuthController.java
+E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\DashboardController.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\HomeController.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\LoginController.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\UserController.java
@@ -22,3 +23,4 @@ E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\repository\StudentReposi
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\repository\UserRepository.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\AuthService.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\JwtService.java
+E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\UserService.java

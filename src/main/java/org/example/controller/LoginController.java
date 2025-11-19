@@ -46,7 +46,7 @@ public class LoginController {
             AuthResponse response = authService.register(req);
 
             model.addAttribute("success", "User registered successfully! Email: " + response.getEmail());
-            return "register"; // same page, show success message
+            return "login";
 
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
@@ -67,10 +67,13 @@ public class LoginController {
             authRequest.setPassword(password);
 
             AuthResponse response = authService.login(authRequest);
+            System.out.println("Login successful. AuthResponse Email: " + response.getEmail());
+            System.out.println("Login successful. AuthResponse Token: " + response.getToken());
 
 
             model.addAttribute("success", "Login successful! Welcome back.");
-            return "login";
+            model.addAttribute("token", response.getToken());
+            return "dashboard";
 
         } catch (Exception e) {
             model.addAttribute("error", "Login failed: " + e.getMessage());
