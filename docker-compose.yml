@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: skedjuli-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: skedjuli
+      MYSQL_USER: skeduser
+      MYSQL_PASSWORD: skedpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - skedjuli-db-data:/var/lib/mysql
+      - ./db/baseline.sql:/docker-entrypoint-initdb.d/baseline.sql:ro
+
+volumes: 
+    skedjuli-db-data:
