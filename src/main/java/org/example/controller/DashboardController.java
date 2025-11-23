@@ -18,14 +18,8 @@ public class DashboardController {
 
     @GetMapping("/api/dashboard")
     public User getDashboardData(Principal principal) {
-
         String email = principal.getName();
-        User user = userService.findByEmail(email);
-
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
-
-        return user;
+        return java.util.Optional.ofNullable(userService.findByEmail(email))
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

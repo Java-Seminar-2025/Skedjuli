@@ -1,14 +1,15 @@
 package org.example.service;
 
 import org.example.model.*;
-import org.example.repository.*;
+import org.example.repository.LecturerRepository;
+import org.example.repository.StudentRepository;
+import org.example.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -62,13 +63,7 @@ public class AuthService {
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(req.getPassword()));
 
-        if (req.getDateOfBirth() != null) {
-            try {
-                user.setDateOfBirth(req.getDateOfBirth());
-            } catch (Exception ignored) {
-                user.setDateOfBirth(null);
-            }
-        }
+        Optional.ofNullable(req.getDateOfBirth()).ifPresent(user::setDateOfBirth);
 
         LocalDateTime now = LocalDateTime.now();
         user.setCreatedAt(now);
@@ -76,25 +71,29 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        if (role == 1) { // student
-            Student student = new Student();
-            student.setUserId(savedUser.getId());
-            student.setStudyProgramId(req.getStudyProgramId());
-            student.setEnrollmentYear(req.getEnrollmentYear());
-            student.setCurrentYear(req.getCurrentYear());
-            student.setIsActive(true);
-            student.setCreatedAt(now);
-            studentRepository.save(student);
-        } else { // lecturer
-            Lecturer lecturer = new Lecturer();
-            lecturer.setUserId(savedUser.getId());
-            lecturer.setDepartment(req.getDepartment());
-            lecturer.setAcademicTitle(req.getAcademicTitle());
-            lecturer.setOfficeLocation(req.getOfficeLocation());
-            lecturer.setPhoneNumber(req.getPhoneNumber());
-            lecturer.setIsActive(true);
-            lecturer.setCreatedAt(now);
-            lecturerRepository.save(lecturer);
+        switch (role) {
+            case 1 -> {
+                Student student = new Student();
+                student.setUserId(savedUser.getId());
+                student.setStudyProgramId(req.getStudyProgramId());
+                student.setEnrollmentYear(req.getEnrollmentYear());
+                student.setCurrentYear(req.getCurrentYear());
+                student.setIsActive(true);
+                student.setCreatedAt(now);
+                studentRepository.save(student);
+            }
+            case 2 -> {
+                Lecturer lecturer = new Lecturer();
+                lecturer.setUserId(savedUser.getId());
+                lecturer.setDepartment(req.getDepartment());
+                lecturer.setAcademicTitle(req.getAcademicTitle());
+                lecturer.setOfficeLocation(req.getOfficeLocation());
+                lecturer.setPhoneNumber(req.getPhoneNumber());
+                lecturer.setIsActive(true);
+                lecturer.setCreatedAt(now);
+                lecturerRepository.save(lecturer);
+            }
+            default -> throw new RuntimeException("Invalid role");
         }
 
         String token = jwtService.generateToken(savedUser.getEmail());
@@ -104,8 +103,8 @@ public class AuthService {
     //login
     public AuthResponse login(AuthRequest authRequest) {
         User user = userRepository.findByEmail(authRequest.getEmail())
-                .orElseGet(() -> userRepository.findByUsername(authRequest.getEmail())
-                        .orElseThrow(() -> new RuntimeException("User not found")));
+                .or(() -> userRepository.findByUsername(authRequest.getEmail()))
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
