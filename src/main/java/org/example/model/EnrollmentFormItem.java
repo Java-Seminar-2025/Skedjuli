@@ -48,11 +48,7 @@ public class EnrollmentFormItem {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Constructors
-
     public EnrollmentFormItem() {}
-
-    // Getters & Setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

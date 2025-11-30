@@ -3,7 +3,9 @@ package org.example.controller;
 import org.example.model.AuthRequest;
 import org.example.model.AuthResponse;
 import org.example.model.RegisterRequest;
+import org.example.service.EnrollmentService;
 import org.example.service.AuthService;
+import org.example.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginController {
 
     private final AuthService authService;
+    private final EnrollmentService enrollmentService;
 
-    public LoginController(AuthService authService) {
+    public LoginController(AuthService authService,  EnrollmentService enrollmentService) {
         this.authService = authService;
+        this.enrollmentService = enrollmentService;
     }
 
     @GetMapping("/register")

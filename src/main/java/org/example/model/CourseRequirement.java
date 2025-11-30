@@ -23,16 +23,12 @@ public class CourseRequirement {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Constructors
-
     public CourseRequirement() {}
 
     public CourseRequirement(Course course, Course requiredCourse) {
         this.course = course;
         this.requiredCourse = requiredCourse;
     }
-
-    // Getters & Setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

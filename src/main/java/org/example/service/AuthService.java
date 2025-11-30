@@ -31,7 +31,6 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    //register
     @Transactional
     public AuthResponse register(RegisterRequest req) {
 
@@ -100,7 +99,6 @@ public class AuthService {
         return new AuthResponse(token, savedUser.getEmail());
     }
 
-    //login
     public AuthResponse login(AuthRequest authRequest) {
         User user = userRepository.findByEmail(authRequest.getEmail())
                 .or(() -> userRepository.findByUsername(authRequest.getEmail()))

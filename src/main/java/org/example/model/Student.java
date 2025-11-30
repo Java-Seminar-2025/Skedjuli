@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    public Long id;
 
     @Column(name = "user_id", nullable = false)
     public Long userId;
 
     @Column(name = "study_program_id")
-    public Integer studyProgramId;
+    public Long studyProgramId;
 
     @Column(name = "enrollment_year")
     public Integer enrollmentYear;
@@ -29,18 +29,16 @@ public class Student {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-
     public Student() {}
 
-    // Getters & Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
-    public Integer getStudyProgramId() { return studyProgramId; }
-    public void setStudyProgramId(Integer studyProgramId) { this.studyProgramId = studyProgramId; }
+    public Long getStudyProgramId() { return studyProgramId; }
+    public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
 
     public Integer getEnrollmentYear() { return enrollmentYear; }
     public void setEnrollmentYear(Integer enrollmentYear) { this.enrollmentYear = enrollmentYear; }

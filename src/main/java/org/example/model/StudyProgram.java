@@ -40,11 +40,7 @@ public class StudyProgram {
     @OneToMany(mappedBy = "studyProgram", fetch = FetchType.LAZY)
     private Set<Course> courses = new HashSet<>();
 
-    // Constructors
-
     public StudyProgram() {}
-
-    // Getters & Setters
 
     public Long getId() { return id; }
 

@@ -9,7 +9,6 @@ import java.util.Set;
 @Entity
 @Table(name = "academic_years")
 public class AcademicYear {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,11 +40,7 @@ public class AcademicYear {
     @OneToMany(mappedBy = "academicYear", fetch = FetchType.LAZY)
     private Set<Course> courses = new HashSet<>();
 
-    // Constructors
-
     public AcademicYear() {}
-
-    // Getters & Setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

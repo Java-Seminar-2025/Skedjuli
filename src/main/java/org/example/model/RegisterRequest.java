@@ -15,13 +15,11 @@ public class RegisterRequest {
     private String officeLocation;
     private String phoneNumber;
 
-    private Integer studyProgramId;
+    private Long studyProgramId;
     private Integer enrollmentYear;
     private Integer currentYear;
 
     private LocalDate dateOfBirth;
-
-    //  Getters & Setters
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
@@ -53,8 +51,8 @@ public class RegisterRequest {
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
-    public Integer getStudyProgramId() { return studyProgramId; }
-    public void setStudyProgramId(Integer studyProgramId) { this.studyProgramId = studyProgramId; }
+    public Long getStudyProgramId() { return studyProgramId; }
+    public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
 
     public Integer getEnrollmentYear() { return enrollmentYear; }
     public void setEnrollmentYear(Integer enrollmentYear) { this.enrollmentYear = enrollmentYear; }

@@ -31,8 +31,6 @@ public class Course {
     @Column(name = "enrollment_limit")
     private Integer enrollmentLimit;
 
-    // Relationships
-
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
@@ -57,8 +55,6 @@ public class Course {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relationships: prerequisites (course_req)
-
     @ManyToMany
     @JoinTable(
             name = "course_req",
@@ -70,11 +66,7 @@ public class Course {
     @ManyToMany(mappedBy = "prerequisites")
     private Set<Course> dependentCourses = new HashSet<>();
 
-    // Constructors
-
     public Course() {}
-
-    // Getters & Setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
