@@ -3,6 +3,9 @@ package org.example.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "enrollment_forms")
@@ -11,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class EnrollmentForm {
-
     public enum Status {
         PENDING(1),
         APPROVED(2),
@@ -74,6 +76,9 @@ public class EnrollmentForm {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "enrollmentForm", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EnrollmentFormItem> items = new ArrayList<>();
 
     // --- Enum access ---
     public Status getStatusEnum() {

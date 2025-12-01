@@ -56,7 +56,6 @@ public class EnrollmentFormItem {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Optional getters/setters for status
     public Status getStatusEnum() {
         return Status.fromValue(status);
     }

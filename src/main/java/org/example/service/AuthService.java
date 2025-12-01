@@ -1,6 +1,6 @@
 package org.example.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.example.model.*;
 import org.example.repository.LecturerRepository;
 import org.example.repository.StudentRepository;
@@ -14,8 +14,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthService {
+
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final LecturerRepository lecturerRepository;
@@ -26,6 +27,7 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest req) {
 
+        // Basic validation
         if (req.getEmail() == null || req.getEmail().isBlank()) {
             throw new RuntimeException("Email cannot be empty");
         }
@@ -37,15 +39,20 @@ public class AuthService {
             throw new RuntimeException("First name and last name are required");
         }
 
+        // Duplicate checks
         if (userRepository.existsByEmail(req.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
-        if (userRepository.existsByUsername(req.getEmail())) {  // using email as username
+        if (userRepository.existsByUsername(req.getEmail())) {
             throw new RuntimeException("Username already exists");
         }
 
-        int role = "professor".equalsIgnoreCase(req.getRole()) ? 2 : 1;  // 2 = lecturer, 1 = student
 
+        int role = "professor".equalsIgnoreCase(req.getRole()) ? 2 : 1;
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // Create user
         User user = new User();
         user.setUsername(req.getEmail());
         user.setEmail(req.getEmail());
@@ -53,44 +60,43 @@ public class AuthService {
         user.setLastName(req.getLastName());
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(req.getPassword()));
-
-        Optional.ofNullable(req.getDateOfBirth()).ifPresent(user::setDateOfBirth);
-
-        LocalDateTime now = LocalDateTime.now();
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
+        Optional.ofNullable(req.getDateOfBirth()).ifPresent(user::setDateOfBirth);
 
         User savedUser = userRepository.save(user);
 
-        switch (role) {
-            case 1 -> {
-                StudyProgram studyProgram = studyProgramRepository
-                        .findById(req.getStudyProgramId())
-                        .orElseThrow(() -> new RuntimeException("Study program not found"));
+        // Create related entity
+        if (role == 1) {
+            // STUDENT
+            StudyProgram studyProgram = studyProgramRepository.findById(req.getStudyProgramId())
+                    .orElseThrow(() -> new RuntimeException("Study program not found"));
 
-                Student student = new Student();
-                student.setUser(savedUser);
-                student.setStudyProgram(studyProgram);
-                student.setEnrollmentYear(req.getEnrollmentYear());
-                student.setCurrentYear(req.getCurrentYear());
-                student.setIsActive(true);
-                student.setCreatedAt(now);
-                studentRepository.save(student);
-            }
-            case 2 -> {
-                Lecturer lecturer = new Lecturer();
-                lecturer.setUser(savedUser);
-                lecturer.setDepartment(req.getDepartment());
-                lecturer.setAcademicTitle(req.getAcademicTitle());
-                lecturer.setOfficeLocation(req.getOfficeLocation());
-                lecturer.setPhoneNumber(req.getPhoneNumber());
-                lecturer.setIsActive(true);
-                lecturer.setCreatedAt(now);
-                lecturerRepository.save(lecturer);
-            }
-            default -> throw new RuntimeException("Invalid role");
+            Student student = new Student();
+            student.setUser(savedUser);
+            student.setStudyProgram(studyProgram);
+            student.setEnrollmentYear(req.getEnrollmentYear());
+            student.setCurrentYear(req.getCurrentYear());
+            student.setIsActive(true);
+            student.setCreatedAt(now);
+
+            studentRepository.save(student);
+
+        } else if (role == 2) {
+            // LECTURER
+            Lecturer lecturer = new Lecturer();
+            lecturer.setUser(savedUser);
+            lecturer.setDepartment(req.getDepartment());
+            lecturer.setAcademicTitle(req.getAcademicTitle());
+            lecturer.setOfficeLocation(req.getOfficeLocation());
+            lecturer.setPhoneNumber(req.getPhoneNumber());
+            lecturer.setIsActive(true);
+            lecturer.setCreatedAt(now);
+
+            lecturerRepository.save(lecturer);
         }
 
+        // Generate JWT
         String token = jwtService.generateToken(savedUser.getEmail());
         return new AuthResponse(token, savedUser.getEmail());
     }

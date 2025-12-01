@@ -1,16 +1,16 @@
 package org.example.service;
 
-import lombok.AllArgsConstructor;
-import org.example.model.Course;
-import org.example.model.EnrollmentForm;
-import org.example.model.EnrollmentFormItem;
-import org.example.model.Student;
+import lombok.RequiredArgsConstructor;
+import org.example.model.*;
 import org.example.repository.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EnrollmentService {
 
     private final StudentRepository studentRepository;
@@ -18,59 +18,65 @@ public class EnrollmentService {
     private final CompletedCourseRepository completedCourseRepository;
     private final EnrollmentFormRepository enrollmentFormRepository;
     private final EnrollmentFormItemRepository itemRepository;
+    private final AcademicYearRepository academicYearRepository;
 
     private EnrollmentForm enrollSemester(Student student, Integer semester) {
 
-        // prevent double enrollment for same semester
         enrollmentFormRepository
-                .findByStudentIdAndSemester(student.getId(), semester)
+                .findByStudentAndSemester(student, semester)
                 .ifPresent(f -> {
                     throw new RuntimeException("Enrollment for semester " + semester + " already exists");
                 });
 
-        // fetch mandatory courses
         List<Course> mandatoryCourses =
                 courseRepository.findByStudyProgramAndSemesterAndMandatoryTrue(
                         student.getStudyProgram(),
                         semester
                 );
 
-        // create the form
+        List<Course> completedCourses = completedCourseRepository.findByStudent(student)
+                .stream()
+                .map(CompletedCourse::getCourse)
+                .collect(Collectors.toList());
+
         EnrollmentForm form = new EnrollmentForm();
         form.setStudent(student);
         form.setSemester(semester);
+        form.setAcademicYear(academicYearRepository.findByActiveTrue());
         form.setStatusEnum(EnrollmentForm.Status.PENDING);
-        enrollmentFormRepository.save(form);
 
-        // add only courses student has NOT completed
-        List<Long> completedCourseIds = completedCourseRepository
-                .findCourseIdsByStudentId(student.getId());
+        List<EnrollmentFormItem> items = new ArrayList<>();
 
         for (Course course : mandatoryCourses) {
-            if (!completedCourseIds.contains(course.getId())) {
+            if (!completedCourses.contains(course)) {
                 EnrollmentFormItem item = new EnrollmentFormItem();
                 item.setEnrollmentForm(form);
                 item.setCourse(course);
                 item.setStatusEnum(EnrollmentFormItem.Status.PENDING);
-                itemRepository.save(item);
+
+                items.add(item);
             }
         }
 
-        return form;
+        form.setItems(items);
+
+        return enrollmentFormRepository.save(form);
+    }
+    public void enrollFirstYear(Student student) {
+        Integer year = student.getCurrentYear();
+        Integer sem1 = year * 2 - 1;  // 1
+        Integer sem2 = year * 2;      // 2
+
+        enrollSemester(student, sem1);
+        enrollSemester(student, sem2);
     }
 
-    public List<EnrollmentForm> enrollFirstYear(Long studentId) {
+    public List<Course> getEnrolledCourses(Student student) {
 
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+        List<EnrollmentForm> forms = enrollmentFormRepository.findByStudent(student);
 
-        Integer year = student.getCurrentYear();
-        Integer sem1 = year * 2 - 1;
-        Integer sem2 = year * 2;
-
-        return List.of(
-                enrollSemester(student, sem1),
-                enrollSemester(student, sem2)
-        );
+        return forms.stream()
+                .flatMap(f -> f.getItems().stream().map(EnrollmentFormItem::getCourse))
+                .collect(Collectors.toList());
     }
 }

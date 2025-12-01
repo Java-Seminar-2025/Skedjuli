@@ -10,6 +10,7 @@ org\example\controller\DashboardController.class
 org\example\service\JwtService.class
 org\example\service\UserService.class
 org\example\repository\EnrollmentFormItemRepository.class
+org\example\repository\AcademicYearRepository.class
 org\example\model\EnrollmentForm$Status.class
 org\example\model\Student.class
 org\example\model\User.class
