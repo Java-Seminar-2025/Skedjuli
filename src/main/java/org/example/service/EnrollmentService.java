@@ -1,5 +1,6 @@
 package org.example.service;
 
+import lombok.AllArgsConstructor;
 import org.example.model.Course;
 import org.example.model.EnrollmentForm;
 import org.example.model.EnrollmentFormItem;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
+@AllArgsConstructor
 public class EnrollmentService {
 
     private final StudentRepository studentRepository;
@@ -16,18 +18,6 @@ public class EnrollmentService {
     private final CompletedCourseRepository completedCourseRepository;
     private final EnrollmentFormRepository enrollmentFormRepository;
     private final EnrollmentFormItemRepository itemRepository;
-
-    public EnrollmentService(StudentRepository studentRepository,
-                             CourseRepository courseRepository,
-                             CompletedCourseRepository completedCourseRepository,
-                             EnrollmentFormRepository enrollmentFormRepository,
-                             EnrollmentFormItemRepository itemRepository) {
-        this.studentRepository = studentRepository;
-        this.courseRepository = courseRepository;
-        this.completedCourseRepository = completedCourseRepository;
-        this.enrollmentFormRepository = enrollmentFormRepository;
-        this.itemRepository = itemRepository;
-    }
 
     private EnrollmentForm enrollSemester(Student student, Integer semester) {
 
@@ -40,8 +30,8 @@ public class EnrollmentService {
 
         // fetch mandatory courses
         List<Course> mandatoryCourses =
-                courseRepository.findByStudyProgramIdAndSemesterAndMandatoryTrue(
-                        student.getStudyProgramId(),
+                courseRepository.findByStudyProgramAndSemesterAndMandatoryTrue(
+                        student.getStudyProgram(),
                         semester
                 );
 
@@ -49,7 +39,7 @@ public class EnrollmentService {
         EnrollmentForm form = new EnrollmentForm();
         form.setStudent(student);
         form.setSemester(semester);
-        form.setStatus(EnrollmentForm.Status.PENDING);
+        form.setStatusEnum(EnrollmentForm.Status.PENDING);
         enrollmentFormRepository.save(form);
 
         // add only courses student has NOT completed
@@ -61,7 +51,7 @@ public class EnrollmentService {
                 EnrollmentFormItem item = new EnrollmentFormItem();
                 item.setEnrollmentForm(form);
                 item.setCourse(course);
-                item.setStatus(EnrollmentFormItem.Status.PENDING);
+                item.setStatusEnum(EnrollmentFormItem.Status.PENDING);
                 itemRepository.save(item);
             }
         }

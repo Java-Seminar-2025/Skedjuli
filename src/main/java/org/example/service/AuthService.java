@@ -1,8 +1,10 @@
 package org.example.service;
 
+import lombok.AllArgsConstructor;
 import org.example.model.*;
 import org.example.repository.LecturerRepository;
 import org.example.repository.StudentRepository;
+import org.example.repository.StudyProgramRepository;
 import org.example.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,24 +14,14 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final LecturerRepository lecturerRepository;
+    private final StudyProgramRepository studyProgramRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthService(UserRepository userRepository,
-                       StudentRepository studentRepository,
-                       LecturerRepository lecturerRepository,
-                       JwtService jwtService,
-                       PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.studentRepository = studentRepository;
-        this.lecturerRepository = lecturerRepository;
-        this.jwtService = jwtService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Transactional
     public AuthResponse register(RegisterRequest req) {
@@ -72,9 +64,13 @@ public class AuthService {
 
         switch (role) {
             case 1 -> {
+                StudyProgram studyProgram = studyProgramRepository
+                        .findById(req.getStudyProgramId())
+                        .orElseThrow(() -> new RuntimeException("Study program not found"));
+
                 Student student = new Student();
-                student.setUserId(savedUser.getId());
-                student.setStudyProgramId(req.getStudyProgramId());
+                student.setUser(savedUser);
+                student.setStudyProgram(studyProgram);
                 student.setEnrollmentYear(req.getEnrollmentYear());
                 student.setCurrentYear(req.getCurrentYear());
                 student.setIsActive(true);
@@ -83,7 +79,7 @@ public class AuthService {
             }
             case 2 -> {
                 Lecturer lecturer = new Lecturer();
-                lecturer.setUserId(savedUser.getId());
+                lecturer.setUser(savedUser);
                 lecturer.setDepartment(req.getDepartment());
                 lecturer.setAcademicTitle(req.getAcademicTitle());
                 lecturer.setOfficeLocation(req.getOfficeLocation());

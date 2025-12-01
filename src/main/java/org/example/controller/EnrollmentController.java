@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import lombok.AllArgsConstructor;
 import org.example.model.Course;
 import org.example.model.EnrollmentForm;
 import org.example.model.EnrollmentFormItem;
@@ -15,17 +16,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/enrollment")
+@AllArgsConstructor
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
     private final UserService userService;
     private final EnrollmentFormRepository enrollmentFormRepository;
-
-    public EnrollmentController(EnrollmentService enrollmentService, UserService userService, EnrollmentFormRepository enrollmentFormRepository) {
-        this.enrollmentService = enrollmentService;
-        this.userService = userService;
-        this.enrollmentFormRepository = enrollmentFormRepository;
-    }
 
     /**
      * Get enrolled courses for a student (first-year)

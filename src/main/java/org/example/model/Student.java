@@ -1,55 +1,50 @@
 package org.example.model;
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "students")
+@Getter
+@Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
 public class Student {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    public Long userId;
+    @NonNull
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
-    @Column(name = "study_program_id")
-    public Long studyProgramId;
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "study_program_id", nullable = false, unique = true)
+    private StudyProgram studyProgram;
 
-    @Column(name = "enrollment_year")
-    public Integer enrollmentYear;
+    @NonNull
+    @Column(name = "enrollment_year",  nullable = false)
+    private Integer enrollmentYear;
 
-    @Column(name = "current_year")
-    public Integer currentYear;
+    @NonNull
+    @Column(name = "current_year" , nullable = false)
+    private Integer currentYear;
+
+    @Column(name = "average_grade")
+    private Double averageGrade;
+
+    @Column(name = "total_ects_earned")
+    private Double totalEctsEarned;
 
     @Column(name = "is_active")
-    public Boolean isActive = true;
+    private Boolean isActive = true;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    public Student() {}
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-
-    public Long getStudyProgramId() { return studyProgramId; }
-    public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
-
-    public Integer getEnrollmentYear() { return enrollmentYear; }
-    public void setEnrollmentYear(Integer enrollmentYear) { this.enrollmentYear = enrollmentYear; }
-
-    public Integer getCurrentYear() { return currentYear; }
-    public void setCurrentYear(Integer currentYear) { this.currentYear = currentYear; }
-
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
 }

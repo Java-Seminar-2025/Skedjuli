@@ -1,10 +1,15 @@
 package org.example.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "enrollment_form_items")
+@Getter
+@Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
 public class EnrollmentFormItem {
 
     public enum Status {
@@ -31,14 +36,17 @@ public class EnrollmentFormItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "enrollment_form_id", nullable = false)
     private EnrollmentForm enrollmentForm;
 
+    @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
+    @NonNull
     @Column(name = "status", nullable = false)
     private Integer status;
 
@@ -48,23 +56,12 @@ public class EnrollmentFormItem {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public EnrollmentFormItem() {}
+    // Optional getters/setters for status
+    public Status getStatusEnum() {
+        return Status.fromValue(status);
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public EnrollmentForm getEnrollmentForm() { return enrollmentForm; }
-    public void setEnrollmentForm(EnrollmentForm enrollmentForm) { this.enrollmentForm = enrollmentForm; }
-
-    public Course getCourse() { return course; }
-    public void setCourse(Course course) { this.course = course; }
-
-    public Status getStatus() { return Status.fromValue(status); }
-    public void setStatus(Status status) { this.status = status.getValue(); }
-
-    public String getRejectionReason() { return rejectionReason; }
-    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setStatusEnum(Status statusEnum) {
+        this.status = statusEnum.getValue();
+    }
 }

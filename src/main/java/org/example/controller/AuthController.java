@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import lombok.AllArgsConstructor;
 import org.example.model.AuthRequest;
 import org.example.model.AuthResponse;
 import org.example.model.RegisterRequest;
@@ -10,12 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*") // omogućuje komunikaciju s frontendom
+@AllArgsConstructor
 public class AuthController {
     private final AuthService authService;
-
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
