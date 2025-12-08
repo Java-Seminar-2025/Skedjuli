@@ -1,10 +1,10 @@
 package org.example.controller;
 
 import lombok.AllArgsConstructor;
-import org.example.model.AuthRequest;
-import org.example.model.AuthResponse;
-import org.example.model.RegisterRequest;
-import org.example.service.AuthService;
+import org.example.domain.dto.AuthRequest;
+import org.example.domain.dto.AuthResponse;
+import org.example.domain.dto.RegisterRequest;
+import org.example.service.business.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

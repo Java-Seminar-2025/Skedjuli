@@ -1,10 +1,8 @@
 package org.example.controller;
 
 import lombok.AllArgsConstructor;
-import org.example.model.Course;
-import org.example.model.Student;
-import org.example.service.EnrollmentService;
-import org.example.service.UserService;
+import org.example.domain.dto.EnrollmentCourseResponse;
+import org.example.service.business.EnrollmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,27 +14,17 @@ import java.util.List;
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
-    private final UserService userService;
 
-    @GetMapping("/student/{userId}/courses")
-    public ResponseEntity<List<Course>> getEnrolledCourses(@PathVariable Long userId) {
-        Student student = userService.findStudentByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-        List<Course> enrolledCourses = enrollmentService.getEnrolledCourses(student);
+    @GetMapping("/student/{studentId}/courses")
+    public ResponseEntity<List<EnrollmentCourseResponse>> getEnrolledCourses(@PathVariable Long studentId) {
+        List<EnrollmentCourseResponse> enrolledCourses = enrollmentService.getEnrolledCoursesForYear(studentId);
         return ResponseEntity.ok(enrolledCourses);
     }
 
-    @PostMapping("/student/{userId}/enroll")
-    public ResponseEntity<String> enrollStudent(@PathVariable Long userId) {
-        Student student = userService.findStudentByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-
-        if (student.getCurrentYear() != 1) {
-            return ResponseEntity.badRequest().body("Only first-year students can be enrolled using this endpoint");
-        }
-
+    @PostMapping("/student/{studentId}/enroll")
+    public ResponseEntity<String> enrollStudent(@PathVariable Long studentId) {
         try {
-            enrollmentService.enrollFirstYear(student);
+            enrollmentService.enrollYear(studentId);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

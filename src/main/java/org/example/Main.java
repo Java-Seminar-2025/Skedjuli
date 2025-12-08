@@ -9,11 +9,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 //dostupni predmeti studentu (ako je npr 1. god da prikaze sve dostupne, ako je 2. prikaz polozenih/ sto moze upisat)
 ///Logika za godinu studia *ko sta je na nasen faksu*
-//- 1. godina → svi obvezni predmeti 1. godine 60 ects
+//- 1. godina → svi obvezni predmeti 1. godine 60 ects ovaj dio je rijesen, treba popravit da vridi za 2. i trecu godinu al o tom po tom
 //- 2. godina → provjera položenih predmeta 1. godine + obvezni 2. godine 58-62
 //- 3. godina → preostali obvezni + izborni predmeti 58-62 bez zavrsnog do 80 za zavrsnin
 
-// upis predmeta api
+// upis predmeta api (radi upis predmeta na prvu godinu i vraca upisane predmete sa svih godina)
 //upis predmeta page
 
 

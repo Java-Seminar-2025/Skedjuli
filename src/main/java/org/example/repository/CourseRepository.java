@@ -1,11 +1,10 @@
 package org.example.repository;
 
-import org.example.model.Course;
-import org.example.model.StudyProgram;
+import org.example.domain.entity.CourseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface CourseRepository extends JpaRepository<Course, Long> {
-    List<Course> findByStudyProgramAndSemesterAndMandatoryTrue(StudyProgram program, Integer Semester);
+public interface CourseRepository extends JpaRepository<CourseEntity, Long> {
+    List<CourseEntity> findByStudyProgram_IdAndSemesterAndMandatoryTrue(Long studyProgramId, Integer semester);
 }

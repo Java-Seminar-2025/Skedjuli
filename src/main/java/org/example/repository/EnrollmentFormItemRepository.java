@@ -1,7 +1,10 @@
 package org.example.repository;
 
-import org.example.model.EnrollmentFormItem;
+import org.example.domain.entity.EnrollmentFormItemEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFormItem, Long> {
+import java.util.List;
+
+public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFormItemEntity, Long> {
+    List<EnrollmentFormItemEntity> findByEnrollmentForm_Id(Long enrollmentFormId);
 }
