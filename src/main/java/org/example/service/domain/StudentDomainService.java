@@ -15,10 +15,17 @@ public class StudentDomainService {
 
     private final StudentRepository studentRepository;
 
-    public void createStudent(UserEntity user, StudyProgramEntity studyProgram, int enrollmentYear, int currentYear) {
-        StudentEntity student = new StudentEntity();
-        student.setUser(user);
-        student.setStudyProgram(studyProgram);
+    public void createStudent(Long userId, Long studyProgramId, int enrollmentYear, int currentYear) {
+        var student = new StudentEntity();
+
+        var uRef = new UserEntity();
+        uRef.setId(userId);
+        student.setUser(uRef);
+
+        var spRef = new StudyProgramEntity();
+        spRef.setId(studyProgramId);
+        student.setStudyProgram(spRef);
+
         student.setEnrollmentYear(enrollmentYear);
         student.setCurrentYear(currentYear);
         student.setIsActive(true);
@@ -27,14 +34,14 @@ public class StudentDomainService {
         studentRepository.save(student);
     }
 
-    public StudyProgramEntity getStudyProgramById(Long studentId) {
-        StudentEntity student = studentRepository.findById(studentId)
+    public Long getStudyProgramIdByStudentId(Long studentId) {
+        var student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
-        return student.getStudyProgram();
+        return student.getStudyProgram().getId();
     }
 
     public Integer getCurrentYearById(Long studentId) {
-        StudentEntity student = studentRepository.findById(studentId)
+        var student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         return student.getCurrentYear();
     }

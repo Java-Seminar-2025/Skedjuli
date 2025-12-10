@@ -1,3 +1,4 @@
+org\example\domain\dto\UserDto.class
 org\example\repository\CourseRepository.class
 org\example\domain\entity\EnrollmentFormEntity.class
 org\example\validator\LoginValidator.class
@@ -23,15 +24,16 @@ org\example\domain\entity\CourseRequirementEntity.class
 org\example\service\business\AuthService.class
 org\example\service\domain\EnrollmentFormDomainService.class
 org\example\controller\LoginController.class
+org\example\domain\dto\CourseInfo.class
 org\example\domain\entity\CourseEntity.class
 org\example\domain\entity\StudyProgramEntity.class
 org\example\repository\StudentRepository.class
-org\example\domain\dto\DashboardResponse.class
 org\example\domain\enums\EnrollmentFormItemStatus.class
 org\example\service\domain\CourseDomainService.class
 org\example\service\domain\StudentDomainService.class
 org\example\domain\dto\AuthRequest.class
 org\example\repository\UserRepository.class
+org\example\domain\dto\UserInfo.class
 org\example\domain\mapper\UserMapper.class
 org\example\service\domain\CompletedCourseDomainService.class
 org\example\service\business\EnrollmentService.class
@@ -48,4 +50,5 @@ org\example\domain\entity\LecturerEntity.class
 org\example\config\SecurityConfig.class
 org\example\service\domain\EnrollmentFormItemDomainService.class
 org\example\service\infrastructure\JwtService.class
+org\example\domain\enums\Role.class
 org\example\domain\mapper\CourseMapper.class

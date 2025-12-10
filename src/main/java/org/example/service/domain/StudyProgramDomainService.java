@@ -1,7 +1,6 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.entity.StudyProgramEntity;
 import org.example.repository.StudyProgramRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +9,7 @@ import org.springframework.stereotype.Service;
 public class StudyProgramDomainService {
     private final StudyProgramRepository studyProgramRepository;
 
-    public StudyProgramEntity getById(Long id) {
-        return studyProgramRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Study program not found"));
+    public boolean existsById(Long id) {
+        return studyProgramRepository.existsById(id);
     }
 }

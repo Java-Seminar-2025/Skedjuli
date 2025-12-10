@@ -7,9 +7,11 @@ C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\controller\HomeC
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\controller\LoginController.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\dto\AuthRequest.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\dto\AuthResponse.java
-C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\dto\DashboardResponse.java
+C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\dto\CourseInfo.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\dto\EnrollmentCourseResponse.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\dto\RegisterRequest.java
+C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\dto\UserDto.java
+C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\dto\UserInfo.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\entity\AcademicYearEntity.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\entity\CompletedCourseEntity.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\entity\CourseEntity.java
@@ -22,6 +24,7 @@ C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\entity\St
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\entity\UserEntity.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\enums\EnrollmentFormItemStatus.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\enums\EnrollmentFormStatus.java
+C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\enums\Role.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\mapper\CourseMapper.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\domain\mapper\UserMapper.java
 C:\Users\Lenovo\IdeaProjects\Skedjuli\src\main\java\org\example\Main.java

@@ -14,9 +14,13 @@ public class LecturerDomainService {
 
     private final LecturerRepository lecturerRepository;
 
-    public void createLecturer(UserEntity user, String department, String title, String office, String phone) {
-        LecturerEntity lecturer = new LecturerEntity();
-        lecturer.setUser(user);
+    public void createLecturer(Long userId, String department, String title, String office, String phone) {
+        var lecturer = new LecturerEntity();
+
+        var uRef = new UserEntity();
+        uRef.setId(userId);
+        lecturer.setUser(uRef);
+
         lecturer.setDepartment(department);
         lecturer.setAcademicTitle(title);
         lecturer.setOfficeLocation(office);

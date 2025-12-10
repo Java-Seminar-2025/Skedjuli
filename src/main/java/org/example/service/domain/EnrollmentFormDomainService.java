@@ -1,13 +1,14 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.entity.*;
+import org.example.domain.entity.EnrollmentFormEntity;
+import org.example.domain.entity.EnrollmentFormItemEntity;
+import org.example.domain.entity.CourseEntity;
+import org.example.domain.entity.StudentEntity;
+import org.example.domain.entity.AcademicYearEntity;
 import org.example.domain.enums.EnrollmentFormItemStatus;
 import org.example.domain.enums.EnrollmentFormStatus;
-import org.example.repository.AcademicYearRepository;
-import org.example.repository.CourseRepository;
 import org.example.repository.EnrollmentFormRepository;
-import org.example.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,49 +18,47 @@ import java.time.LocalDateTime;
 public class EnrollmentFormDomainService {
 
     private final EnrollmentFormRepository enrollmentFormRepository;
-    private final StudentRepository studentRepository;
-    private final AcademicYearRepository academicYearRepository;
-    private final CourseRepository courseRepository;
 
-    public EnrollmentFormEntity createEmptyForm(Long studentId, Long academicYearId, int semester) {
-        StudentEntity student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-        AcademicYearEntity year = academicYearRepository.findById(academicYearId)
-                .orElseThrow(() -> new RuntimeException("Academic year not found"));
+    public Long createEmptyFormReturnId(Long studentId, Long academicYearId, int semester) {
+        var f = new EnrollmentFormEntity();
 
-        EnrollmentFormEntity f = new EnrollmentFormEntity();
-        f.setStudent(student);
-        f.setAcademicYear(year);
+        var studentRef = new StudentEntity();
+        studentRef.setId(studentId);
+        f.setStudent(studentRef);
+
+        var yearRef = new AcademicYearEntity();
+        yearRef.setId(academicYearId);
+        f.setAcademicYear(yearRef);
+
         f.setSemester(semester);
         f.setStatusEnum(EnrollmentFormStatus.PENDING);
         f.setCreatedAt(LocalDateTime.now());
 
-        return enrollmentFormRepository.save(f);
+        var saved = enrollmentFormRepository.save(f);
+        return saved.getId();
     }
 
-    public void addItem(EnrollmentFormEntity form, Long courseId) {
-        CourseEntity course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
-        EnrollmentFormItemEntity item = new EnrollmentFormItemEntity();
+    public void addItemByFormId(Long enrollmentFormId, Long courseId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found"));
+
+        var item = new EnrollmentFormItemEntity();
         item.setEnrollmentForm(form);
-        item.setCourse(course);
+
+        var courseRef = new CourseEntity();
+        courseRef.setId(courseId);
+        item.setCourse(courseRef);
+
         item.setStatusEnum(EnrollmentFormItemStatus.PENDING);
         item.setCreatedAt(LocalDateTime.now());
 
         form.getItems().add(item);
-    }
-
-    public boolean isEnrolledForSemester(Long studentId, Integer semester) {
-        return enrollmentFormRepository.existsByStudent_IdAndSemester(studentId, semester);
+        enrollmentFormRepository.save(form);
     }
 
     public Long getEnrollmentFormId(Long studentId, Integer semester) {
         return enrollmentFormRepository.findByStudent_IdAndSemester(studentId, semester)
                 .orElseThrow(() -> new RuntimeException("Enrollment form not found"))
                 .getId();
-    }
-
-    public void save(EnrollmentFormEntity form) {
-        enrollmentFormRepository.save(form);
     }
 }

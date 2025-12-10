@@ -2,6 +2,7 @@ package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
 import org.example.domain.dto.RegisterRequest;
+import org.example.domain.dto.UserDto;
 import org.example.domain.entity.UserEntity;
 import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,8 @@ public class UserDomainService {
         return userRepository.existsByUsername(username);
     }
 
-    public UserEntity getByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    public UserEntity createUser(RegisterRequest req, String encodedPassword, int role) {
-        UserEntity user = new UserEntity();
+    public Long createUser(RegisterRequest req, String encodedPassword, int role) {
+        var user = new UserEntity();
         user.setEmail(req.email());
         user.setUsername(req.email());
         user.setFirstName(req.firstName());
@@ -39,7 +35,13 @@ public class UserDomainService {
         user.setUpdatedAt(LocalDateTime.now());
         user.setDateOfBirth(req.dateOfBirth());
 
-        return userRepository.save(user);
+        var saved = userRepository.save(user);
+        return saved.getId();
     }
 
+    public UserDto getUserDtoByEmail(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return new UserDto(user.getId(), user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getRole());
+    }
 }
