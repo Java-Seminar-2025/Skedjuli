@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.model.dto.CourseInfo;
 import org.example.model.entity.CourseEntity;
 import org.example.model.mapper.CourseMapper;
-import org.example.exception.CourseNotFoundException;
 import org.example.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +44,7 @@ public class CourseDomainService {
     public CourseInfo getCourseInfoById(Long courseId) {
         if (courseId == null) throw new IllegalArgumentException("courseId is null");
         var entity = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException(courseId));
+                .orElseThrow(() -> new IllegalArgumentException("course not found"));
         return CourseMapper.toCourseInfo(entity);
     }
 }

@@ -25,18 +25,17 @@ public class CompletionService {
     public CompletedCourseDto markCompleted(CompletedCourseCreateRequest request) {
         completedCourseValidator.validateCreate(request);
 
-        // Hard checks (no null checks, no if): force existence by calling domain getters
-        studentDomainService.getCurrentYearById((long) request.studentId());
-        courseDomainService.getCourseInfoById((long) request.courseId());
+        studentDomainService.getCurrentYearById(request.studentId());
+        courseDomainService.getCourseInfoById(request.courseId());
 
-        var academicYearId = academicYearDomainService.getActiveYearId();
+        Long academicYearId = academicYearDomainService.getActiveYearId();
 
         return completedCourseDomainService.createCompletedCourse(
                 request.studentId(),
                 request.courseId(),
                 request.grade(),
                 request.completionDate(),
-                academicYearId.intValue()
+                academicYearId
         );
     }
 }

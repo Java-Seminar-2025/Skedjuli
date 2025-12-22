@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class AcademicYearMapper {
 
     public AcademicYearDto toDto(AcademicYearEntity entity) {
-        var id = entity.getId().intValue();
+        var id = entity.getId();
         var yearCode = entity.getYearCode();
         var startDate = entity.getStartDate();
         var endDate = entity.getEndDate();

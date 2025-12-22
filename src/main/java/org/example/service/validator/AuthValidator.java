@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.model.dto.RegisterRequest;
 import org.example.model.dto.UserDto;
 import org.example.model.enums.Role;
-import org.example.exception.EnrollmentValidationException;
 import org.example.service.domain.StudyProgramDomainService;
 import org.example.service.domain.UserDomainService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,11 +21,11 @@ public class AuthValidator {
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * Validate registration request. Void API — throws EnrollmentValidationException on failure.
+     * Validate registration request. Void API — throws IllegalArgumentException on failure.
      */
     public void validateRegister(RegisterRequest req) {
         var request = Optional.ofNullable(req)
-                .orElseThrow(() -> new EnrollmentValidationException("Register request is null"));
+                .orElseThrow(() -> new IllegalArgumentException("Register request is null"));
 
         var email = Optional.ofNullable(request.email()).orElse("").trim();
         var password = Optional.ofNullable(request.password()).orElse("");
@@ -35,35 +34,37 @@ public class AuthValidator {
         var lastName = Optional.ofNullable(request.lastName()).orElse("").trim();
         var roleStr = Optional.ofNullable(request.role()).orElse("").trim();
 
-        if (!StringUtils.hasText(email)) throw new EnrollmentValidationException("Email is required");
-        if (!StringUtils.hasText(password)) throw new EnrollmentValidationException("Password is required");
-        if (!StringUtils.hasText(confirm)) throw new EnrollmentValidationException("Confirm password is required");
+        if (!StringUtils.hasText(email)) throw new IllegalArgumentException("Email is required");
+        if (!StringUtils.hasText(password)) throw new IllegalArgumentException("Password is required");
+        if (!StringUtils.hasText(confirm)) throw new IllegalArgumentException("Confirm password is required");
         if (!StringUtils.hasText(firstName) || !StringUtils.hasText(lastName))
-            throw new EnrollmentValidationException("First name and last name are required");
+            throw new IllegalArgumentException("First name and last name are required");
 
-        if (!password.equals(confirm)) throw new EnrollmentValidationException("Passwords do not match");
+        if (!password.equals(confirm)) throw new IllegalArgumentException("Passwords do not match");
 
-        // Example extra checks: password length (adjust policy as needed)
-        if (password.length() < 8) throw new EnrollmentValidationException("Password must be at least 8 characters long");
+        if (password.length() < 8)
+            throw new IllegalArgumentException("Password must be at least 8 characters long");
 
-        // Validate role
         final Role role;
         try {
             role = Role.fromString(roleStr);
         } catch (Exception e) {
-            throw new EnrollmentValidationException("Invalid role: " + roleStr);
+            throw new IllegalArgumentException("Invalid role: " + roleStr);
         }
 
-        // Unique constraints
-        if (userDomainService.existsByEmail(email)) throw new EnrollmentValidationException("Email already exists");
-        if (userDomainService.existsByUsername(email)) throw new EnrollmentValidationException("Username already exists");
+        if (userDomainService.existsByEmail(email))
+            throw new IllegalArgumentException("Email already exists");
 
-        // Student-specific checks
+        if (userDomainService.existsByUsername(email))
+            throw new IllegalArgumentException("Username already exists");
+
         if (role == Role.STUDENT) {
-            var sp = request.studyProgramId(); // supports both int or long in record
-            if ((long) sp <= 0L) throw new EnrollmentValidationException("Study program id must be set for student");
-            if (!studyProgramDomainService.existsById((long) sp))
-                throw new EnrollmentValidationException("Study program not found: " + sp);
+            var sp = request.studyProgramId();
+            if (sp <= 0L)
+                throw new IllegalArgumentException("Study program id must be set for student");
+
+            if (!studyProgramDomainService.existsById(sp))
+                throw new IllegalArgumentException("Study program not found: " + sp);
         }
     }
 
@@ -75,19 +76,23 @@ public class AuthValidator {
         var p = Optional.ofNullable(password).orElse("");
 
         if (!StringUtils.hasText(e) || !StringUtils.hasText(p))
-            throw new EnrollmentValidationException("Email and password are required");
+            throw new IllegalArgumentException("Email and password are required");
     }
 
     /**
      * Validate that the provided raw password matches the stored password hash.
-     * Void API — throws EnrollmentValidationException on failure.
+     * Void API — throws IllegalArgumentException on failure.
      */
     public void validatePassword(UserDto userDto, String rawPassword) {
-        var user = Optional.ofNullable(userDto).orElseThrow(() -> new EnrollmentValidationException("Invalid email or password"));
+        var user = Optional.ofNullable(userDto)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
         var raw = Optional.ofNullable(rawPassword).orElse("");
-        if (!StringUtils.hasText(raw)) throw new EnrollmentValidationException("Password is required");
+        if (!StringUtils.hasText(raw))
+            throw new IllegalArgumentException("Password is required");
 
         var hash = Optional.ofNullable(user.passwordHash()).orElse("");
-        if (!passwordEncoder.matches(raw, hash)) throw new EnrollmentValidationException("Invalid email or password");
+        if (!passwordEncoder.matches(raw, hash))
+            throw new IllegalArgumentException("Invalid email or password");
     }
 }

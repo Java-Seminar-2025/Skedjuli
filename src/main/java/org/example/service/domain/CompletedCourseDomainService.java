@@ -48,10 +48,10 @@ public class CompletedCourseDomainService {
     }
 
     @Transactional
-    public CompletedCourseDto createCompletedCourse(int studentId, int courseId, int grade, LocalDate completionDate, int academicYearId) {
-        var studentRef = entityManager.getReference(StudentEntity.class, (long) studentId);
-        var courseRef = entityManager.getReference(CourseEntity.class, (long) courseId);
-        var yearRef = entityManager.getReference(AcademicYearEntity.class, (long) academicYearId);
+    public CompletedCourseDto createCompletedCourse(Long studentId, Long courseId, int grade, LocalDate completionDate, Long academicYearId) {
+        var studentRef = entityManager.getReference(StudentEntity.class, studentId);
+        var courseRef = entityManager.getReference(CourseEntity.class, courseId);
+        var yearRef = entityManager.getReference(AcademicYearEntity.class, academicYearId);
 
         var entity = new CompletedCourseEntity();
         entity.setStudent(studentRef);

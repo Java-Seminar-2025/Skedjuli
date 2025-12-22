@@ -29,7 +29,7 @@ public class CompletedCourseValidator {
         Optional.ofNullable(request.completionDate())
                 .orElseThrow(() -> new IllegalArgumentException("completionDate must not be null"));
 
-        Optional.of(completedCourseDomainService.hasCompletedCourse((long) request.studentId(), (long) request.courseId()))
+        Optional.of(completedCourseDomainService.hasCompletedCourse(request.studentId(), request.courseId()))
                 .filter(exists -> !exists)
                 .orElseThrow(() -> new IllegalStateException("Course already marked as completed for this student"));
     }
