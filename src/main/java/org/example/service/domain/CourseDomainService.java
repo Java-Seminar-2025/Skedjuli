@@ -1,8 +1,10 @@
 package org.example.service.domain;
 
 import lombok.RequiredArgsConstructor;
-import org.example.domain.dto.CourseInfo;
-import org.example.domain.entity.CourseEntity;
+import org.example.model.dto.CourseInfo;
+import org.example.model.entity.CourseEntity;
+import org.example.model.mapper.CourseMapper;
+import org.example.exception.CourseNotFoundException;
 import org.example.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -38,5 +40,12 @@ public class CourseDomainService {
                 .distinct()
                 .map(c -> new CourseInfo(c.getId(), c.getName(), c.getEcts(), c.getSemester()))
                 .collect(Collectors.toList());
+    }
+
+    public CourseInfo getCourseInfoById(Long courseId) {
+        if (courseId == null) throw new IllegalArgumentException("courseId is null");
+        var entity = courseRepository.findById(courseId)
+                .orElseThrow(() -> new CourseNotFoundException(courseId));
+        return CourseMapper.toCourseInfo(entity);
     }
 }

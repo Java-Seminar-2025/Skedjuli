@@ -1,8 +1,8 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.entity.LecturerEntity;
-import org.example.domain.entity.UserEntity;
+import org.example.model.entity.LecturerEntity;
+import org.example.model.entity.UserEntity;
 import org.example.repository.LecturerRepository;
 import org.springframework.stereotype.Service;
 

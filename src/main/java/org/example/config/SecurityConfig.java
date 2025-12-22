@@ -28,6 +28,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/enrollment/**").permitAll()
+                        .requestMatchers("/api/completed-courses/**").permitAll()
+                        .requestMatchers("/api/academic-years/**").permitAll()
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/login", "/register", "/dashboard").permitAll()
                         .anyRequest().authenticated()

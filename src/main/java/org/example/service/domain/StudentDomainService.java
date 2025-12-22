@@ -1,9 +1,9 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.entity.StudentEntity;
-import org.example.domain.entity.StudyProgramEntity;
-import org.example.domain.entity.UserEntity;
+import org.example.model.entity.StudentEntity;
+import org.example.model.entity.StudyProgramEntity;
+import org.example.model.entity.UserEntity;
 import org.example.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 

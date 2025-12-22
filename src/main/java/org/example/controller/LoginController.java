@@ -1,8 +1,8 @@
 package org.example.controller;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.dto.AuthRequest;
-import org.example.domain.dto.RegisterRequest;
+import org.example.model.dto.AuthRequest;
+import org.example.model.dto.RegisterRequest;
 import org.example.service.business.AuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

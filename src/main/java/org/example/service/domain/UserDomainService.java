@@ -1,9 +1,9 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.dto.RegisterRequest;
-import org.example.domain.dto.UserDto;
-import org.example.domain.entity.UserEntity;
+import org.example.model.dto.RegisterRequest;
+import org.example.model.dto.UserDto;
+import org.example.model.entity.UserEntity;
 import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
