@@ -3,6 +3,7 @@ package org.example.service.validator;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.AcademicYearCreateRequest;
 import org.example.repository.AcademicYearRepository;
+import org.example.service.domain.AcademicYearDomainService;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -11,7 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AcademicYearValidator {
 
-    private final AcademicYearRepository academicYearRepository;
+    private final AcademicYearDomainService academicYearDomainService;
 
     public void validateCreate(AcademicYearCreateRequest request) {
         Optional.ofNullable(request)
@@ -47,7 +48,7 @@ public class AcademicYearValidator {
                         .filter(Boolean::booleanValue)
                         .orElseThrow(() -> new IllegalArgumentException("enrollmentStart must be before or equal to enrollmentEnd")));
 
-        Optional.of(academicYearRepository.existsByYearCode(request.yearCode()))
+        Optional.of(academicYearDomainService.existsByYearCode(request.yearCode()))
                 .filter(exists -> !exists)
                 .orElseThrow(() -> new IllegalStateException("Academic year with this yearCode already exists"));
     }

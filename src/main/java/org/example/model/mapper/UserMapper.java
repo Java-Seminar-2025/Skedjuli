@@ -2,19 +2,17 @@ package org.example.model.mapper;
 
 import org.example.model.dto.UserDto;
 import org.example.model.dto.UserInfo;
+import org.example.model.entity.UserEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
 
-public class UserMapper {
 
-    private UserMapper() {}
+@Mapper(componentModel="spring")
+public interface UserMapper {
 
-    public static UserInfo toUserInfo(UserDto user) {
-        if (user == null) return null;
-        return new UserInfo(
-                user.id(),
-                user.email(),
-                user.firstName(),
-                user.lastName(),
-                user.role()
-        );
-    }
+    @Mapping(source = "password", target = "passwordHash")
+    UserDto toUserDto(UserEntity user);
+
+    UserInfo toUserInfo(UserEntity user);
 }

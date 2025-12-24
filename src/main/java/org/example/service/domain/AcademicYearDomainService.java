@@ -10,6 +10,7 @@ import org.example.model.mapper.AcademicYearMapper;
 import org.example.repository.AcademicYearRepository;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.Optional;
 
 @Getter
@@ -18,6 +19,10 @@ import java.util.Optional;
 public class AcademicYearDomainService {
     private final AcademicYearRepository academicYearRepository;
     private final AcademicYearMapper academicYearMapper;
+
+    public boolean existsByYearCode(String yearCode) {
+        return academicYearRepository.existsByYearCode(yearCode);
+    }
 
     public Long getActiveYearId() {
         return academicYearRepository.getByActiveTrue()
