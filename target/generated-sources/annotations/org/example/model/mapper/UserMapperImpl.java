@@ -4,11 +4,12 @@ import javax.annotation.processing.Generated;
 import org.example.model.dto.UserDto;
 import org.example.model.dto.UserInfo;
 import org.example.model.entity.UserEntity;
+import org.example.model.enums.Role;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-12-23T18:57:38+0100",
+    date = "2025-12-25T11:04:54+0100",
     comments = "version: 1.6.3, compiler: javac, environment: Java 17.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -25,16 +26,14 @@ public class UserMapperImpl implements UserMapper {
         String email = null;
         String firstName = null;
         String lastName = null;
-        int role = 0;
+        Role role = null;
 
         passwordHash = user.getPassword();
         id = user.getId();
         email = user.getEmail();
         firstName = user.getFirstName();
         lastName = user.getLastName();
-        if ( user.getRole() != null ) {
-            role = user.getRole();
-        }
+        role = user.getRole();
 
         UserDto userDto = new UserDto( id, email, passwordHash, firstName, lastName, role );
 
@@ -51,15 +50,13 @@ public class UserMapperImpl implements UserMapper {
         String email = null;
         String firstName = null;
         String lastName = null;
-        int role = 0;
+        Role role = null;
 
         id = user.getId();
         email = user.getEmail();
         firstName = user.getFirstName();
         lastName = user.getLastName();
-        if ( user.getRole() != null ) {
-            role = user.getRole();
-        }
+        role = user.getRole();
 
         UserInfo userInfo = new UserInfo( id, email, firstName, lastName, role );
 

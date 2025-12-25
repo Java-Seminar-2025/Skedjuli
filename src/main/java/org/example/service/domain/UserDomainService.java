@@ -5,6 +5,7 @@ import org.example.model.dto.RegisterRequest;
 import org.example.model.dto.UserDto;
 import org.example.model.dto.UserInfo;
 import org.example.model.entity.UserEntity;
+import org.example.model.enums.Role;
 import org.example.model.mapper.UserMapper;
 import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class UserDomainService {
         return userRepository.existsByUsername(username);
     }
 
-    public Long createUser(RegisterRequest req, String encodedPassword, int role) {
+    public Long createUser(RegisterRequest req, String encodedPassword, Role role) {
         var user = new UserEntity();
         user.setEmail(req.email());
         user.setUsername(req.email());

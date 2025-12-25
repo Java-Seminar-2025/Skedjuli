@@ -38,7 +38,7 @@ public class AuthService {
         var encodedPassword = passwordEncoder.encode(req.password());
 
         // create user via domain service (domain service returns userId)
-        var userId = userDomainService.createUser(req, encodedPassword, role.getValue());
+        var userId = userDomainService.createUser(req, encodedPassword, role);
 
         // create domain-specific entity for student/lecturer using domain services
         if (role == Role.STUDENT) {

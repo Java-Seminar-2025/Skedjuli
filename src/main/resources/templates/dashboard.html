@@ -121,7 +121,7 @@
             document.getElementById('user-info').innerHTML = `
                 <h4>Hello, ${data.firstName} ${data.lastName}</h4>
                 <p>Email: ${data.email}</p>
-                <p>Role: ${data.role === 1 ? "Student" : "Lecturer"}</p>
+                <p>Role: ${data.role === "STUDENT" ? "Student" : "Lecturer"}</p>
             `;
         })
         .catch(err => {

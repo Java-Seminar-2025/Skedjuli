@@ -69,6 +69,7 @@ org\example\model\mapper\AcademicYearMapper.class
 org\example\model\mapper\UserMapperImpl.class
 org\example\service\business\DashboardService.class
 org\example\service\validator\CourseRequirementValidator.class
+org\example\model\converter\RoleConverter.class
 org\example\model\dto\AcademicYearDto.class
 org\example\config\SecurityConfig.class
 org\example\service\domain\EnrollmentFormItemDomainService.class

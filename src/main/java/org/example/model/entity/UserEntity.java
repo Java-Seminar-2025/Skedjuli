@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.NonNull;
+import org.example.model.converter.RoleConverter;
+import org.example.model.enums.Role;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +46,8 @@ public class UserEntity {
 
     @NonNull
     @Column(name = "role", nullable = false)
-    private Integer role;
+    @Convert(converter = RoleConverter.class)
+    private Role role;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;

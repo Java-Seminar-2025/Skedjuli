@@ -8,6 +8,7 @@ E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\EnrollmentCon
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\HomeController.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\LoginController.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\Main.java
+E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\converter\RoleConverter.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\AcademicYearCreateRequest.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\AcademicYearDto.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\AuthRequest.java
