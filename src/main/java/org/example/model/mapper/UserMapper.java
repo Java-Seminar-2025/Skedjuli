@@ -4,7 +4,6 @@ import org.example.model.dto.UserDto;
 import org.example.model.dto.UserInfo;
 import org.example.model.entity.UserEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import org.mapstruct.Mapping;
 
 

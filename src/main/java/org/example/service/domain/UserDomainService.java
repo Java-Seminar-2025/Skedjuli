@@ -30,7 +30,7 @@ public class UserDomainService {
     public Long createUser(RegisterRequest req, String encodedPassword, Role role) {
         var user = new UserEntity();
         user.setEmail(req.email());
-        user.setUsername(req.email());
+        user.setUsername(generateUsername(req.firstName(),  req.lastName()));
         user.setFirstName(req.firstName());
         user.setLastName(req.lastName());
         user.setPassword(encodedPassword);
@@ -54,4 +54,30 @@ public class UserDomainService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return userMapper.toUserInfo(user);
     }
+
+    private String generateUsername(String firstName, String lastName) {
+        String prefix = (firstName.substring(0, 1) + lastName.substring(0, 1)).toLowerCase();
+
+        return userRepository
+                .findTopByUsernameStartingWithOrderByUsernameDesc(prefix)
+                .map(user -> {
+                    String lastUsername = user.getUsername();
+
+                    if (lastUsername.length() > prefix.length()) {
+                        try {
+                            String numberPart = lastUsername.substring(prefix.length());
+
+                            int lastNumber = Integer.parseInt(numberPart);
+
+                            return prefix + String.format("%07d", lastNumber + 1);
+                        } catch (NumberFormatException e) {
+                            return prefix + "0000000";
+                        }
+                    } else {
+                        return prefix + "0000000";
+                    }
+                })
+                .orElse(prefix + "0000000");
+    }
+
 }

@@ -33,7 +33,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /*
    lukina lista
-korisit role enum u recordu - sta ovo znaci?
 i doc na kraj dto folderu
 e da glavna stvar je sta se jos userima na registeru nije dodijelia oni username o kojem smo pricali pa bi i to tribalo pogledat
 popravit selection api jer je completion api radi pa bi selection triba napravit parcijalni upis sta ne radi
