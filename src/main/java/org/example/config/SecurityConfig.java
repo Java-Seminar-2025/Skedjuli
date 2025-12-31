@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/academic-years/**").permitAll()
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/login", "/register", "/dashboard").permitAll()
+                        .requestMatchers("/api/students/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);

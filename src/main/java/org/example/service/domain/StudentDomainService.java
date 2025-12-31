@@ -45,4 +45,11 @@ public class StudentDomainService {
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         return student.getCurrentYear();
     }
+
+    public void updateCurrentYear(Long studentId, int newYear) {
+        var student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        student.setCurrentYear(newYear);
+        studentRepository.save(student);
+    }
 }

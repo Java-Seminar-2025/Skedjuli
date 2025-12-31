@@ -7,6 +7,7 @@ E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\DashboardCont
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\EnrollmentController.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\HomeController.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\LoginController.java
+E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\controller\StudentController.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\Main.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\converter\RoleConverter.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\AcademicYearCreateRequest.java
@@ -22,6 +23,7 @@ E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\EnrollmentSele
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\EnrollmentSelectionResponse.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\RegisterRequest.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\TargetRange.java
+E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\UpdateStudentYearRequest.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\UserDto.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\dto\UserInfo.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\model\entity\AcademicYearEntity.java
@@ -58,6 +60,7 @@ E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\business\AuthSer
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\business\CompletionService.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\business\DashboardService.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\business\EnrollmentService.java
+E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\business\StudentService.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\domain\AcademicYearDomainService.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\domain\CompletedCourseDomainService.java
 E:\faks\JAVA\projekt\Skedjuli\src\main\java\org\example\service\domain\CourseDomainService.java
