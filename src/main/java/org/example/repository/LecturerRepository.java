@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.model.Lecturer;
+import org.example.model.entity.LecturerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LecturerRepository extends JpaRepository<Lecturer, Integer> {}
+public interface LecturerRepository extends JpaRepository<LecturerEntity, Long> {}
