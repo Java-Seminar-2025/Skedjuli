@@ -10,7 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/academic-years")
+@RequestMapping("/api/academicYears")
 @Validated
 @RequiredArgsConstructor
 public class ActiveYearController {
