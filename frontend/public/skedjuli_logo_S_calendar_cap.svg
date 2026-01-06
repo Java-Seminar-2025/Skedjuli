@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- Gradient used on the S outline -->
+    <linearGradient id="gradS" x1="200" y1="200" x2="824" y2="824" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0B63D1"/>
+      <stop offset="55%" stop-color="#16B3A8"/>
+      <stop offset="100%" stop-color="#8EDB2B"/>
+    </linearGradient>
+
+    <!-- Mask that reveals content only inside the thick stroke of the S -->
+    <mask id="maskStroke">
+      <rect x="0" y="0" width="1024" height="1024" fill="black"/>
+      <path id="sPath"
+            d="M 740 220
+               C 660 140 540 120 430 150
+               C 300 188 250 300 310 380
+               C 355 440 450 465 540 490
+               C 650 520 720 560 700 650
+               C 675 765 530 820 405 800
+               C 295 782 235 715 215 670"
+            fill="none" stroke="white" stroke-width="170" stroke-linecap="round" stroke-linejoin="round"/>
+    </mask>
+
+    <!-- Slight shadow for the cap -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Calendar "days" squares (masked into the S stroke area) -->
+  <g mask="url(#maskStroke)" opacity="0.95">
+    <!-- Light background inside S -->
+    <rect x="0" y="0" width="1024" height="1024" fill="white"/>
+    <!-- Grid of day squares -->
+    <g>
+      <!-- We place a dense grid and let the mask carve it into the S -->
+      <!-- Sizes tuned to read as "days in month" -->
+      <!-- Rows -->
+      <!-- row 1 -->
+      <rect x="260" y="290" width="54" height="54" rx="10" fill="#0B63D1" opacity="0.85"/>
+      <rect x="340" y="290" width="54" height="54" rx="10" fill="#16B3A8" opacity="0.85"/>
+      <rect x="420" y="290" width="54" height="54" rx="10" fill="#8EDB2B" opacity="0.85"/>
+      <rect x="500" y="290" width="54" height="54" rx="10" fill="#F2C94C" opacity="0.85"/>
+      <rect x="580" y="290" width="54" height="54" rx="10" fill="#16B3A8" opacity="0.65"/>
+
+      <!-- row 2 -->
+      <rect x="280" y="370" width="54" height="54" rx="10" fill="#16B3A8" opacity="0.35"/>
+      <rect x="360" y="370" width="54" height="54" rx="10" fill="#0B63D1" opacity="0.35"/>
+      <rect x="440" y="370" width="54" height="54" rx="10" fill="#8EDB2B" opacity="0.35"/>
+      <rect x="520" y="370" width="54" height="54" rx="10" fill="#16B3A8" opacity="0.35"/>
+      <rect x="600" y="370" width="54" height="54" rx="10" fill="#0B63D1" opacity="0.35"/>
+
+      <!-- row 3 -->
+      <rect x="320" y="450" width="54" height="54" rx="10" fill="#0B63D1" opacity="0.22"/>
+      <rect x="400" y="450" width="54" height="54" rx="10" fill="#16B3A8" opacity="0.22"/>
+      <rect x="480" y="450" width="54" height="54" rx="10" fill="#8EDB2B" opacity="0.22"/>
+      <rect x="560" y="450" width="54" height="54" rx="10" fill="#0B63D1" opacity="0.22"/>
+
+      <!-- lower cluster -->
+      <rect x="520" y="610" width="54" height="54" rx="10" fill="#16B3A8" opacity="0.30"/>
+      <rect x="600" y="610" width="54" height="54" rx="10" fill="#0B63D1" opacity="0.30"/>
+      <rect x="680" y="610" width="54" height="54" rx="10" fill="#8EDB2B" opacity="0.30"/>
+
+      <rect x="500" y="690" width="54" height="54" rx="10" fill="#0B63D1" opacity="0.20"/>
+      <rect x="580" y="690" width="54" height="54" rx="10" fill="#16B3A8" opacity="0.20"/>
+      <rect x="660" y="690" width="54" height="54" rx="10" fill="#8EDB2B" opacity="0.20"/>
+    </g>
+  </g>
+
+  <!-- The S outline (thin-ish) -->
+  <use href="#sPath" stroke="url(#gradS)" stroke-width="170" />
+
+  <!-- Inner highlight to add "outline" feel -->
+  <use href="#sPath" stroke="white" stroke-width="110" opacity="0.75"/>
+
+  <!-- Graduation cap (kept fully inside canvas) -->
+  <g transform="translate(0,0)" filter="url(#softShadow)">
+    <!-- Cap top -->
+    <polygon points="360,170 690,120 820,210 490,260"
+             fill="#1B6FD9"/>
+    <!-- Cap underside -->
+    <polygon points="490,260 820,210 820,265 490,315"
+             fill="#1457A8"/>
+    <!-- Cap band -->
+    <path d="M 420 250 L 760 200 L 760 250 L 420 300 Z" fill="#0F4D9B" opacity="0.95"/>
+
+    <!-- Tassel -->
+    <path d="M 470 165 C 430 190 395 215 375 245"
+          fill="none" stroke="#C99A1A" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="375" cy="245" r="14" fill="#C99A1A"/>
+    <path d="M 375 259 C 365 290 365 315 380 350"
+          fill="none" stroke="#C99A1A" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 370 350 L 390 350 L 405 395 L 355 395 Z" fill="#C99A1A"/>
+  </g>
+</svg>
