@@ -2,8 +2,12 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.model.dto.CreateStudentRequest;
 import org.example.model.dto.StudentPatchRequest;
-import org.example.service.business.StudentService;
+import org.example.model.dto.StudentResponse;
+import org.example.service.domain.StudentDomainService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,13 +16,46 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class StudentController {
 
-    private final StudentService studentService;
+    private final StudentDomainService studentDomainService;
 
     @PatchMapping("/{studentId}")
     public ResponseEntity<Void> patchStudent(@PathVariable Long studentId, @Valid @RequestBody StudentPatchRequest request) {
-        studentService.patchStudent(studentId, request);
+        studentDomainService.patchStudent(studentId, request);
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping
+    public ResponseEntity<Void> createStudent(@Valid @RequestBody CreateStudentRequest request) {
+        studentDomainService.createStudent(request.userId(), request.studyProgramId(), request.enrollmentYear(),request.currentYear());
+        return ResponseEntity.noContent().build();
+    }
 
+    @GetMapping ("/{studentId}")
+    public ResponseEntity<StudentResponse> getStudent(@PathVariable Long studentId) {
+        return ResponseEntity.ok(studentDomainService.getStudent(studentId));
+    }
+
+    @DeleteMapping("/{studentId}")
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long studentId) {
+        studentDomainService.deleteStudent(studentId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /*
+    @GetMapping
+    public ResponseEntity<Page<StudentResponse>> getStudents(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String sortBy,
+            @RequestParam String sortOrder,
+            @RequestParam Boolean active,
+            @RequestParam Long studyProgramId,
+            @RequestParam Integer enrollmentYear,
+            @RequestParam Integer currentYear,
+            @RequestParam Double totalEctsEarned,
+            @RequestParam Boolean isActive
+            ) {
+        return ResponseEntity.ok(studentDomainService.getStudents(page, size, sortBy, sortOrder, active,studyProgramId, enrollmentYear, currentYear, totalEctsEarned, isActive));
+    }
+     */
 }

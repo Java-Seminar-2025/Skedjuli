@@ -2,10 +2,12 @@ package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
 import org.example.model.dto.StudentPatchRequest;
+import org.example.model.dto.StudentResponse;
 import org.example.model.entity.StudentEntity;
 import org.example.model.entity.StudyProgramEntity;
 import org.example.model.entity.UserEntity;
 import org.example.repository.StudentRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -59,4 +61,27 @@ public class StudentDomainService {
             student.setIsActive(request.isActive());
         }
     }
+
+    public StudentResponse getStudent(Long studentId) {
+        StudentEntity student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException(String.valueOf(studentId)));
+
+        return new StudentResponse(
+                student.getEnrollmentYear(),
+                student.getCurrentYear(),
+                student.getAverageGrade(),
+                student.getTotalEctsEarned(),
+                student.getIsActive()
+        );
+    }
+
+    public void deleteStudent(Long studentId) {
+        StudentEntity student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException(String.valueOf(studentId)));
+
+        studentRepository.delete(student);
+    }
+
+    /*public Page<StudentResponse> getStudents(int page, int size, String sortBy, String sortOrder, Boolean active, Long studyProgramId, Integer enrollmentYear, Integer currentYear, Double totalEctsEarned, Boolean isActive) {
+    }*/
 }
