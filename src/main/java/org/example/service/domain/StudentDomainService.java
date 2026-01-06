@@ -1,6 +1,7 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
+import org.example.model.dto.StudentPatchRequest;
 import org.example.model.entity.StudentEntity;
 import org.example.model.entity.StudyProgramEntity;
 import org.example.model.entity.UserEntity;
@@ -46,10 +47,16 @@ public class StudentDomainService {
         return student.getCurrentYear();
     }
 
-    public void updateCurrentYear(Long studentId, int newYear) {
-        var student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-        student.setCurrentYear(newYear);
-        studentRepository.save(student);
+    public void patchStudent(Long studentId, StudentPatchRequest request) {
+        StudentEntity student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException(String.valueOf(studentId)));
+
+        if (request.currentYear() != null) {
+            student.setCurrentYear(request.currentYear());
+        }
+
+        if (request.isActive() != null) {
+            student.setIsActive(request.isActive());
+        }
     }
 }
