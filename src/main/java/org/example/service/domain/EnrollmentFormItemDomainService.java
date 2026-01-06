@@ -25,6 +25,7 @@ import java.util.Objects;
 public class EnrollmentFormItemDomainService {
 
     private final EnrollmentFormItemRepository enrollmentFormItemRepository;
+    private final CourseMapper courseMapper;
 
     /**
      * Return CourseInfo DTOs for items on the given enrollment form.
@@ -34,7 +35,7 @@ public class EnrollmentFormItemDomainService {
         return enrollmentFormItemRepository.findByEnrollmentForm_Id(enrollmentFormId)
                 .stream()
                 .map(EnrollmentFormItemEntity::getCourse)
-                .map(CourseMapper::toCourseInfo)
+                .map(courseMapper::toCourseInfo)
                 .filter(Objects::nonNull)
                 .toList();
     }

@@ -1,8 +1,6 @@
 package org.example.model.dto;
 
-import java.util.Set;
-
-public record CourseAdminReadDto(
+public record CourseReadRequestDto(
 
         Long id,
         String code,
@@ -14,10 +12,7 @@ public record CourseAdminReadDto(
         Boolean active,
         Integer enrollmentLimit,
 
-        IdNameDto studyProgram,
-        IdNameDto academicYear,
-        IdNameDto lecturer,
-
-        Set<IdNameDto> prerequisites
-
+        Long studyProgramId,
+        Long academicYearId,
+        Long lecturerId
 ) {}

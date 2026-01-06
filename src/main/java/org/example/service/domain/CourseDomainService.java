@@ -2,6 +2,7 @@ package org.example.service.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.CourseInfo;
+import org.example.model.dto.CourseReadRequestDto;
 import org.example.model.entity.CourseEntity;
 import org.example.model.mapper.CourseMapper;
 import org.example.repository.CourseRepository;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public class CourseDomainService {
 
     private final CourseRepository courseRepository;
+    private final CourseMapper courseMapper;
 
     public List<Long> getMandatoryCourseIds(Long studyProgramId, Integer semester) {
         return courseRepository.findByStudyProgram_IdAndSemesterAndMandatoryTrue(studyProgramId, semester)
@@ -45,6 +47,10 @@ public class CourseDomainService {
         if (courseId == null) throw new IllegalArgumentException("courseId is null");
         var entity = courseRepository.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("course not found"));
-        return CourseMapper.toCourseInfo(entity);
+        return courseMapper.toCourseInfo(entity);
+    }
+
+    public CourseReadRequestDto getCourseReadRequestDtoById(Long courseId) {
+        return courseMapper.toCourseReadRequestDto(courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("course not found")));
     }
 }

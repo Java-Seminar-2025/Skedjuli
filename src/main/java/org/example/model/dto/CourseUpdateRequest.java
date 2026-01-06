@@ -1,7 +1,5 @@
 package org.example.model.dto;
 
-import java.util.Set;
-
 public record CourseUpdateRequest(
 
         Long id,
@@ -16,8 +14,5 @@ public record CourseUpdateRequest(
 
         Long lecturerId,
         Long studyProgramId,
-        Long academicYearId,
-
-        Set<Long> prerequisiteCourseIds
-
+        Long academicYearId
 ) {}
