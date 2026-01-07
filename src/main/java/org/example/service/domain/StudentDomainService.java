@@ -1,5 +1,6 @@
 package org.example.service.domain;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.example.model.dto.StudentPatchRequest;
 import org.example.model.dto.StudentResponse;
@@ -7,7 +8,11 @@ import org.example.model.entity.StudentEntity;
 import org.example.model.entity.StudyProgramEntity;
 import org.example.model.entity.UserEntity;
 import org.example.repository.StudentRepository;
+import org.example.repository.specification.StudentSpecification;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -49,6 +54,7 @@ public class StudentDomainService {
         return student.getCurrentYear();
     }
 
+    @Transactional
     public void patchStudent(Long studentId, StudentPatchRequest request) {
         StudentEntity student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException(String.valueOf(studentId)));
@@ -82,6 +88,24 @@ public class StudentDomainService {
         studentRepository.delete(student);
     }
 
-    /*public Page<StudentResponse> getStudents(int page, int size, String sortBy, String sortOrder, Boolean active, Long studyProgramId, Integer enrollmentYear, Integer currentYear, Double totalEctsEarned, Boolean isActive) {
-    }*/
+    public Page<StudentResponse> getStudents(int page, int size, String sortBy, String sortOrder, Long studyProgramId, Integer enrollmentYear, Integer currentYear, Double totalEctsEarned, Boolean isActive) {
+        Sort sort = sortOrder.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<StudentEntity> students = studentRepository.findAll(
+                StudentSpecification.filter(studyProgramId, enrollmentYear, currentYear, totalEctsEarned, isActive), pageable
+        );
+        return students.map(this::toResponse);
+    }
+
+    private StudentResponse toResponse(StudentEntity student) {
+        return new StudentResponse(
+                student.getEnrollmentYear(),
+                student.getCurrentYear(),
+                student.getAverageGrade(),
+                student.getTotalEctsEarned(),
+                student.getIsActive()
+        );
+    }
 }

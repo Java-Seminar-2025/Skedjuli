@@ -41,21 +41,19 @@ public class StudentController {
         return ResponseEntity.noContent().build();
     }
 
-    /*
+
     @GetMapping
     public ResponseEntity<Page<StudentResponse>> getStudents(
-            @RequestParam int page,
-            @RequestParam int size,
-            @RequestParam String sortBy,
-            @RequestParam String sortOrder,
-            @RequestParam Boolean active,
-            @RequestParam Long studyProgramId,
-            @RequestParam Integer enrollmentYear,
-            @RequestParam Integer currentYear,
-            @RequestParam Double totalEctsEarned,
-            @RequestParam Boolean isActive
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) Long studyProgramId,
+            @RequestParam(required = false) Integer enrollmentYear,
+            @RequestParam(required = false) Integer currentYear,
+            @RequestParam(required = false) Double totalEctsEarned,
+            @RequestParam(required = false) Boolean isActive
             ) {
-        return ResponseEntity.ok(studentDomainService.getStudents(page, size, sortBy, sortOrder, active,studyProgramId, enrollmentYear, currentYear, totalEctsEarned, isActive));
+        return ResponseEntity.ok(studentDomainService.getStudents(page, size, sortBy, sortOrder,studyProgramId, enrollmentYear, currentYear, totalEctsEarned, isActive));
     }
-     */
 }
