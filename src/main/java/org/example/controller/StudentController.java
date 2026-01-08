@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.example.model.dto.StudentPatchRequest;
 import org.example.service.business.StudentService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Validated
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
 public class StudentController {

@@ -11,7 +11,8 @@ import lombok.NonNull;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "completed_courses")
+@Table(name = "completed_courses",
+uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "course_id"}))
 @Getter
 @Setter
 @NoArgsConstructor

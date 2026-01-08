@@ -1,4 +1,4 @@
-package org.example.model.dto;
+package org.example.model.dto.request.selection;
 import java.util.List;
 
 public record EnrollmentSelectionRequest(

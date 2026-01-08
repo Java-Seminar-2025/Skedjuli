@@ -1,6 +1,7 @@
 package org.example.service.domain;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.CompletedCourseDto;
 import org.example.model.entity.AcademicYearEntity;
@@ -49,6 +50,9 @@ public class CompletedCourseDomainService {
 
     @Transactional
     public CompletedCourseDto createCompletedCourse(Long studentId, Long courseId, int grade, LocalDate completionDate, Long academicYearId) {
+        if (completedCourseRepository.existsByStudent_IdAndCourse_Id(studentId, courseId)) {
+            throw new IllegalStateException("Course already completed by student");
+        }
         var studentRef = entityManager.getReference(StudentEntity.class, studentId);
         var courseRef = entityManager.getReference(CourseEntity.class, courseId);
         var yearRef = entityManager.getReference(AcademicYearEntity.class, academicYearId);
@@ -63,5 +67,35 @@ public class CompletedCourseDomainService {
         var saved = completedCourseRepository.save(entity);
 
         return completedCourseMapper.toDto(saved);
+    }
+
+    public CompletedCourseDto getById(Long id) {
+        var entity = completedCourseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Completed course not found with id: " + id));
+        return completedCourseMapper.toDto(entity);
+    }
+
+    @Transactional
+    public CompletedCourseDto update(Long id, CompletedCourseDto dto) {
+        var entity = completedCourseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Completed course not found with id: " + id));
+
+        entity.setGrade(dto.grade());
+        entity.setCompletionDate(dto.completionDate());
+
+        if (dto.academicYearId() != null) {
+            var yearRef = entityManager.getReference(AcademicYearEntity.class, dto.academicYearId());
+            entity.setAcademicYear(yearRef);
+        }
+
+        return completedCourseMapper.toDto(entity);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        if (!completedCourseRepository.existsById(id)) {
+            throw new EntityNotFoundException("Completed course not found with id: " + id);
+        }
+        completedCourseRepository.deleteById(id);
     }
 }
