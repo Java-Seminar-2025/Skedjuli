@@ -8,9 +8,11 @@ import org.example.model.dto.StudentResponse;
 import org.example.service.domain.StudentDomainService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Validated
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
 public class StudentController {

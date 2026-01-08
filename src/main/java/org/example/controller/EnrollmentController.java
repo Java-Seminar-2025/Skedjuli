@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.model.dto.CourseInfo;
 import org.example.model.dto.EnrollmentResult;
-import org.example.model.dto.EnrollmentSelectionRequest;
+import org.example.model.dto.request.selection.EnrollmentSelectionRequest;
 import org.example.model.dto.EnrollmentSelectionResponse;
 import org.example.service.business.EnrollmentService;
 import org.springframework.http.ResponseEntity;

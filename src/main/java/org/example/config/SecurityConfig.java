@@ -45,11 +45,10 @@ public class SecurityConfig {
 
 
                         .requestMatchers("/api/auth/**").permitAll()
-
-
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/enrollment/**").permitAll()
                         .requestMatchers("/api/completedCourses/**").permitAll()
+                        .requestMatchers("/api/completedCourse/**").permitAll()
                         .requestMatchers("/api/academicYears/**").permitAll()
                         .requestMatchers("/api/students/**").permitAll()
                         .requestMatchers("/api/studyPrograms/**").permitAll()
