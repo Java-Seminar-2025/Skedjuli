@@ -1,7 +1,7 @@
 package org.example.service.validator;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.CompletedCourseCreateRequest;
+import org.example.model.dto.request.create.CompletedCourseCreateRequest;
 import org.example.service.domain.CompletedCourseDomainService;
 import org.springframework.stereotype.Component;
 

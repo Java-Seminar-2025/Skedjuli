@@ -1,7 +1,7 @@
 package org.example.service.business;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.AcademicYearCreateRequest;
+import org.example.model.dto.request.create.AcademicYearCreateRequest;
 import org.example.model.dto.AcademicYearDto;
 import org.example.service.domain.AcademicYearDomainService;
 import org.example.service.validator.AcademicYearValidator;

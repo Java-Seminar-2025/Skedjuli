@@ -5,6 +5,8 @@ import lombok.Getter;
 import org.example.model.dto.AuthRequest;
 import org.example.model.dto.AuthResponse;
 import org.example.model.dto.RegisterRequest;
+import org.example.model.dto.request.create.LecturerCreateRequest;
+import org.example.model.dto.request.create.StudentCreateRequest;
 import org.example.model.enums.Role;
 import org.example.service.domain.LecturerDomainService;
 import org.example.service.domain.StudentDomainService;
@@ -43,9 +45,11 @@ public class AuthService {
         // create domain-specific entity for student/lecturer using domain services
         if (role == Role.STUDENT) {
             // studyProgramId may be int/long depending on your DTO — cast if needed
-            studentDomainService.createStudent(userId, req.studyProgramId(), req.enrollmentYear(), req.currentYear());
+            var studentCreateRequest = new StudentCreateRequest(userId, req.studyProgramId(), req.enrollmentYear(), req.currentYear());
+            studentDomainService.createStudent(studentCreateRequest);
         } else {
-            lecturerDomainService.createLecturer(userId, req.department(), req.academicTitle(), req.officeLocation(), req.phoneNumber());
+            var lecturerCreateRequest = new LecturerCreateRequest(userId, req.department(), req.academicTitle(), req.officeLocation(), req.phoneNumber());
+            lecturerDomainService.createLecturer(lecturerCreateRequest);
         }
 
         var token = jwtService.generateToken(req.email());

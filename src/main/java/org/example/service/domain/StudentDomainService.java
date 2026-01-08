@@ -2,12 +2,15 @@ package org.example.service.domain;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.example.model.dto.StudentPatchRequest;
+import org.example.model.dto.request.create.StudentCreateRequest;
+import org.example.model.dto.request.patch.StudentPatchRequest;
 import org.example.model.dto.StudentResponse;
 import org.example.model.entity.StudentEntity;
 import org.example.model.entity.StudyProgramEntity;
 import org.example.model.entity.UserEntity;
+import org.example.model.mapper.StudentMapper;
 import org.example.repository.StudentRepository;
+
 import org.example.repository.specification.StudentSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,20 +25,21 @@ import java.time.LocalDateTime;
 public class StudentDomainService {
 
     private final StudentRepository studentRepository;
+    private final StudentMapper studentMapper;
 
-    public void createStudent(Long userId, Long studyProgramId, int enrollmentYear, int currentYear) {
+    public void createStudent(StudentCreateRequest request) {
         var student = new StudentEntity();
 
         var uRef = new UserEntity();
-        uRef.setId(userId);
+        uRef.setId(request.userId());
         student.setUser(uRef);
 
         var spRef = new StudyProgramEntity();
-        spRef.setId(studyProgramId);
+        spRef.setId(request.studyProgramId());
         student.setStudyProgram(spRef);
 
-        student.setEnrollmentYear(enrollmentYear);
-        student.setCurrentYear(currentYear);
+        student.setEnrollmentYear(request.enrollmentYear());
+        student.setCurrentYear(request.currentYear());
         student.setIsActive(true);
         student.setCreatedAt(LocalDateTime.now());
 
@@ -56,7 +60,7 @@ public class StudentDomainService {
 
     @Transactional
     public void patchStudent(Long studentId, StudentPatchRequest request) {
-        StudentEntity student = studentRepository.findById(studentId)
+        var student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException(String.valueOf(studentId)));
 
         if (request.currentYear() != null) {
@@ -69,43 +73,28 @@ public class StudentDomainService {
     }
 
     public StudentResponse getStudent(Long studentId) {
-        StudentEntity student = studentRepository.findById(studentId)
+        var student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException(String.valueOf(studentId)));
 
-        return new StudentResponse(
-                student.getEnrollmentYear(),
-                student.getCurrentYear(),
-                student.getAverageGrade(),
-                student.getTotalEctsEarned(),
-                student.getIsActive()
-        );
+        return  studentMapper.toStudentResponse(student);
     }
 
     public void deleteStudent(Long studentId) {
-        StudentEntity student = studentRepository.findById(studentId)
+        var student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException(String.valueOf(studentId)));
 
         studentRepository.delete(student);
     }
 
     public Page<StudentResponse> getStudents(int page, int size, String sortBy, String sortOrder, Long studyProgramId, Integer enrollmentYear, Integer currentYear, Double totalEctsEarned, Boolean isActive) {
-        Sort sort = sortOrder.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        var sort = sortOrder.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<StudentEntity> students = studentRepository.findAll(
+        var students = studentRepository.findAll(
                 StudentSpecification.filter(studyProgramId, enrollmentYear, currentYear, totalEctsEarned, isActive), pageable
         );
-        return students.map(this::toResponse);
-    }
 
-    private StudentResponse toResponse(StudentEntity student) {
-        return new StudentResponse(
-                student.getEnrollmentYear(),
-                student.getCurrentYear(),
-                student.getAverageGrade(),
-                student.getTotalEctsEarned(),
-                student.getIsActive()
-        );
+        return students.map(studentMapper::toStudentResponse);
     }
 }

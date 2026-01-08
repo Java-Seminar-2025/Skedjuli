@@ -1,6 +1,6 @@
-package org.example.model.dto;
+package org.example.model.dto.request.create;
 
-public record CreateStudentRequest(
+public record StudentCreateRequest(
         long userId,
 
         long studyProgramId,

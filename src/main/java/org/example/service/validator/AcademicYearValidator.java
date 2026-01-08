@@ -1,7 +1,7 @@
 package org.example.service.validator;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.AcademicYearCreateRequest;
+import org.example.model.dto.request.create.AcademicYearCreateRequest;
 import org.example.service.domain.AcademicYearDomainService;
 import org.springframework.stereotype.Component;
 

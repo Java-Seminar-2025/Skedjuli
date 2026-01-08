@@ -6,5 +6,4 @@ public record StudentResponse(
         Double averageGrade,
         Double totalEctsEarned,
         Boolean isActive
-) {
-}
+) {}

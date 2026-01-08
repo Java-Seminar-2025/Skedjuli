@@ -3,14 +3,13 @@ package org.example.service.domain;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.model.dto.AcademicYearCreateRequest;
+import org.example.model.dto.request.create.AcademicYearCreateRequest;
 import org.example.model.dto.AcademicYearDto;
 import org.example.model.entity.AcademicYearEntity;
 import org.example.model.mapper.AcademicYearMapper;
 import org.example.repository.AcademicYearRepository;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.util.Optional;
 
 @Getter

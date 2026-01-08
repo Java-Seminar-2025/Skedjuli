@@ -1,8 +1,6 @@
-package org.example.model.dto;
+package org.example.model.dto.request.patch;
 
-public record CourseReadRequestDto(
-
-        Long id,
+public record CoursePatchRequest(
         String code,
         String name,
         String description,

@@ -2,7 +2,7 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.CompletedCourseCreateRequest;
+import org.example.model.dto.request.create.CompletedCourseCreateRequest;
 import org.example.model.dto.CompletedCourseDto;
 import org.example.service.business.CompletionService;
 import org.springframework.http.ResponseEntity;

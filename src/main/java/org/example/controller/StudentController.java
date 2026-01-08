@@ -2,12 +2,11 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.CreateStudentRequest;
-import org.example.model.dto.StudentPatchRequest;
+import org.example.model.dto.request.create.StudentCreateRequest;
+import org.example.model.dto.request.patch.StudentPatchRequest;
 import org.example.model.dto.StudentResponse;
 import org.example.service.domain.StudentDomainService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +24,8 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createStudent(@Valid @RequestBody CreateStudentRequest request) {
-        studentDomainService.createStudent(request.userId(), request.studyProgramId(), request.enrollmentYear(),request.currentYear());
+    public ResponseEntity<Void> createStudent(@Valid @RequestBody StudentCreateRequest request) {
+        studentDomainService.createStudent(request);
         return ResponseEntity.noContent().build();
     }
 

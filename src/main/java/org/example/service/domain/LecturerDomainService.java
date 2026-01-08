@@ -1,6 +1,7 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
+import org.example.model.dto.request.create.LecturerCreateRequest;
 import org.example.model.entity.LecturerEntity;
 import org.example.model.entity.UserEntity;
 import org.example.repository.LecturerRepository;
@@ -14,17 +15,17 @@ public class LecturerDomainService {
 
     private final LecturerRepository lecturerRepository;
 
-    public void createLecturer(Long userId, String department, String title, String office, String phone) {
+    public void createLecturer(LecturerCreateRequest request) {
         var lecturer = new LecturerEntity();
 
         var uRef = new UserEntity();
-        uRef.setId(userId);
+        uRef.setId(request.userId());
         lecturer.setUser(uRef);
 
-        lecturer.setDepartment(department);
-        lecturer.setAcademicTitle(title);
-        lecturer.setOfficeLocation(office);
-        lecturer.setPhoneNumber(phone);
+        lecturer.setDepartment(request.department());
+        lecturer.setAcademicTitle(request.title());
+        lecturer.setOfficeLocation(request.office());
+        lecturer.setPhoneNumber(request.phone());
         lecturer.setIsActive(true);
         lecturer.setCreatedAt(LocalDateTime.now());
 

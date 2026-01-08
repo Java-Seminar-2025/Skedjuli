@@ -1,7 +1,7 @@
 package org.example.service.business;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.CompletedCourseCreateRequest;
+import org.example.model.dto.request.create.CompletedCourseCreateRequest;
 import org.example.model.dto.CompletedCourseDto;
 import org.example.service.domain.AcademicYearDomainService;
 import org.example.service.domain.CompletedCourseDomainService;
