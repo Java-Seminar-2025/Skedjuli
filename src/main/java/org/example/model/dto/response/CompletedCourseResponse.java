@@ -1,8 +1,9 @@
-package org.example.model.dto;
+package org.example.model.dto.response;
 
 import java.time.LocalDate;
 
-public record CompletedCourseDto(
+public record CompletedCourseResponse(
+        Long id,
         Long studentId,
         Long courseId,
         int grade,

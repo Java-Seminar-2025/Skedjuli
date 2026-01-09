@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.NonNull;
 import org.example.model.enums.EnrollmentFormItemStatus;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -43,6 +44,7 @@ public class EnrollmentFormItemEntity {
     private String rejectionReason;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     public EnrollmentFormItemStatus getStatusEnum() {

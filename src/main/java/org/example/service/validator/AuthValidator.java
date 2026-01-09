@@ -1,7 +1,7 @@
 package org.example.service.validator;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.RegisterRequest;
+import org.example.model.dto.request.create.UserCreateRequest;
 import org.example.model.dto.UserDto;
 import org.example.model.enums.Role;
 import org.example.service.domain.StudyProgramDomainService;
@@ -23,7 +23,7 @@ public class AuthValidator {
     /**
      * Validate registration request. Void API — throws IllegalArgumentException on failure.
      */
-    public void validateRegister(RegisterRequest req) {
+    public void validateRegister(UserCreateRequest req) {
         var request = Optional.ofNullable(req)
                 .orElseThrow(() -> new IllegalArgumentException("Register request is null"));
 

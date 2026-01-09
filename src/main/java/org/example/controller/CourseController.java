@@ -3,49 +3,45 @@ package org.example.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.example.model.dto.CourseInfo;
 import org.example.model.dto.request.create.CourseCreateRequest;
 import org.example.model.dto.request.patch.CoursePatchRequest;
+import org.example.model.dto.response.CourseResponse;
 import org.example.service.domain.CourseDomainService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
-
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/courses")
 @Validated
 @RequiredArgsConstructor
 public class CourseController {
-    private final CourseDomainService courseDomainService;
+    private final CourseDomainService service;
 
     @PostMapping
-    public ResponseEntity<?> createCourse(@Valid @RequestBody CourseCreateRequest request) {
-        if (request == null)
-            throw new IllegalArgumentException("CourseCreateRequest is null");
-        courseDomainService.createCourse(request);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseCreateRequest request) {
+        var created = service.createCourse(request);
+        return ResponseEntity
+                .created(URI.create("/api/courses/" + created.id()))
+                .body(created);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CourseInfo> getCourse(@PathVariable Long id) {
-        if (id == null)
-            throw new IllegalArgumentException("CourseId is null");
-        return ResponseEntity.ok(courseDomainService.getCourseInfoById(id));
+    public ResponseEntity<CourseResponse> getCourse(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getCourseInfoById(id));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> patchCourse(@PathVariable Long id, @Valid @RequestBody CoursePatchRequest request) {
-        if (request == null)
-            throw new IllegalArgumentException("CoursePatchRequest is null");
-        courseDomainService.patchCourse(id, request);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<CourseResponse> patchCourse(@PathVariable Long id, @Valid @RequestBody CoursePatchRequest request) {
+        return ResponseEntity.ok(service.patchCourse(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
-        courseDomainService.deleteCourse(id);
+        service.deleteCourse(id);
         return ResponseEntity.noContent().build();
     }
 }

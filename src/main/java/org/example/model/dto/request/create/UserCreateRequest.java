@@ -1,10 +1,10 @@
-package org.example.model.dto;
+package org.example.model.dto.request.create;
 
 import java.time.LocalDate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record RegisterRequest(
+public record UserCreateRequest(
         @NotBlank String firstName,
         @NotBlank String lastName,
         @NotBlank String email,

@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public record CompletedCourseCreateRequest(
         @Min(1) Long studentId,
         @Min(1) Long courseId,
-        @NotNull @Min(1) @Max(5) int grade,
-        @NotNull LocalDate completionDate
+        @NotNull @Min(1) @Max(5) Integer grade,
+        @NotNull LocalDate completionDate,
+        @Min(1) Long academicYearId
 ) {}

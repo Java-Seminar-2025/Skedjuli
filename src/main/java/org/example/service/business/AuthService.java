@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.example.model.dto.AuthRequest;
 import org.example.model.dto.AuthResponse;
-import org.example.model.dto.RegisterRequest;
+import org.example.model.dto.request.create.UserCreateRequest;
 import org.example.model.dto.request.create.LecturerCreateRequest;
 import org.example.model.dto.request.create.StudentCreateRequest;
 import org.example.model.enums.Role;
@@ -32,28 +32,28 @@ public class AuthService {
     private final AuthValidator authValidator;
 
     @Transactional
-    public AuthResponse register(RegisterRequest req) {
+    public AuthResponse register(UserCreateRequest request) {
         // validate input; will throw EnrollmentValidationException on failure
-        authValidator.validateRegister(req);
+        authValidator.validateRegister(request);
 
-        var role = Role.fromString(req.role());
-        var encodedPassword = passwordEncoder.encode(req.password());
+        var role = Role.fromString(request.role());
+
 
         // create user via domain service (domain service returns userId)
-        var userId = userDomainService.createUser(req, encodedPassword, role);
+        var user = userDomainService.createUser(request);
 
         // create domain-specific entity for student/lecturer using domain services
         if (role == Role.STUDENT) {
             // studyProgramId may be int/long depending on your DTO — cast if needed
-            var studentCreateRequest = new StudentCreateRequest(userId, req.studyProgramId(), req.enrollmentYear(), req.currentYear());
+            var studentCreateRequest = new StudentCreateRequest(user.id(), request.studyProgramId(), request.enrollmentYear(), request.currentYear());
             studentDomainService.createStudent(studentCreateRequest);
         } else {
-            var lecturerCreateRequest = new LecturerCreateRequest(userId, req.department(), req.academicTitle(), req.officeLocation(), req.phoneNumber());
+            var lecturerCreateRequest = new LecturerCreateRequest(user.id(), request.department(), request.academicTitle(), request.officeLocation(), request.phoneNumber());
             lecturerDomainService.createLecturer(lecturerCreateRequest);
         }
 
-        var token = jwtService.generateToken(req.email());
-        return new AuthResponse(token, req.email());
+        var token = jwtService.generateToken(request.email());
+        return new AuthResponse(token, request.email());
     }
 
     /**

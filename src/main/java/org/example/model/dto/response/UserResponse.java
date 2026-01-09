@@ -1,10 +1,11 @@
-package org.example.model.dto;
+package org.example.model.dto.response;
 
 import org.example.model.enums.Role;
 
-public record UserInfo(
+public record UserResponse(
         Long id,
         String email,
+        String username,
         String firstName,
         String lastName,
         Role role

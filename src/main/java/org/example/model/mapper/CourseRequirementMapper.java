@@ -14,18 +14,18 @@ public final class CourseRequirementMapper {
 
     private CourseRequirementMapper() { }
 
-    public static CourseRequirementDto toDto(CourseRequirementEntity e) {
-        if (e == null) return null;
+    public static CourseRequirementDto toDto(CourseRequirementEntity entity) {
+        if (entity == null) return null;
 
-        Long courseId = Optional.of(e.getCourse())
+        Long courseId = Optional.of(entity.getCourse())
                 .map(CourseEntity::getId)
                 .orElse(null);
 
-        Long reqId = Optional.of(e.getRequiredCourse())
+        Long reqId = Optional.of(entity.getRequiredCourse())
                 .map(CourseEntity::getId)
                 .orElse(null);
 
-        return new CourseRequirementDto(e.getId(), courseId, reqId, e.getCreatedAt());
+        return new CourseRequirementDto(entity.getId(), courseId, reqId, entity.getCreatedAt());
     }
 
     public static List<CourseRequirementDto> toDtoList(Collection<CourseRequirementEntity> entities) {

@@ -2,7 +2,7 @@ package org.example.controller;
 
 import lombok.AllArgsConstructor;
 import org.example.model.dto.AuthRequest;
-import org.example.model.dto.RegisterRequest;
+import org.example.model.dto.request.create.UserCreateRequest;
 import org.example.service.business.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,15 +18,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
-        var response = authService.register(req);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> register(@Valid @RequestBody UserCreateRequest req) {
+        return ResponseEntity.ok( authService.register(req));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest) {
-        var response = authService.login(authRequest);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authService.login(authRequest));
     }
 }
 

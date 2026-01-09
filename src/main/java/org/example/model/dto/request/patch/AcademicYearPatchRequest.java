@@ -1,13 +1,13 @@
-package org.example.model.dto.request.create;
+package org.example.model.dto.request.patch;
 
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record AcademicYearCreateRequest(
+public record AcademicYearPatchRequest(
         @NotNull LocalDate startDate,
         @NotNull LocalDate endDate,
         LocalDate enrollmentStart,
         LocalDate enrollmentEnd,
-        boolean isActive
+        Boolean isActive
 ) {}

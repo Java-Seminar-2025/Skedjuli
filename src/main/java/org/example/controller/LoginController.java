@@ -2,7 +2,7 @@ package org.example.controller;
 
 import lombok.AllArgsConstructor;
 import org.example.model.dto.AuthRequest;
-import org.example.model.dto.RegisterRequest;
+import org.example.model.dto.request.create.UserCreateRequest;
 import org.example.service.business.AuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +22,7 @@ public class LoginController {
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
-        var req = new RegisterRequest(
+        var req = new UserCreateRequest(
                 "",
                 "",
                 "",
@@ -48,7 +48,7 @@ public class LoginController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("registerRequest") RegisterRequest req, Model model) {
+    public String registerUser(@Valid @ModelAttribute("registerRequest") UserCreateRequest req, Model model) {
         try {
             var response = authService.register(req);
             model.addAttribute("success", "User registered successfully! Email: " + response.email());
