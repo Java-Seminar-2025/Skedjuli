@@ -1,7 +1,7 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
-import org.example.model.dto.CourseInfo;
+import org.example.model.dto.response.CourseResponse;
 import org.example.model.entity.CourseEntity;
 import org.example.model.entity.EnrollmentFormEntity;
 import org.example.model.entity.EnrollmentFormItemEntity;
@@ -27,15 +27,12 @@ public class EnrollmentFormItemDomainService {
     private final EnrollmentFormItemRepository enrollmentFormItemRepository;
     private final CourseMapper courseMapper;
 
-    /**
-     * Return CourseInfo DTOs for items on the given enrollment form.
-     */
     @Transactional(readOnly = true)
-    public List<CourseInfo> getEnrollmentFormItems(Long enrollmentFormId) {
+    public List<CourseResponse> getEnrollmentFormItems(Long enrollmentFormId) {
         return enrollmentFormItemRepository.findByEnrollmentForm_Id(enrollmentFormId)
                 .stream()
                 .map(EnrollmentFormItemEntity::getCourse)
-                .map(courseMapper::toCourseInfo)
+                .map(courseMapper::toCourseResponse)
                 .filter(Objects::nonNull)
                 .toList();
     }

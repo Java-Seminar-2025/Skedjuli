@@ -22,11 +22,11 @@ public class UserDomainService {
     private final UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
-    public boolean existsByEmail(String email) {
+    public Boolean existsByEmail(String email) {
         return repository.existsByEmail(email);
     }
 
-    public boolean existsByUsername(String username) {
+    public Boolean existsByUsername(String username) {
         return repository.existsByUsername(username);
     }
 

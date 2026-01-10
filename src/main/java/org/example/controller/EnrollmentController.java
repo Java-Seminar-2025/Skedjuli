@@ -2,7 +2,7 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.example.model.dto.CourseInfo;
+import org.example.model.dto.response.CourseResponse;
 import org.example.model.dto.EnrollmentResult;
 import org.example.model.dto.request.selection.EnrollmentSelectionRequest;
 import org.example.model.dto.EnrollmentSelectionResponse;
@@ -23,7 +23,7 @@ public class EnrollmentController {
     private final EnrollmentService enrollmentService;
 
     @GetMapping("/student/{studentId}/courses")
-    public ResponseEntity<List<CourseInfo>> getEnrolledCourses(@PathVariable Long studentId) {
+    public ResponseEntity<List<CourseResponse>> getEnrolledCourses(@PathVariable Long studentId) {
         var courses = enrollmentService.getEnrolledCoursesForYear(studentId);
         return ResponseEntity.ok(courses);
     }

@@ -1,9 +1,11 @@
 package org.example.service.domain;
 
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.CourseRequirementDto;
+import org.example.model.dto.request.create.CourseRequirementCreateRequest;
+import org.example.model.dto.request.patch.CourseRequirementPatchRequest;
+import org.example.model.dto.response.CourseRequirementResponse;
 import org.example.model.entity.CourseEntity;
 import org.example.model.entity.CourseRequirementEntity;
 import org.example.model.mapper.CourseRequirementMapper;
@@ -18,70 +20,69 @@ import java.util.stream.Collectors;
 public class CourseRequirementDomainService {
 
     private final CourseRequirementRepository repository;
+    private final CourseRequirementMapper mapper;
+    private final EntityManager entityManager;
 
     @Transactional
-    public CourseRequirementDto createRequirement(CourseEntity course, CourseEntity requiredCourse) {
-        var entity = new CourseRequirementEntity();
+    public CourseRequirementResponse createCourseRequirement(CourseRequirementCreateRequest request) {
+        var courseRequirement = new CourseRequirementEntity();
+        var course = entityManager.getReference(CourseEntity.class, request.courseId());
+        var requiredCourse = entityManager.getReference(CourseEntity.class, request.requiredCourseId());
 
-        entity.setCourse(course);
-        entity.setRequiredCourse(requiredCourse);
+        courseRequirement.setCourse(course);
+        courseRequirement.setRequiredCourse(requiredCourse);
 
-        var saved = repository.save(entity);
-        return CourseRequirementMapper.toDto(saved);
+        var saved = repository.save(courseRequirement);
+        return mapper.toCourseRequirementResponse(saved);
     }
 
-    public List<CourseRequirementDto> findByCourseId(Long courseId) {
+    public List<CourseRequirementResponse> findByCourseId(Long courseId) {
         if (courseId == null) return List.of();
         var rows = repository.findByCourse_Id(courseId);
-        return CourseRequirementMapper.toDtoList(rows);
+        return rows.stream().map(mapper::toCourseRequirementResponse).toList();
     }
 
-    public List<CourseRequirementDto> findByCourseIds(Collection<Long> courseIds) {
+    public List<CourseRequirementResponse> findByCourseIds(Collection<Long> courseIds) {
         if (courseIds == null || courseIds.isEmpty()) return List.of();
         var rows = repository.findByCourse_IdIn(courseIds);
-        return CourseRequirementMapper.toDtoList(rows);
+        return rows.stream().map(mapper::toCourseRequirementResponse).toList();
     }
 
-    public List<CourseRequirementDto> findAll() {
-        return CourseRequirementMapper.toDtoList(repository.findAll());
+    public List<CourseRequirementResponse> findAll() {
+        var rows = repository.findAll();
+        return rows.stream().map(mapper::toCourseRequirementResponse).toList();
     }
 
     public Map<Long, List<Long>> getDirectPrereqsMap(Collection<Long> courseIds) {
         return findByCourseIds(courseIds).stream()
                 .collect(Collectors.groupingBy(
-                        CourseRequirementDto::courseId,
-                        Collectors.mapping(CourseRequirementDto::requiredCourseId, Collectors.toList())
+                        CourseRequirementResponse::courseId,
+                        Collectors.mapping(CourseRequirementResponse::requiredCourseId, Collectors.toList())
                 ));
     }
 
     public List<Long> getDirectPrerequisiteIds(Long courseId) {
         return findByCourseId(courseId).stream()
-                .map(CourseRequirementDto::requiredCourseId)
+                .map(CourseRequirementResponse::requiredCourseId)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void patchRequirements(Long courseId, Set<Long> newRequiredCourseIds, Map<Long, CourseEntity> courseMap) {
-        repository.findByCourse_Id(courseId).stream()
-                .filter(req -> !newRequiredCourseIds.contains(req.getRequiredCourse().getId()))
-                .forEach(repository::delete);
+    public CourseRequirementResponse patchCourseRequirement(Long id, CourseRequirementPatchRequest request) {
+        var courseRequirement = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Course requirement not found"));
+        var requiredCourse = entityManager.getReference(CourseEntity.class, request.requiredCourseId());
 
-        newRequiredCourseIds.stream()
-                .filter(reqId -> repository.findByCourse_IdAndRequiredCourse_Id(courseId, reqId).isEmpty())
-                .map(reqId -> new CourseRequirementEntity(
-                        courseMap.get(courseId),
-                        courseMap.get(reqId)
-                ))
-                .forEach(repository::save);
+        courseRequirement.setRequiredCourse(requiredCourse);
+
+        return mapper.toCourseRequirementResponse(courseRequirement);
     }
 
 
     @Transactional
-    public void deleteRequirement(Long courseId, Long requiredCourseId) {
-        var requirement = repository.findByCourse_IdAndRequiredCourse_Id(courseId, requiredCourseId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Course requirement not found for courseId=" + courseId + " and requiredCourseId=" + requiredCourseId
-                ));
+    public void deleteCourseRequirement(Long id) {
+        var requirement = repository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Course requirement not found"));
         repository.delete(requirement);
     }
 

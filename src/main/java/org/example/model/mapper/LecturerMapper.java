@@ -4,7 +4,7 @@ import org.example.model.dto.response.LecturerResponse;
 import org.example.model.entity.LecturerEntity;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface LecturerMapper {
     LecturerResponse toLecturerResponse(LecturerEntity entity);
 }

@@ -3,8 +3,6 @@ package org.example.service.domain;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.CourseInfo;
-
 import org.example.model.dto.request.create.CourseCreateRequest;
 import org.example.model.dto.request.patch.CoursePatchRequest;
 import org.example.model.dto.response.CourseResponse;
@@ -61,25 +59,25 @@ public class CourseDomainService {
                 .toList();
     }
 
-    public List<CourseInfo> getMandatoryCoursesForSemesters(Long studyProgramId, List<Integer> semesters) {
+    public List<CourseResponse> getMandatoryCoursesForSemesters(Long studyProgramId, List<Integer> semesters) {
         return semesters.stream()
                 .flatMap(sem -> repository.findByStudyProgram_IdAndSemesterAndMandatoryTrue(studyProgramId, sem).stream())
                 .distinct()
-                .map(c -> new CourseInfo(c.getId(), c.getName(), c.getEcts(), c.getSemester()))
+                .map(mapper::toCourseResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<CourseInfo> getSelectableCoursesForYear(Long studyProgramId, int year) {
+    public List<CourseResponse> getSelectableCoursesForYear(Long studyProgramId, int year) {
         var semStart = (year - 1) * 2 + 1;
         var sems = List.of(semStart, semStart + 1);
         return sems.stream()
                 .flatMap(sem -> repository.findByStudyProgram_IdAndSemesterAndMandatoryFalse(studyProgramId, sem).stream())
                 .distinct()
-                .map(c -> new CourseInfo(c.getId(), c.getName(), c.getEcts(), c.getSemester()))
+                .map(mapper::toCourseResponse)
                 .collect(Collectors.toList());
     }
 
-    public CourseResponse getCourseInfoById(Long courseId) {
+    public CourseResponse getCourseById(Long courseId) {
         return mapper.toCourseResponse(getCourseOrThrow(courseId));
     }
 

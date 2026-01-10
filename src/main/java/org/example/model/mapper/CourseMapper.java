@@ -1,6 +1,5 @@
 package org.example.model.mapper;
 
-import org.example.model.dto.CourseInfo;
 import org.example.model.dto.response.CourseResponse;
 import org.example.model.entity.AcademicYearEntity;
 import org.example.model.entity.CourseEntity;
@@ -16,13 +15,11 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", imports = {Collectors.class})
 public interface CourseMapper {
 
-    CourseInfo toCourseInfo(CourseEntity entity);
     @Mapping(target = "lecturerId", source = "lecturer", qualifiedByName = "mapLecturerId")
     @Mapping(target = "studyProgramId", source = "studyProgram", qualifiedByName = "mapStudyProgramId")
     @Mapping(target = "academicYearId", source = "academicYear", qualifiedByName = "mapAcademicYearId")
     @Mapping(target = "prerequisiteIds", expression = "java(mapPrerequisites(entity))")
     CourseResponse toCourseResponse(CourseEntity entity);
-
 
     @Named("mapStudyProgramId")
     default Long mapStudyProgramId(StudyProgramEntity entity) {

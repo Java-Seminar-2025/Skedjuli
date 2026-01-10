@@ -12,9 +12,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUsername(String username);
 
-    boolean existsByEmail(String email);
+    Boolean existsByEmail(String email);
 
-    boolean existsByUsername(String username);
+    Boolean existsByUsername(String username);
 
     Optional<UserEntity> findTopByUsernameStartingWithOrderByUsernameDesc(String prefix);
 }

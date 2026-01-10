@@ -1,5 +1,7 @@
 package org.example.model.dto.request.patch;
 
+import java.util.Set;
+
 public record CoursePatchRequest(
         String code,
         String name,
@@ -9,8 +11,8 @@ public record CoursePatchRequest(
         Boolean mandatory,
         Boolean active,
         Integer enrollmentLimit,
-
         Long studyProgramId,
         Long academicYearId,
-        Long lecturerId
+        Long lecturerId,
+        Set<Long> prerequisiteCourseIds
 ) {}
