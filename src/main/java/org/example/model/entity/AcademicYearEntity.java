@@ -21,6 +21,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AcademicYearEntity {
 
+    @Column(name = "is_active")
+    private Boolean active;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,8 +46,7 @@ public class AcademicYearEntity {
     @Column(name = "enrollment_end")
     private LocalDate enrollmentEnd;
 
-    @Column(name = "is_active")
-    private Boolean active = true;
+
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

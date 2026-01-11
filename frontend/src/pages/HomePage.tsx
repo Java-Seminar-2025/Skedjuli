@@ -40,7 +40,7 @@ export default function HomePage() {
           <button
             type="button"
             onClick={handleLogout}
-            className="px-4 py-2 rounded-lg border bg-gray-50 hover:bg-gray-100"
+            className="px-4 py-2 rounded-lg border bg-red-600/90 hover:bg-red-600/50"
           >
             Logout
           </button>
@@ -63,8 +63,8 @@ export default function HomePage() {
             onClick={() => navigate("/tasks")}
             className="p-4 rounded-xl border bg-white hover:bg-gray-50 text-left"
           >
-            <div className="font-semibold">Tasks</div>
-            <div className="text-sm text-gray-600">Go to your task list</div>
+            <div className="font-semibold">Create a new Course</div>
+            <div className="text-sm text-gray-600">A fresh start...</div>
           </button>
 
           <button

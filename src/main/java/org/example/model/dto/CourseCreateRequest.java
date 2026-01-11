@@ -1,44 +1,39 @@
 package org.example.model.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Set;
+@Getter
+@Setter
+public class CourseCreateRequest {
 
-public record CourseCreateRequest(
+    @NotBlank
+    @Size(max = 20)
+    private String code;
 
-        @NotBlank
-        @Size(max = 20)
-        String code,
+    @NotBlank
+    @Size(max = 100)
+    private String name;
 
-        @NotBlank
-        @Size(max = 100)
-        String name,
+    private String description;
 
-        String description,
+    @NotNull
+    @Min(1)
+    private Integer ects;
 
-        @NotNull
-        @Positive
-        Integer ects,
+    private Boolean mandatory;
 
-        @NotNull
-        Integer semester,
+    @Min(1)
+    private Integer enrollmentLimit;
 
-        @NotNull
-        Boolean mandatory,
+    @NotNull
+    private Long studyProgramId;
 
-        Integer enrollmentLimit,
+    @NotNull
+    private Long academicYearId;
 
-        @NotNull
-        Long studyProgramId,
-
-        @NotNull
-        Long academicYearId,
-
-        Long lecturerId,
-
-        Set<Long> prerequisiteCourseIds
-
-) {}
+    @NotNull
+    @Min(1)
+    private Integer semester;
+}

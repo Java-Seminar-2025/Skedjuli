@@ -8,6 +8,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface CourseMapper {
     CourseReadRequestDto toCourseReadRequestDto(CourseEntity course);
-
     CourseInfo toCourseInfo(CourseEntity course);
 }
