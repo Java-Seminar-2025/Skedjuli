@@ -9,4 +9,6 @@ public interface AcademicYearRepository extends JpaRepository<AcademicYearEntity
     Optional<AcademicYearEntity> getByActiveTrue();
 
     Boolean existsByYearCode(String yearCode);
+
+    AcademicYearEntity findByActiveTrue();
 }

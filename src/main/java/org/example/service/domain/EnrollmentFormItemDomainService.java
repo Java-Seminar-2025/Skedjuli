@@ -95,4 +95,11 @@ public class EnrollmentFormItemDomainService {
                 .mapToInt(CourseEntity::getEcts)
                 .sum();
     }
+
+    public List<CourseResponse> findEnrolledCoursesForStudent(Long studentId, int value, Long id) {
+        return enrollmentFormItemRepository.findEnrolledCoursesForStudent(studentId, value, id)
+                .stream()
+                .map(courseMapper::toCourseResponse)
+                .toList();
+    }
 }

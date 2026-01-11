@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/students/**").permitAll()
                         .requestMatchers("/api/studyPrograms/**").permitAll()
                         .requestMatchers("/api/courses/**").permitAll()
+                        .requestMatchers("/api/enrollmentForms/**").permitAll()
 
 
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()

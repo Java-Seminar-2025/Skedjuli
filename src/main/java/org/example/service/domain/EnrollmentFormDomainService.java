@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -113,5 +114,16 @@ public class EnrollmentFormDomainService {
     public Optional<Long> findCurrentFormIdForStudent(Long studentId, Long academicYearId, int semStart) {
         return findFormIdByStudentAndAcademicYearAndSemester(studentId, academicYearId, semStart)
                 .or(() -> findFormIdByStudentAndAcademicYearAndSemester(studentId, academicYearId, semStart + 1));
+    }
+
+    @Transactional
+    public void approveForm(Long enrollmentFormId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        form.setStatusEnum(EnrollmentFormStatus.APPROVED);
+        form.setCreatedAt(LocalDateTime.now());
+
+        enrollmentFormRepository.save(form);
     }
 }
