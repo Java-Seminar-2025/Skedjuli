@@ -45,7 +45,7 @@ public class AcademicYearEntity {
     private LocalDate enrollmentEnd;
 
     @Column(name = "is_active")
-    private Boolean active = true;
+    private Boolean active;
 
     @Column(name = "created_at")
     @CreationTimestamp

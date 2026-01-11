@@ -33,7 +33,7 @@ public class StudyProgramController {
         return ResponseEntity.ok(service.getStudyProgramById(id));
     }
 
-    @GetMapping
+    @GetMapping("/allStudyPrograms")
     public ResponseEntity<List<StudyProgramResponse>> getAllStudyPrograms() {
         return ResponseEntity.ok(service.getAllStudyPrograms());
     }

@@ -1,6 +1,8 @@
 package org.example.model.mapper;
 
 import org.example.model.dto.response.CourseResponse;
+import org.example.model.dto.unsorted.CourseInfo;
+import org.example.model.dto.unsorted.CourseReadRequestDto;
 import org.example.model.entity.AcademicYearEntity;
 import org.example.model.entity.CourseEntity;
 import org.example.model.entity.LecturerEntity;
@@ -42,4 +44,6 @@ public interface CourseMapper {
                 .map(CourseEntity::getId)
                 .collect(Collectors.toSet());
     }
+    CourseReadRequestDto toCourseReadRequestDto(CourseEntity course);
+    CourseInfo toCourseInfo(CourseEntity course);
 }
