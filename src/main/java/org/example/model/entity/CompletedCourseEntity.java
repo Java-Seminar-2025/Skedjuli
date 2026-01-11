@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
@@ -47,5 +48,6 @@ public class CompletedCourseEntity {
     private LocalDate completionDate;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDate createdAt;
 }

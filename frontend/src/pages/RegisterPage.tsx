@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import InputField from "../components/InputField";
 import { useRegister } from "../features/auth/model/auth.store";
-import { StudyProgramApi } from "../data/services/StudyProgramsApi";
+import { StudyProgramApi } from "../features/auth/model/StudyProgramsApi";
 import type {
   StudyProgram,
   RegisterRequestDto,
   UserRole,
-} from "../data/dto/auth.dto";
+} from "../features/auth/model/auth.dto";
 
 export default function RegisterPage() {
   const [programs, setPrograms] = useState<StudyProgram[]>([]);

@@ -7,5 +7,10 @@ import java.util.Optional;
 
 public interface AcademicYearRepository extends JpaRepository<AcademicYearEntity, Long> {
     Optional<AcademicYearEntity> getByActiveTrue();
+<<<<<<< HEAD
     boolean existsByYearCode(String yearCode);
+=======
+
+    Boolean existsByYearCode(String yearCode);
+>>>>>>> origin/enrollment
 }

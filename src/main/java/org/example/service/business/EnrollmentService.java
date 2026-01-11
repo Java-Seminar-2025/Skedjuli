@@ -3,7 +3,7 @@ package org.example.service.business;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.model.dto.CourseInfo;
+import org.example.model.dto.response.CourseResponse;
 import org.example.model.enums.YearTarget;
 import org.example.service.domain.AcademicYearDomainService;
 import org.example.service.domain.CompletedCourseDomainService;
@@ -46,27 +46,27 @@ public class EnrollmentService {
 
         var year = studentDomainService.getCurrentYearById(studentId);
         var studyProgramId = studentDomainService.getStudyProgramIdByStudentId(studentId);
-        var activeYearId = academicYearDomainService.getActiveYearId();
+        var activeYearId = academicYearDomainService.getActiveAcademicYear().id();
         var semStart = (year - 1) * 2 + 1;
 
         var candidates = getCoursesToConsider(studentId, studyProgramId, year);
 
-        var selectedCourseInfos = Optional.ofNullable(selectedCourseIds)
+        var selectedCourseResponses = Optional.ofNullable(selectedCourseIds)
                 .stream()
                 .flatMap(List::stream)
                 .distinct()
-                .map(courseDomainService::getCourseInfoById)
+                .map(courseDomainService::getCourseById)
                 .distinct()
                 .toList();
 
-        var selectedIds = selectedCourseInfos.stream().map(CourseInfo::id).collect(Collectors.toSet());
+        var selectedIds = selectedCourseResponses.stream().map(CourseResponse::id).collect(Collectors.toSet());
 
-        var mergedCandidates = Stream.concat(selectedCourseInfos.stream(), candidates.stream())
+        var mergedCandidates = Stream.concat(selectedCourseResponses.stream(), candidates.stream())
                 .filter(c -> !completedCourseDomainService.hasCompletedCourse(studentId, c.id()))
                 .distinct()
                 .sorted(Comparator
-                        .comparing((CourseInfo c) -> selectedIds.contains(c.id())).reversed()
-                        .thenComparingInt(CourseInfo::ects).reversed())
+                        .comparing((CourseResponse c) -> selectedIds.contains(c.id())).reversed()
+                        .thenComparingInt(CourseResponse::ects).reversed())
                 .toList();
 
         var range = YearTarget.fromYear(year).getRange(false);
@@ -82,7 +82,7 @@ public class EnrollmentService {
         );
     }
 
-    private List<CourseInfo> getCoursesToConsider(Long studentId, Long studyProgramId, int year) {
+    private List<CourseResponse> getCoursesToConsider(Long studentId, Long studyProgramId, int year) {
         return switch (year) {
             case 1 -> courseDomainService.getMandatoryCoursesForSemesters(studyProgramId, List.of(1, 2)).stream()
                     .filter(c -> !completedCourseDomainService.hasCompletedCourse(studentId, c.id()))
@@ -98,7 +98,7 @@ public class EnrollmentService {
             case 3 -> {
                 var remaining = getRemainingMandatoryForStudent(studentId, studyProgramId);
                 var selectives = courseDomainService.getSelectableCoursesForYear(studyProgramId, 3);
-                var combined = new ArrayList<CourseInfo>();
+                var combined = new ArrayList<CourseResponse>();
                 combined.addAll(remaining);
                 combined.addAll(selectives);
                 yield combined;
@@ -107,7 +107,7 @@ public class EnrollmentService {
         };
     }
 
-    private List<CourseInfo> getRemainingMandatoryForStudent(Long studentId, Long studyProgramId) {
+    private List<CourseResponse> getRemainingMandatoryForStudent(Long studentId, Long studyProgramId) {
         var allMandatory = courseDomainService.getMandatoryCoursesForSemesters(studyProgramId, List.of(1, 2, 3, 4, 5, 6));
         return allMandatory.stream()
                 .filter(c -> !completedCourseDomainService.hasCompletedCourse(studentId, c.id()))
@@ -119,7 +119,7 @@ public class EnrollmentService {
             Long activeYearId,
             int sem1,
             int sem2,
-            List<CourseInfo> candidates,
+            List<CourseResponse> candidates,
             int minTarget,
             int maxTarget
     ) {
@@ -129,7 +129,7 @@ public class EnrollmentService {
         var toConsider = candidates.stream()
                 .filter(c -> !completedCourseDomainService.hasCompletedCourse(studentId, c.id()))
                 .distinct()
-                .sorted(Comparator.comparingInt(CourseInfo::ects).reversed())
+                .sorted(Comparator.comparingInt(CourseResponse::ects).reversed())
                 .toList();
 
         var semToForm = Map.of(sem1, form1Id, sem2, form2Id);
@@ -162,7 +162,7 @@ public class EnrollmentService {
                 });
     }
 
-    public List<CourseInfo> getEnrolledCoursesForYear(Long studentId) {
+    public List<CourseResponse> getEnrolledCoursesForYear(Long studentId) {
         var year = studentDomainService.getCurrentYearById(studentId);
         var sem1 = year * 2 - 1;
         var sem2 = year * 2;
@@ -181,7 +181,7 @@ public class EnrollmentService {
         return createOrUpdateSelectionForStudent(studentId, selectedCourseIds);
     }
 
-    public List<CourseInfo> getSelection(Long studentId) {
+    public List<CourseResponse> getSelection(Long studentId) {
         return Optional.ofNullable(getCurrentEnrollmentFormId(studentId))
                 .map(enrollmentFormItemDomainService::getEnrollmentFormItems)
                 .orElse(List.of());
@@ -189,7 +189,7 @@ public class EnrollmentService {
 
     public Long getCurrentEnrollmentFormId(Long studentId) {
         var year = studentDomainService.getCurrentYearById(studentId);
-        var activeYearId = academicYearDomainService.getActiveYearId();
+        var activeYearId = academicYearDomainService.getActiveAcademicYear().id();
         var semStart = (year - 1) * 2 + 1;
 
         return enrollmentFormDomainService.findCurrentFormIdForStudent(studentId, activeYearId, semStart)
@@ -199,7 +199,7 @@ public class EnrollmentService {
     @Transactional
     public Long createOrUpdateSelectionForStudent(Long studentId, List<Long> selectedCourseIds) {
         var year = studentDomainService.getCurrentYearById(studentId);
-        var activeYearId = academicYearDomainService.getActiveYearId();
+        var activeYearId = academicYearDomainService.getActiveAcademicYear().id();
         var semStart = (year - 1) * 2 + 1;
         var sems = List.of(semStart, semStart + 1);
 
@@ -211,22 +211,22 @@ public class EnrollmentService {
                 .toList();
 
         var courseById = selectedDistinct.stream()
-                .map(courseDomainService::getCourseInfoById)
+                .map(courseDomainService::getCourseById)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toMap(CourseInfo::id, c -> c));
+                .collect(Collectors.toMap(CourseResponse::id, c -> c));
 
         var bySem = courseById.values().stream()
                 .filter(ci -> sems.contains(ci.semester()))
                 .collect(Collectors.groupingBy(
-                        CourseInfo::semester,
-                        Collectors.mapping(CourseInfo::id, Collectors.toList())
+                        CourseResponse::semester,
+                        Collectors.mapping(CourseResponse::id, Collectors.toList())
                 ));
 
         sems.forEach(sem -> {
             var formId = enrollmentFormDomainService.findOrCreateFormId(studentId, activeYearId, sem);
 
             var existingCourseIds = enrollmentFormItemDomainService.getEnrollmentFormItems(formId).stream()
-                    .map(CourseInfo::id)
+                    .map(CourseResponse::id)
                     .collect(Collectors.toSet());
 
             var targetCourseIds = Optional.ofNullable(bySem.get(sem)).orElse(List.of());

@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import InputField from "../components/InputField";
-import { LoginRequestDto, LoginResponseDto } from "../data/dto/auth.dto";
-import { LoginApi } from "../data/services/LoginApi";
+import {
+  LoginRequestDto,
+  LoginResponseDto,
+} from "../features/auth/model/auth.dto";
+import { LoginApi } from "../features/auth/model/LoginApi";
 import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
   const Navigation = useNavigate();

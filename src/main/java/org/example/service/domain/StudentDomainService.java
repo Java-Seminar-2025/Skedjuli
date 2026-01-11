@@ -1,55 +1,62 @@
 package org.example.service.domain;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.example.model.dto.StudentPatchRequest;
+import org.example.model.dto.request.create.StudentCreateRequest;
+import org.example.model.dto.request.patch.StudentPatchRequest;
+import org.example.model.dto.response.StudentResponse;
 import org.example.model.entity.StudentEntity;
 import org.example.model.entity.StudyProgramEntity;
 import org.example.model.entity.UserEntity;
+import org.example.model.mapper.StudentMapper;
 import org.example.repository.StudentRepository;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import org.example.repository.specification.StudentSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class StudentDomainService {
 
-    private final StudentRepository studentRepository;
+    private final StudentRepository repository;
+    private final StudentMapper mapper;
+    private final EntityManager entityManager;
 
-    public void createStudent(Long userId, Long studyProgramId, int enrollmentYear, int currentYear) {
+    public StudentResponse createStudent(StudentCreateRequest request) {
         var student = new StudentEntity();
 
-        var uRef = new UserEntity();
-        uRef.setId(userId);
-        student.setUser(uRef);
-
-        var spRef = new StudyProgramEntity();
-        spRef.setId(studyProgramId);
-        student.setStudyProgram(spRef);
-
-        student.setEnrollmentYear(enrollmentYear);
-        student.setCurrentYear(currentYear);
+        student.setUser(entityManager.getReference(UserEntity.class, request.userId()));
+        student.setStudyProgram(entityManager.getReference(StudyProgramEntity.class, request.studyProgramId()));
+        student.setEnrollmentYear(request.enrollmentYear());
+        student.setCurrentYear(request.currentYear());
         student.setIsActive(true);
-        student.setCreatedAt(LocalDateTime.now());
 
-        studentRepository.save(student);
+        var saved = repository.save(student);
+
+        return mapper.toStudentResponse(saved);
     }
 
     public Long getStudyProgramIdByStudentId(Long studentId) {
-        var student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+        var student = getStudentOrThrow(studentId);
+
         return student.getStudyProgram().getId();
     }
 
     public Integer getCurrentYearById(Long studentId) {
-        var student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+        var student = getStudentOrThrow(studentId);
+
         return student.getCurrentYear();
     }
 
-    public void patchStudent(Long studentId, StudentPatchRequest request) {
-        StudentEntity student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalArgumentException(String.valueOf(studentId)));
+    @Transactional
+    public StudentResponse patchStudent(Long studentId, StudentPatchRequest request) {
+        var student = getStudentOrThrow(studentId);
 
         if (request.currentYear() != null) {
             student.setCurrentYear(request.currentYear());
@@ -58,5 +65,36 @@ public class StudentDomainService {
         if (request.isActive() != null) {
             student.setIsActive(request.isActive());
         }
+
+        return mapper.toStudentResponse(student);
+    }
+
+    public StudentResponse getStudent(Long studentId) {
+        var student = getStudentOrThrow(studentId);
+
+        return mapper.toStudentResponse(student);
+    }
+
+    public void deleteStudent(Long studentId) {
+        var student = getStudentOrThrow(studentId);
+
+        repository.delete(student);
+    }
+
+    public Page<StudentResponse> getStudents(int page, int size, String sortBy, String sortOrder, Long studyProgramId, Integer enrollmentYear, Integer currentYear, Double totalEctsEarned, Boolean isActive) {
+        var sort = sortOrder.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        var students = repository.findAll(
+                StudentSpecification.filter(studyProgramId, enrollmentYear, currentYear, totalEctsEarned, isActive), pageable
+        );
+
+        return students.map(mapper::toStudentResponse);
+    }
+
+    private StudentEntity getStudentOrThrow(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found: " + id));
     }
 }
