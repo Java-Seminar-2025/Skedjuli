@@ -44,6 +44,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                        .requestMatchers("/api/enrollmentForms/*/pdf").permitAll() //
 
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
@@ -54,7 +55,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/students/**").permitAll()
                         .requestMatchers("/api/studyPrograms/**").permitAll()
                         .requestMatchers("/api/courses/**").permitAll()
-                        .requestMatchers("/api/enrollmentForms/**").permitAll()
 
 
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()

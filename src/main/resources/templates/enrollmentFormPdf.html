@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="hr">
+<head>
+    <meta charset="UTF-8" />
+    <style type="text/css">
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { border: 1px solid #333; padding: 6px; }
+        th { background-color: #eee; }
+        .meta { margin-top: 10px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+<h2>Upisni list</h2>
+
+<div class="meta">
+    <strong>Student:</strong> <span th:text="${dto.studentFullName}"></span><br />
+    <strong>Studij:</strong> <span th:text="${dto.studyProgramName}"></span><br />
+    <strong>Akademska godina:</strong> <span th:text="${dto.academicYearCode}"></span><br />
+    <strong>Semestar:</strong> <span th:text="${dto.semester}"></span><br />
+    <strong>Status:</strong> <span th:text="${dto.formStatus}"></span><br />
+    <strong>Predano:</strong>
+    <span th:text="${dto.submittedAt != null ? #temporals.format(dto.submittedAt, 'dd.MM.yyyy. HH:mm') : '-'}"></span><br />
+    <strong>Odobreno:</strong>
+    <span th:text="${dto.approvedAt != null ? #temporals.format(dto.approvedAt, 'dd.MM.yyyy. HH:mm') : '-'}"></span>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Kod</th>
+        <th>Naziv kolegija</th>
+        <th>ECTS</th>
+        <th>Semestar</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${dto.items == null || #lists.isEmpty(dto.items)}">
+        <td colspan="5">Nema stavki.</td>
+    </tr>
+
+    <tr th:each="item : ${dto.items}">
+        <td th:text="${item.courseCode}"></td>
+        <td th:text="${item.courseName}"></td>
+        <td th:text="${item.ects}"></td>
+        <td th:text="${item.semester}"></td>
+        <td th:text="${item.status}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

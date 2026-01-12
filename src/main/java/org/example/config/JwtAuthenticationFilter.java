@@ -20,25 +20,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.contains("/api/auth/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String authHeader = Optional.ofNullable(request.getHeader("Authorization")).orElse("");
+
+        // ✅ no token -> anonymous -> continue
         if (!authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
+
         String token = authHeader.substring(7);
+
+        // ✅ invalid token -> treat as anonymous (or you can 401 here)
         if (!jwtService.validateToken(token)) {
             filterChain.doFilter(request, response);
             return;
         }
+
         String email = jwtService.extractEmail(token);
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(email, null, new ArrayList<>());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         filterChain.doFilter(request, response);
     }
+
 }
