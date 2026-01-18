@@ -87,6 +87,10 @@ public class EnrollmentFormDomainService {
         var form = enrollmentFormRepository.findById(enrollmentFormId)
                 .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
 
+        if (Boolean.TRUE.equals(form.getIsLocked()) || form.getStatusEnum() == EnrollmentFormStatus.LOCKED || form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form has been locked and cannot be modified");
+        }
+
         var item = new EnrollmentFormItemEntity();
         item.setEnrollmentForm(form);
 
@@ -121,9 +125,45 @@ public class EnrollmentFormDomainService {
         var form = enrollmentFormRepository.findById(enrollmentFormId)
                 .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
 
+        if (form.getStatusEnum() != EnrollmentFormStatus.LOCKED && !Boolean.TRUE.equals(form.getIsLocked())) {
+            throw new IllegalStateException("Cannot approve unlocked form");
+        }
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form already approved");
+        }
+
         form.setStatusEnum(EnrollmentFormStatus.APPROVED);
-        form.setCreatedAt(LocalDateTime.now());
+        form.setApprovedAt(LocalDateTime.now());
+        form.setIsLocked(true);
 
         enrollmentFormRepository.save(form);
+    }
+
+    @Transactional
+    public void lockForm(Long enrollmentFormId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form already approved");
+        }
+        if (form.getStatusEnum() == EnrollmentFormStatus.LOCKED || Boolean.TRUE.equals(form.getIsLocked())) {
+            throw new IllegalStateException("Enrollment form already locked");
+        }
+
+        form.setStatusEnum(EnrollmentFormStatus.LOCKED);
+        form.setIsLocked(true);
+        form.setSubmittedAt(LocalDateTime.now());
+
+        enrollmentFormRepository.save(form);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isLocked (Long enrollmentFormId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        return Boolean.TRUE.equals(form.getIsLocked()) || form.getStatusEnum() == EnrollmentFormStatus.LOCKED || form.getStatusEnum() == EnrollmentFormStatus.APPROVED;
     }
 }

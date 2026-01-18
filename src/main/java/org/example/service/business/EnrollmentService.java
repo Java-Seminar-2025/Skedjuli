@@ -224,6 +224,7 @@ public class EnrollmentService {
 
         sems.forEach(sem -> {
             var formId = enrollmentFormDomainService.findOrCreateFormId(studentId, activeYearId, sem);
+            ensureFormModifiable(formId);
 
             var existingCourseIds = enrollmentFormItemDomainService.getEnrollmentFormItems(formId).stream()
                     .map(CourseResponse::id)
@@ -250,4 +251,11 @@ public class EnrollmentService {
 
         return enrollmentFormDomainService.findOrCreateFormId(studentId, activeYearId, semStart);
     }
+
+    private void ensureFormModifiable(Long formId) {
+        if (enrollmentFormDomainService.isLocked(formId)) {
+            throw new IllegalStateException("Enrollment form is locked and cannot be modified");
+        }
+    }
+
 }

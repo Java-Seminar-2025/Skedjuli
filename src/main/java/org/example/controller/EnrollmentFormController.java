@@ -33,4 +33,9 @@ public class EnrollmentFormController {
                 .body(pdf);
     }
 
+    @PostMapping("/{formId}/lock")
+    public void lockForm(@PathVariable Long formId){
+        enrollmentFormDomainService.lockForm(formId);
+    }
+
 }
