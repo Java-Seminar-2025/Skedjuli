@@ -12,6 +12,7 @@ services:
       - "3307:3306"
     volumes:
       - skedjuli-db-data:/var/lib/mysql
+      - ./db/baseline.sql:/docker-entrypoint-initdb.d/baseline.sql:ro
 
 volumes: 
     skedjuli-db-data:

@@ -44,7 +44,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers("/api/enrollmentForms/*/pdf").permitAll() //
+                        .requestMatchers("/api/enrollmentForms/**").permitAll() //
 
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
