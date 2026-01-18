@@ -1,4 +1,4 @@
-👩‍🎓 Student
+👩‍🎓 Student<br>
 Implemented
 - Register/Login
 WIP
