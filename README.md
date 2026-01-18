@@ -61,7 +61,7 @@
 - Upravljanje studijskim programima
 
 ### 🚧 U razvoju (WIP)
-- Role-based autorizacija (RBAC)
+- Role-based autorizacija 
 
 ### 📝 Zadaci
 - Ručno dodavanje studenata na kolegije _(nije implementirano)_
