@@ -6,6 +6,7 @@ import org.example.model.dto.response.CourseResponse;
 import org.example.model.dto.EnrollmentResult;
 import org.example.model.dto.request.selection.EnrollmentSelectionRequest;
 import org.example.model.dto.EnrollmentSelectionResponse;
+import org.example.model.dto.response.EnrollmentFormHistoryResponse;
 import org.example.service.business.EnrollmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -63,5 +64,10 @@ public class EnrollmentController {
         enrollmentService.enrollYear(studentId, selectedIds, allowHigher);
 
         return ResponseEntity.ok(new EnrollmentResult("OK", "Enrollment successful"));
+    }
+
+    @GetMapping("/student/{studentId}/history")
+    public ResponseEntity<List<EnrollmentFormHistoryResponse>> getApprovedHistory(@PathVariable Long studentId) {
+        return ResponseEntity.ok(enrollmentService.getApprovedEnrollmentHistory(studentId));
     }
 }

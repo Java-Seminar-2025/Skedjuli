@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.example.model.dto.response.CourseResponse;
+import org.example.model.dto.response.EnrollmentFormHistoryResponse;
 import org.example.model.enums.YearTarget;
 import org.example.service.domain.AcademicYearDomainService;
 import org.example.service.domain.CompletedCourseDomainService;
@@ -256,6 +257,20 @@ public class EnrollmentService {
         if (enrollmentFormDomainService.isLocked(formId)) {
             throw new IllegalStateException("Enrollment form is locked and cannot be modified");
         }
+    }
+
+    public List<EnrollmentFormHistoryResponse> getApprovedEnrollmentHistory(Long studentId) {
+        return enrollmentFormDomainService.getApprovedFormsHistory(studentId).stream()
+                .map(f -> new EnrollmentFormHistoryResponse(
+                        f.getId(),
+                        f.getAcademicYear().getId(),
+                        f.getAcademicYear().getYearCode(),
+                        f.getSemester(),
+                        f.getApprovedAt(),
+                        Boolean.TRUE.equals(f.getIsLocked()),
+                        f.getCreatedAt()
+                ))
+                .toList();
     }
 
 }

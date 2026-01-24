@@ -166,4 +166,9 @@ public class EnrollmentFormDomainService {
 
         return Boolean.TRUE.equals(form.getIsLocked()) || form.getStatusEnum() == EnrollmentFormStatus.LOCKED || form.getStatusEnum() == EnrollmentFormStatus.APPROVED;
     }
+
+    @Transactional(readOnly = true)
+    public Collection<EnrollmentFormEntity> getApprovedFormsHistory(Long studentId) {
+        return enrollmentFormRepository.findAllByStudent_IdAndStatusOrderByCreatedAtDesc(studentId, EnrollmentFormStatus.APPROVED.getValue());
+    }
 }
