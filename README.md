@@ -16,10 +16,9 @@
   - limit upisa
   - predavača _(dostupno preko ID-a)_
 - PDF export upisnog lista
+- Pregled prethodnih upisnih listova  
 
 ### 🚧 U razvoju (WIP)
-- Pregled prethodnih upisnih listova  
-  _(model postoji, API još nije implementiran)_
 
 ### 📝 Zadaci
 - /
