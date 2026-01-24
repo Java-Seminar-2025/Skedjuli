@@ -21,7 +21,6 @@
 ### 🚧 U razvoju (WIP)
 
 ### 📝 Zadaci
-- /
 
 ---
 
@@ -77,5 +76,4 @@
 ### 🚧 U razvoju (WIP)
 
 ### 📝 Zadaci
-- Notifikacije za rokove upisa
 - Analitika uspješnosti studenata
