@@ -36,13 +36,12 @@
   - limit upisa
 - Pregled i upravljanje vlastitim kolegijima
 - Upravljanje preduvjetima kolegija
+- Zaključavanje upisnog lista
+- Pregled liste upisanih studenata po kolegiju  
 
 ### 🚧 U razvoju (WIP)
-- Zaključavanje upisnog lista (approve workflow je djelomično implementiran)
 
 ### 📝 Zadaci
-- Pregled liste upisanih studenata po kolegiju  
-  _(nakon zaključavanja upisnog lista)_
 
 ---
 
@@ -73,9 +72,9 @@
 - Automatska provjera preduvjeta  
   _(direktni i tranzitivni preduvjeti, uz provjeru položenih kolegija)_
 - PDF export upisnih listova
+- Zaključavanje upisa (potpuno korištenje `approvedBy`, `approvedAt`, `isLocked`)
 
 ### 🚧 U razvoju (WIP)
-- Zaključavanje upisa (potpuno korištenje `approvedBy`, `approvedAt`, `isLocked`)
 
 ### 📝 Zadaci
 - Notifikacije za rokove upisa
