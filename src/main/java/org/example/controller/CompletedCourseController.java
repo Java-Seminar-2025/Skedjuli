@@ -27,17 +27,17 @@ public class CompletedCourseController {
                 .body(created);
     }
 
-    @GetMapping("{/id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CompletedCourseResponse> getCompletedCourse(@PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PatchMapping("{/id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CompletedCourseResponse> patchCompletedCourse(@PathVariable Long id, @Valid @RequestBody CompletedCoursePatchRequest request) {
         return ResponseEntity.ok(service.patchCompletedCourse(id, request));
     }
 
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCompletedCourse(@PathVariable Long id) {
         service.deleteCompletedCourse(id);
         return ResponseEntity.noContent().build();
