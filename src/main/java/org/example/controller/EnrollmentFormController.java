@@ -16,8 +16,8 @@ public class EnrollmentFormController {
     private final EnrollmentPdfService enrollmentPdfService;
 
     @PostMapping("/{formId}/approve")
-    public void approveForm (@PathVariable Long formId){
-        enrollmentFormDomainService.approveForm(formId);
+    public void approveForm (@PathVariable Long formId, @RequestParam Long approverUserId) {
+        enrollmentFormDomainService.approveForm(formId, approverUserId);
     }
 
     @GetMapping("/{formId}/pdf")

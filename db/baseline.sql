@@ -115,7 +115,7 @@ CREATE TABLE enrollment_forms (
                                   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                   CONSTRAINT fk_form_student FOREIGN KEY (student_id) REFERENCES students(id),
                                   CONSTRAINT fk_form_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years(id),
-                                  CONSTRAINT fk_form_approved_by FOREIGN KEY (approved_by) REFERENCES lecturers(id),
+                                  CONSTRAINT fk_form_approved_by FOREIGN KEY (approved_by) REFERENCES users(id),
                                   CONSTRAINT uq_form_student_year_sem UNIQUE (student_id, academic_year_id, semester)
 );
 

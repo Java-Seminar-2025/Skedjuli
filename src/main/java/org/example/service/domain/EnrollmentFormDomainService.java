@@ -9,6 +9,7 @@ import org.example.model.entity.StudentEntity;
 import org.example.model.enums.EnrollmentFormItemStatus;
 import org.example.model.enums.EnrollmentFormStatus;
 import org.example.repository.EnrollmentFormRepository;
+import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,8 @@ import java.util.Optional;
 public class EnrollmentFormDomainService {
 
     private final EnrollmentFormRepository enrollmentFormRepository;
+
+    private final UserRepository userRepository;
 
     /**
      * Create a minimal enrollment form (student/academic-year references by id) and return its id.
@@ -121,9 +124,12 @@ public class EnrollmentFormDomainService {
     }
 
     @Transactional
-    public void approveForm(Long enrollmentFormId) {
+    public void approveForm(Long enrollmentFormId, Long approverUserId) {
         var form = enrollmentFormRepository.findById(enrollmentFormId)
                 .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        var approver = userRepository.findById(approverUserId)
+                .orElseThrow(() -> new RuntimeException("Approver not found: id=" + approverUserId));
 
         if (form.getStatusEnum() != EnrollmentFormStatus.LOCKED && !Boolean.TRUE.equals(form.getIsLocked())) {
             throw new IllegalStateException("Cannot approve unlocked form");
@@ -133,6 +139,7 @@ public class EnrollmentFormDomainService {
             throw new IllegalStateException("Enrollment form already approved");
         }
 
+        form.setApprovedBy(approver);
         form.setStatusEnum(EnrollmentFormStatus.APPROVED);
         form.setApprovedAt(LocalDateTime.now());
         form.setIsLocked(true);
