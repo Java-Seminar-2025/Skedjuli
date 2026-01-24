@@ -2,11 +2,13 @@ package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
 import org.example.model.dto.response.CourseResponse;
+import org.example.model.dto.response.StudentResponse;
 import org.example.model.entity.CourseEntity;
 import org.example.model.entity.EnrollmentFormEntity;
 import org.example.model.entity.EnrollmentFormItemEntity;
 import org.example.model.enums.EnrollmentFormItemStatus;
 import org.example.model.mapper.CourseMapper;
+import org.example.model.mapper.StudentMapper;
 import org.example.repository.EnrollmentFormItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ public class EnrollmentFormItemDomainService {
 
     private final EnrollmentFormItemRepository enrollmentFormItemRepository;
     private final CourseMapper courseMapper;
+    private final StudentMapper studentMapper;
 
     @Transactional(readOnly = true)
     public List<CourseResponse> getEnrollmentFormItems(Long enrollmentFormId) {
@@ -100,6 +103,19 @@ public class EnrollmentFormItemDomainService {
         return enrollmentFormItemRepository.findEnrolledCoursesForStudent(studentId, value, id)
                 .stream()
                 .map(courseMapper::toCourseResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudentResponse> getStudentsForCourseInYearWithFormStatuses(
+            Long courseId,
+            Long academicYearId,
+            List<Integer> statuses
+    ) {
+        return enrollmentFormItemRepository
+                .findDistinctStudentsByCourseAndYearAndFormStatuses(courseId, academicYearId, statuses)
+                .stream()
+                .map(studentMapper::toStudentResponse)
                 .toList();
     }
 }

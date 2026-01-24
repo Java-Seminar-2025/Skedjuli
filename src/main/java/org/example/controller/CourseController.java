@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.CourseCreateRequest;
 import org.example.model.dto.response.CourseResponse;
+import org.example.model.dto.response.StudentResponse;
 import org.example.model.dto.unsorted.CourseDto;
 import org.example.model.dto.unsorted.CourseReadRequestDto;
 import org.example.service.business.CourseTrialService;
+import org.example.service.business.LecturerCourseService;
 import org.example.service.business.StudentCourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,8 @@ public class CourseController {
     private final StudentCourseService service;
 
     private final CourseTrialService courseTrialService;
+
+    private final LecturerCourseService lecturerCourseService;
 
     @GetMapping("/enrolled/{id}")
     public List<CourseResponse> getStudentEnrolledCourses(@PathVariable Long id) {
@@ -81,5 +85,10 @@ public class CourseController {
         String email = authentication.getName();
         courseTrialService.deleteMyCourse(email, id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping ("/{courseId}/students")
+    public List<StudentResponse> getStudentsForCourse(@PathVariable Long courseId) {
+        return lecturerCourseService.getStudentsForCourseLockedAndApproved(courseId);
     }
 }
