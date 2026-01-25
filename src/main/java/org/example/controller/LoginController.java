@@ -65,7 +65,6 @@ public class LoginController {
             var authRequest = new AuthRequest(email, password);
             var response = authService.login(authRequest);
             model.addAttribute("success", "Login successful! Welcome back.");
-            model.addAttribute("token", response.token());
             return "dashboard";
         } catch (Exception e) {
             model.addAttribute("error", "Login failed: " + e.getMessage());

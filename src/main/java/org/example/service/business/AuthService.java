@@ -12,7 +12,6 @@ import org.example.service.domain.LecturerDomainService;
 import org.example.service.domain.StudentDomainService;
 import org.example.service.domain.StudyProgramDomainService;
 import org.example.service.domain.UserDomainService;
-import org.example.service.infrastructure.JwtService;
 import org.example.service.validator.AuthValidator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ public class AuthService {
     private final StudentDomainService studentDomainService;
     private final LecturerDomainService lecturerDomainService;
     private final StudyProgramDomainService studyProgramDomainService;
-    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthValidator authValidator;
 
@@ -52,8 +50,7 @@ public class AuthService {
             lecturerDomainService.createLecturer(lecturerCreateRequest);
         }
 
-        var token = jwtService.generateToken(request.email());
-        return new AuthResponse(token, request.email());
+        return new AuthResponse(request.email());
     }
 
     /**
@@ -69,7 +66,6 @@ public class AuthService {
         // check password (throws EnrollmentValidationException on failure)
         authValidator.validatePassword(userDto, req.password());
 
-        var token = jwtService.generateToken(userDto.email());
-        return new AuthResponse(token, userDto.email());
+        return new AuthResponse(userDto.email());
     }
 }
