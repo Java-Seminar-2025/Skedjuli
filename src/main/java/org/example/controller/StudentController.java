@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.StudentCreateRequest;
 import org.example.model.dto.request.patch.StudentPatchRequest;
+import org.example.model.dto.response.StudentAnalyticsResponse;
 import org.example.model.dto.response.StudentResponse;
+import org.example.service.business.StudentAnalyticsService;
 import org.example.service.domain.StudentDomainService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import java.net.URI;
 public class StudentController {
 
     private final StudentDomainService service;
+    private final StudentAnalyticsService analyticsService;
 
     @PostMapping
     public ResponseEntity<StudentResponse> createStudent(@Valid @RequestBody StudentCreateRequest request) {
@@ -58,5 +61,10 @@ public class StudentController {
             @RequestParam(required = false) Boolean isActive
             ) {
         return ResponseEntity.ok(service.getStudents(page, size, sortBy, sortOrder,studyProgramId, enrollmentYear, currentYear, totalEctsEarned, isActive));
+    }
+
+    @GetMapping("/{id}/analytics")
+    public ResponseEntity<StudentAnalyticsResponse> getStudentAnalytics(@PathVariable Long id) {
+        return ResponseEntity.ok(analyticsService.getStudentAnalytics(id));
     }
 }
