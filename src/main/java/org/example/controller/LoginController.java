@@ -35,7 +35,6 @@ public class LoginController {
                 "",
                 null,
                 null,
-                null,
                 null
         );
         model.addAttribute("registerRequest", req);

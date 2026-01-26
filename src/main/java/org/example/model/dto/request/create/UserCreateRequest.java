@@ -17,9 +17,5 @@ public record UserCreateRequest(
         String phoneNumber,
         @NotNull Long studyProgramId,
         Integer enrollmentYear,
-        //enrloment year maknit
-        //current year hardkodirat da je 1 jer ka upisujes se
-        //odbarat smjer
-        Integer currentYear,
         LocalDate dateOfBirth
 ) {}
