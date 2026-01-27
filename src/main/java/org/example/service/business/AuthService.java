@@ -40,7 +40,7 @@ public class AuthService {
         authValidator.validateRegister(request);
 
         var role = Role.fromString(request.role());
-
+        var email = request.email().trim().toLowerCase();
 
         // create user via domain service (domain service returns userId)
         var user = userDomainService.createUser(request);
@@ -59,13 +59,15 @@ public class AuthService {
             lecturerDomainService.createLecturer(lecturerCreateRequest);
         }
 
-        return new AuthResponse(request.email());
+        return new AuthResponse(email);
     }
 
     /**
      * Login: validate parameters, verify password via AuthValidator, then return token.
      */
     public AuthResponse login(AuthRequest req) {
+
+        var email = req.email().trim().toLowerCase();
         // basic param validation (throws EnrollmentValidationException if invalid)
         authValidator.validateLogin(req.email(), req.password());
 

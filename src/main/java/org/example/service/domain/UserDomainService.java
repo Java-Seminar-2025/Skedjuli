@@ -23,7 +23,7 @@ public class UserDomainService {
     private final PasswordEncoder passwordEncoder;
 
     public Boolean existsByEmail(String email) {
-        return repository.existsByEmail(email);
+        return repository.existsByEmailIgnoreCase(email);
     }
 
     public Boolean existsByUsername(String username) {
@@ -32,17 +32,20 @@ public class UserDomainService {
 
     @Transactional
     public UserResponse createUser(UserCreateRequest request) {
-        if (existsByEmail(request.email())) {
-            throw new IllegalArgumentException("Email already exists: " + request.email());
+        var email = request.email().trim().toLowerCase();
+        var firstName = request.firstName().trim().toLowerCase();
+        var lastName = request.lastName().trim().toLowerCase();
+        if (existsByEmail(email)) {
+            throw new IllegalArgumentException("Email already exists: " + email);
         }
 
         String encodedPassword = passwordEncoder.encode(request.password());
 
         var user = new UserEntity();
-        user.setEmail(request.email());
+        user.setEmail(email);
         user.setUsername(generateUsername(request.firstName(), request.lastName()));
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.setPassword(encodedPassword);
         user.setRole(Role.fromString(request.role()));
         user.setDateOfBirth(request.dateOfBirth());
