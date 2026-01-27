@@ -2,7 +2,6 @@ package org.example.model.dto.request.create;
 
 import java.time.LocalDate;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record UserCreateRequest(
         @NotBlank String firstName,
@@ -15,7 +14,7 @@ public record UserCreateRequest(
         String academicTitle,
         String officeLocation,
         String phoneNumber,
-        @NotNull Long studyProgramId,
+        Long studyProgramId,
         Integer enrollmentYear,
         LocalDate dateOfBirth
 ) {}

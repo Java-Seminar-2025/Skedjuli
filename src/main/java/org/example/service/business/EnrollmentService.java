@@ -1,6 +1,6 @@
 package org.example.service.business;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.example.model.dto.response.CourseResponse;

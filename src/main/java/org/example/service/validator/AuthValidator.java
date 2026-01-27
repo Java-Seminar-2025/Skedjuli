@@ -55,12 +55,9 @@ public class AuthValidator {
         if (userDomainService.existsByEmail(email))
             throw new IllegalArgumentException("Email already exists");
 
-        if (userDomainService.existsByUsername(email))
-            throw new IllegalArgumentException("Username already exists");
-
         if (role == Role.STUDENT) {
             var sp = request.studyProgramId();
-            if (sp <= 0L)
+            if (sp == null || sp <= 0L)
                 throw new IllegalArgumentException("Study program id must be set for student");
 
             if (!studyProgramDomainService.existsById(sp))

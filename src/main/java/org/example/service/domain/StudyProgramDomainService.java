@@ -1,7 +1,7 @@
 package org.example.service.domain;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.example.model.dto.request.create.StudyProgramCreateRequest;
 import org.example.model.dto.request.patch.StudyProgramPatchRequest;

@@ -1,7 +1,7 @@
 package org.example.service.domain;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.CourseCreateRequest;
 import org.example.model.dto.request.patch.CoursePatchRequest;

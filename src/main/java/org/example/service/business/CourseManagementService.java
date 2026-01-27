@@ -1,6 +1,6 @@
 package org.example.service.business;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.CourseCreateRequest;
 import org.example.model.dto.request.create.CourseRequirementCreateRequest;
