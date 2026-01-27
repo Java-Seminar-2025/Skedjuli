@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import lombok.AllArgsConstructor;
+import org.example.model.dto.AuthLoginResponse;
 import org.example.model.dto.AuthRequest;
 import org.example.model.dto.request.create.UserCreateRequest;
 import org.example.service.business.AuthService;
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthLoginResponse> login(@Valid @RequestBody AuthRequest authRequest) {
         return ResponseEntity.ok(authService.login(authRequest));
     }
 }

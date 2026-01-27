@@ -2,6 +2,7 @@ package org.example.service.business;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.example.model.dto.AuthLoginResponse;
 import org.example.model.dto.AuthRequest;
 import org.example.model.dto.AuthResponse;
 import org.example.model.dto.request.create.UserCreateRequest;
@@ -65,18 +66,19 @@ public class AuthService {
     /**
      * Login: validate parameters, verify password via AuthValidator, then return token.
      */
-    public AuthResponse login(AuthRequest req) {
+    public AuthLoginResponse login(AuthRequest req) {
 
         var email = req.email().trim().toLowerCase();
         // basic param validation (throws EnrollmentValidationException if invalid)
-        authValidator.validateLogin(req.email(), req.password());
+        authValidator.validateLogin(email, req.password());
 
         // fetch user DTO from domain
-        var userDto = userDomainService.getUserDtoByEmail(req.email());
+        var userDto = userDomainService.getUserDtoByEmail(email);
 
         // check password (throws EnrollmentValidationException on failure)
         authValidator.validatePassword(userDto, req.password());
 
-        return new AuthResponse(userDto.email());
+        var user = userDomainService.getUserResponseByEmail(email);
+        return new AuthLoginResponse(user);
     }
 }
