@@ -1,6 +1,7 @@
 package org.example.service.domain;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.example.model.dto.UserDto;
@@ -33,8 +34,8 @@ public class UserDomainService {
     @Transactional
     public UserResponse createUser(UserCreateRequest request) {
         var email = request.email().trim().toLowerCase();
-        var firstName = request.firstName().trim().toLowerCase();
-        var lastName = request.lastName().trim().toLowerCase();
+        var firstName = request.firstName().trim();
+        var lastName = request.lastName().trim();
         if (existsByEmail(email)) {
             throw new IllegalArgumentException("Email already exists: " + email);
         }
@@ -43,15 +44,14 @@ public class UserDomainService {
 
         var user = new UserEntity();
         user.setEmail(email);
-        user.setUsername(generateUsername(request.firstName(), request.lastName()));
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setPassword(encodedPassword);
         user.setRole(Role.fromString(request.role()));
         user.setDateOfBirth(request.dateOfBirth());
 
-        var saved = repository.save(user);
-        return mapper.toUserResponse(saved);
+        assignUniqueUsernameWithRetry(user, request.firstName().trim(),  request.lastName().trim());
+        return mapper.toUserResponse(user);
     }
 
     public UserDto getUserDtoByEmail(String email) {
@@ -66,24 +66,25 @@ public class UserDomainService {
     public UserResponse patchUser(String email, UserPatchRequest request) {
         var user = getUserOrThrow(email);
 
-        if (request.firstName() != null) user.setFirstName(request.firstName());
-        if (request.lastName() != null) user.setLastName(request.lastName());
-        if (request.firstName() != null || request.lastName() != null) {
-            user.setUsername(generateUsername(
-                    request.firstName() != null ? request.firstName() : user.getFirstName(),
-                    request.lastName() != null ? request.lastName() : user.getLastName()
-            ));
-        }
+        if (request.firstName() != null) user.setFirstName(request.firstName().trim());
+        if (request.lastName() != null) user.setLastName(request.lastName().trim());
         if (request.email() != null) {
-            if (!user.getEmail().equals(request.email()) && existsByEmail(request.email())) {
-                throw new IllegalArgumentException("Email already exists: " + request.email());
+            var newEmail = request.email().trim().toLowerCase();
+            if (!user.getEmail().equals(newEmail) && existsByEmail(newEmail)) {
+                throw new IllegalArgumentException("Email already exists: " + newEmail);
             }
-            user.setEmail(request.email());
+            user.setEmail(newEmail);
         }
         if (request.password() != null) {
             user.setPassword(passwordEncoder.encode(request.password()));
         }
         if (request.dateOfBirth() != null) user.setDateOfBirth(request.dateOfBirth());
+        if (request.firstName() != null || request.lastName() != null) {
+            assignUniqueUsernameWithRetry(user, user.getFirstName(), user.getLastName());
+        }
+        else {
+            repository.saveAndFlush(user);
+        }
 
         return mapper.toUserResponse(user);
     }
@@ -120,7 +121,21 @@ public class UserDomainService {
     }
 
     private UserEntity getUserOrThrow(String email) {
-        return repository.findByEmail(email)
+        var normalized = email == null ? "" : email.trim().toLowerCase();
+        return repository.findByEmail(normalized)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+    }
+
+    private void assignUniqueUsernameWithRetry(UserEntity user, String firstName, String lastName) {
+        var maxAttempts = 20;
+        for (int i = 0; i < maxAttempts; i++) {
+            user.setUsername(generateUsername(firstName, lastName));
+            try {
+                repository.saveAndFlush(user);
+                return;
+            } catch (DataIntegrityViolationException ignored) {
+            }
+        }
+        throw new IllegalStateException("Could not generate unique username");
     }
 }
