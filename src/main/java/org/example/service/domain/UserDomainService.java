@@ -50,7 +50,7 @@ public class UserDomainService {
         user.setRole(Role.fromString(request.role()));
         user.setDateOfBirth(request.dateOfBirth());
 
-        assignUniqueUsernameWithRetry(user, request.firstName().trim(),  request.lastName().trim());
+        assignUniqueUsernameWithRetry(user, firstName,  lastName);
         return mapper.toUserResponse(user);
     }
 
@@ -123,7 +123,7 @@ public class UserDomainService {
     private UserEntity getUserOrThrow(String email) {
         var normalized = email == null ? "" : email.trim().toLowerCase();
         return repository.findByEmail(normalized)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + normalized));
     }
 
     private void assignUniqueUsernameWithRetry(UserEntity user, String firstName, String lastName) {
