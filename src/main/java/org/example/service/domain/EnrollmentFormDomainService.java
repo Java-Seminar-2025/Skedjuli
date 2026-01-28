@@ -46,7 +46,6 @@ public class EnrollmentFormDomainService {
 
         f.setSemester(semester);
         f.setStatusEnum(EnrollmentFormStatus.PENDING);
-        f.setCreatedAt(LocalDateTime.now());
 
         var saved = enrollmentFormRepository.save(f);
         return saved.getId();
@@ -102,7 +101,6 @@ public class EnrollmentFormDomainService {
         item.setCourse(courseRef);
 
         item.setStatusEnum(EnrollmentFormItemStatus.PENDING);
-        item.setCreatedAt(LocalDateTime.now());
 
         form.getItems().add(item);
         enrollmentFormRepository.save(form);
