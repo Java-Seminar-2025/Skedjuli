@@ -1,47 +1,49 @@
-export type UserRole = "STUDENT" | "PROFESSOR" | "ADMIN";
-
-export type RegisterRequestDto = {
-  // required
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: UserRole;
-  password: string;
-  confirmPassword: string;
-  studyProgramId: number;
-
-  // optional
-  department?: string;
-  academicTitle?: string;
-  officeLocation?: string;
-  phoneNumber?: string;
-  enrollmentYear?: number;
-  currentYear?: number;
-
-  /**
-   * LocalDate frmat: "YYYY-MM-DD"
-   * npr. "2004-05-10"
-   */
-  dateOfBirth?: string;
-};
-
-export type RegisterResponseDto = {
-  token: string; // JWT
-  email: string;
-};
-
-export type StudyProgram = {
-  id: number;
-  name: string;
-};
-
-//Login
+export type UserRole = "STUDENT" | "PROFESSOR";
 
 export type LoginRequestDto = {
   email: string;
   password: string;
 };
+
 export type LoginResponseDto = {
-  token: string;
+  user: LoginUserDetailsDto;
+};
+
+export type LoginUserDetailsDto = {
+  id: number;
   email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+};
+export type RegisterRequestDto = {
+  email: string;
+  password: string;
+
+  firstName?: string;
+  lastName?: string;
+  confirmPassword?: string;
+
+  role?: UserRole;
+  studyProgramId?: number;
+
+  department?: string;
+  academicTitle?: string;
+  officeLocation?: string;
+  phoneNumber?: string;
+
+  dateOfBirth?: string;
+  enrollmentYear?: number;
+  currentYear?: number;
+};
+
+export type RegisterResponseDto = {
+  message?: string;
+  token?: string;
+};
+
+export type StudyProgram = {
+  id: number;
+  name: string;
 };

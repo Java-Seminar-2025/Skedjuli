@@ -1,30 +1,34 @@
 type InputFieldProps = {
-  name: string;
+  name?: string;
   label: string;
-  placeholder?: string;
-  value?: string;
+  value: string;
   type?: string;
+  placeholder?: string;
   onValueChange?: (value: string) => void;
+  onChange?: (value: string) => void;
 };
 
 export default function InputField({
   name,
   label,
-  placeholder,
   value,
   type = "text",
+  placeholder,
   onValueChange,
+  onChange,
 }: InputFieldProps) {
+  const handler = onValueChange ?? onChange;
+
   return (
-    <div className="w-[58%] mb-2">
-      <label className="text-sm">{label}</label>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <input
-        className="border rounded p-2 w-full"
         name={name}
-        placeholder={placeholder}
-        value={value ?? ""}
         type={type}
-        onChange={(e) => onValueChange?.(e.target.value)}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => handler?.(e.target.value)}
+        className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-gray-200"
       />
     </div>
   );

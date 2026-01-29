@@ -28,6 +28,89 @@ public class CourseTrialService {
     private final StudyProgramRepository studyProgramRepository;
     private final AcademicYearRepository academicYearRepository;
 
+    public CourseDto createCourseByLecturerId(Long lecturerId, CourseCreateRequest request) {
+        LecturerEntity lecturer = lecturerRepository.findById(lecturerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lecturer not found"));
+
+        StudyProgramEntity studyProgram = studyProgramRepository.findById(request.studyProgramId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Study program not found"));
+
+        AcademicYearEntity academicYear = academicYearRepository.findById(request.academicYearId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Academic year not found"));
+
+        if (courseRepository.existsByCode(request.code())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Course code already exists");
+        }
+
+        CourseEntity course = new CourseEntity();
+        course.setCode(request.code());
+        course.setName(request.name());
+        course.setDescription(request.description());
+        course.setEcts(request.ects());
+        course.setMandatory(request.mandatory());
+        course.setEnrollmentLimit(request.enrollmentLimit());
+        course.setSemester(request.semester());
+        course.setLecturer(lecturer);
+        course.setStudyProgram(studyProgram);
+        course.setAcademicYear(academicYear);
+
+        CourseEntity saved = courseRepository.save(course);
+        return toDto(saved);
+    }
+
+    public CourseDto updateCourseByLecturerId(Long lecturerId, Long courseId, CourseCreateRequest request) {
+        LecturerEntity lecturer = lecturerRepository.findById(lecturerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lecturer not found"));
+
+        CourseEntity course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
+
+        if (course.getLecturer() == null || !course.getLecturer().getId().equals(lecturer.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your course");
+        }
+
+        StudyProgramEntity studyProgram = studyProgramRepository.findById(request.studyProgramId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Study program not found"));
+
+        AcademicYearEntity academicYear = academicYearRepository.findById(request.academicYearId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Academic year not found"));
+
+        if (course.getCode() != null && !course.getCode().equals(request.code()) && courseRepository.existsByCode(request.code())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Course code already exists");
+        }
+
+        course.setCode(request.code());
+        course.setName(request.name());
+        course.setDescription(request.description());
+        course.setEcts(request.ects());
+        course.setMandatory(request.mandatory());
+        course.setEnrollmentLimit(request.enrollmentLimit());
+        course.setSemester(request.semester());
+        course.setStudyProgram(studyProgram);
+        course.setAcademicYear(academicYear);
+
+        CourseEntity saved = courseRepository.save(course);
+        return toDto(saved);
+    }
+
+    public void deleteCourseByLecturerId(Long lecturerId, Long courseId) {
+        LecturerEntity lecturer = lecturerRepository.findById(lecturerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lecturer not found"));
+
+        CourseEntity course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
+
+        if (course.getLecturer() == null || !course.getLecturer().getId().equals(lecturer.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your course");
+        }
+
+        courseRepository.delete(course);
+    }
+
+    public List<CourseDto> getCoursesByLecturerId(Long lecturerId) {
+        return courseRepository.findByLecturer_Id(lecturerId).stream().map(this::toDto).toList();
+    }
+
     public List<Long> getMandatoryCourseIds(Long studyProgramId, Integer semester) {
         return courseRepository.findByStudyProgram_IdAndSemesterAndMandatoryTrue(studyProgramId, semester)
                 .stream()

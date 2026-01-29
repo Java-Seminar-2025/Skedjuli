@@ -1,133 +1,83 @@
-import { useEffect, useState } from "react";
-import InputField from "../components/InputField";
-import { LoginRequestDto, LoginResponseDto } from "../data/dto/auth.dto";
-import { LoginApi } from "../data/services/LoginApi";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import InputField from "../components/InputField";
+import type { LoginRequestDto } from "../data/dto/auth.dto";
+import { LoginApi } from "../data/services/LoginApi";
+
+function getErrorMessage(err: unknown) {
+  const e = err as any;
+  return (
+    e?.response?.data?.message ||
+    e?.response?.data?.error ||
+    (typeof e?.response?.data === "string" ? e.response.data : null) ||
+    e?.message ||
+    "Login failed"
+  );
+}
+
 export default function LoginPage() {
-  const Navigation = useNavigate();
-
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const set = <K extends keyof LoginRequestDto>(
-    key: K,
-    value: LoginRequestDto[K]
-  ) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const [rememberMe, setRememberMe] = useState<boolean>(() => {
-    return Boolean(localStorage.getItem("token"));
-  });
-
-  useEffect(() => {
-    const savedEmail =
-      localStorage.getItem("email") ?? sessionStorage.getItem("email");
-    if (savedEmail) {
-      setForm((prev) => ({ ...prev, email: savedEmail }));
-    }
-  }, []);
-
+  const navigate = useNavigate();
   const [form, setForm] = useState<LoginRequestDto>({
     email: "",
     password: "",
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleLogin() {
-    console.log("handleLogin START", form);
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     setError(null);
-
-    if (!form.email.trim() || !form.password.trim()) {
-      setError("Email and password are required to login...");
-      return;
-    }
-
-    if (isSubmitting) return; // !doubleckick
+    setSaving(true);
 
     try {
-      setIsSubmitting(true);
-      console.log("calling LoginApi.login...");
+      const res = await LoginApi.login(form);
+      localStorage.setItem("user", JSON.stringify(res.user));
+      localStorage.setItem("userId", String(res.user.id));
 
-      const data = await LoginApi.login(form);
+      localStorage.removeItem("lecturerId");
+      localStorage.removeItem("studyProgramId");
 
-      console.log("login OK, data:", data);
-
-      localStorage.removeItem("token");
-      localStorage.removeItem("email");
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("email");
-
-      const storage = rememberMe ? localStorage : sessionStorage;
-
-      storage.setItem("token", data.token);
-      storage.setItem("email", data.email);
-
-      Navigation("/Home");
-    } catch (err: any) {
-      console.error("login FAILED:", err);
-
-      const msg =
-        err?.message ??
-        (typeof err === "string" ? err : "Error while logging in");
-
-      setError(msg);
+      navigate("/home");
+    } catch (err) {
+      setError(getErrorMessage(err));
     } finally {
-      setIsSubmitting(false);
+      setSaving(false);
     }
   }
 
   return (
-    <div className="bg-gray-100 flex-1 flex flex-row">
-      <div className="justify-center flex w-full bg-white ml-4 my-4 rounded-l-lg border">
-        <h1 className="self-start p-4 font-semibold">Skedjuli</h1>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+      <div className="w-full max-w-md bg-white border rounded-2xl p-6 shadow-sm">
+        <h1 className="text-2xl font-bold">Login</h1>
 
-        <div className="w-[32%] h-[82%] self-center bg-white rounded-2xl flex flex-col items-center justify-center">
-          <h1 className="text-3xl font-bold">Welcome back</h1>
-          <p className="text-sm font-light mb-4">Get some work done today!</p>
-
-          <div className="w-full flex flex-col items-center justify-center">
-            <InputField
-              name="email"
-              label="Email"
-              placeholder="john.doe@example.com"
-              value={form.email}
-              onValueChange={(v) => set("email", v)}
-            />
-            <InputField
-              name="password"
-              label="Password"
-              placeholder="..."
-              type="password"
-              value={form.password}
-              onValueChange={(v) => set("password", v)}
-            />
-            <div className="w-[58%] flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-gray-700 select-none">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4"
-                />
-                Remember me
-              </label>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                handleLogin();
-              }}
-              disabled={isSubmitting}
-              className="bg-blue-500 border w-[58%] self-center mt-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              <span className="text-white">
-                {isSubmitting ? "Signing in..." : "Sign in"}
-              </span>
-            </button>
+        {error && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {error}
           </div>
-        </div>
+        )}
 
-        <div className="bg-primary justify-end w-[52%] rounded-2xl my-8 ml-8" />
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+          <InputField
+            label="Email"
+            value={form.email}
+            onValueChange={(v) => setForm((p) => ({ ...p, email: v }))}
+            type="text"
+          />
+          <InputField
+            label="Password"
+            value={form.password}
+            onValueChange={(v) => setForm((p) => ({ ...p, password: v }))}
+            type="password"
+          />
+
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full px-4 py-2 rounded-lg border bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-60"
+          >
+            {saving ? "Signing in..." : "Login"}
+          </button>
+        </form>
       </div>
     </div>
   );

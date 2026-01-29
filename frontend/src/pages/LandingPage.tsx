@@ -4,10 +4,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div
-      className="flex-1 flex flex-col
-      bg-gradient-to-br from-blue-400 via-blue-600 to-blue-700"
-    >
+    <div className="min-h-[calc(100vh-5rem)] flex flex-col bg-gradient-to-br from-blue-400 via-blue-600 to-blue-700">
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">

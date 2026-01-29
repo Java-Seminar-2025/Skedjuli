@@ -1,20 +1,36 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
-import { useRegister } from "../features/auth/model/auth.store";
 import { StudyProgramApi } from "../data/services/StudyProgramsApi";
+
+import { registerApi } from "../data/services/RegisterApi";
 import type {
   StudyProgram,
   RegisterRequestDto,
   UserRole,
 } from "../data/dto/auth.dto";
 
+function getErrorMessage(err: unknown) {
+  const e = err as any;
+  return (
+    e?.response?.data?.message ||
+    e?.response?.data?.error ||
+    (typeof e?.response?.data === "string" ? e.response.data : null) ||
+    e?.message ||
+    "Register failed"
+  );
+}
+
 export default function RegisterPage() {
+  const navigate = useNavigate();
+
   const [programs, setPrograms] = useState<StudyProgram[]>([]);
   const [programsLoading, setProgramsLoading] = useState(false);
   const [programsError, setProgramsError] = useState<string | null>(null);
 
   const [step, setStep] = useState<1 | 2>(1);
-  const registerMutation = useRegister();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState<RegisterRequestDto>({
     firstName: "",
@@ -23,13 +39,11 @@ export default function RegisterPage() {
     role: "STUDENT",
     password: "",
     confirmPassword: "",
-
     studyProgramId: 0,
-
-    department: "",
-    academicTitle: "",
-    officeLocation: "",
-    phoneNumber: "",
+    department: undefined,
+    academicTitle: undefined,
+    officeLocation: undefined,
+    phoneNumber: undefined,
     enrollmentYear: undefined,
     currentYear: undefined,
     dateOfBirth: undefined,
@@ -54,10 +68,7 @@ export default function RegisterPage() {
         if (!mounted) return;
 
         setPrograms(list);
-
-        if (list.length > 0) {
-          set("studyProgramId", list[0].id);
-        }
+        if (list.length > 0) set("studyProgramId", list[0].id);
       } catch (e: any) {
         if (!mounted) return;
         setProgramsError(
@@ -74,33 +85,17 @@ export default function RegisterPage() {
   }, []);
 
   const canNext =
-    form.firstName.trim() &&
-    form.lastName.trim() &&
+    (form.firstName ?? "").trim() &&
+    (form.lastName ?? "").trim() &&
     form.email.trim() &&
     form.password.trim() &&
-    form.confirmPassword.trim() &&
+    (form.confirmPassword ?? "").trim() &&
     form.password === form.confirmPassword;
 
   function handleNext() {
     if (!canNext) return;
+    setError(null);
     setStep(2);
-  }
-
-  function handleRegister() {
-    if (!form.studyProgramId || form.studyProgramId <= 0) return;
-
-    const payload: RegisterRequestDto = {
-      ...form,
-      department: form.department?.trim() || undefined,
-      academicTitle: form.academicTitle?.trim() || undefined,
-      officeLocation: form.officeLocation?.trim() || undefined,
-      phoneNumber: form.phoneNumber?.trim() || undefined,
-      dateOfBirth: form.dateOfBirth?.trim() || undefined,
-      enrollmentYear: form.enrollmentYear ?? undefined,
-      currentYear: form.currentYear ?? undefined,
-    };
-
-    registerMutation.mutate(payload);
   }
 
   const setRole = (role: UserRole) => {
@@ -118,6 +113,36 @@ export default function RegisterPage() {
     }
   };
 
+  async function handleRegister() {
+    if (!form.studyProgramId || form.studyProgramId <= 0) return;
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const payload: RegisterRequestDto = {
+        ...form,
+        firstName: form.firstName?.trim() ?? "",
+        lastName: form.lastName?.trim() ?? "",
+        email: form.email.trim(),
+        department: form.department?.trim() || undefined,
+        academicTitle: form.academicTitle?.trim() || undefined,
+        officeLocation: form.officeLocation?.trim() || undefined,
+        phoneNumber: form.phoneNumber?.trim() || undefined,
+        dateOfBirth: form.dateOfBirth?.trim() || undefined,
+        enrollmentYear: form.enrollmentYear ?? undefined,
+        currentYear: form.currentYear ?? undefined,
+      };
+
+      await registerApi(payload);
+      navigate("/login");
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <div className="bg-gray-100 flex-1 flex flex-row">
       <div className="justify-center flex w-full bg-white ml-4 my-4 rounded-l-lg border">
@@ -129,20 +154,24 @@ export default function RegisterPage() {
             Start your academic journey today
           </p>
 
+          {error && (
+            <div className="text-red-600 text-sm mb-3 w-[58%]">{error}</div>
+          )}
+
           {step === 1 && (
             <div className="w-full flex flex-col items-center justify-center">
               <InputField
                 name="firstName"
                 label="Name"
                 placeholder="John"
-                value={form.firstName}
+                value={form.firstName ?? ""}
                 onValueChange={(v) => set("firstName", v)}
               />
               <InputField
                 name="lastName"
                 label="Last Name"
                 placeholder="Doe"
-                value={form.lastName}
+                value={form.lastName ?? ""}
                 onValueChange={(v) => set("lastName", v)}
               />
               <InputField
@@ -165,7 +194,7 @@ export default function RegisterPage() {
                 label="Confirm Password"
                 placeholder="..."
                 type="password"
-                value={form.confirmPassword}
+                value={form.confirmPassword ?? ""}
                 onValueChange={(v) => set("confirmPassword", v)}
               />
 
@@ -190,7 +219,6 @@ export default function RegisterPage() {
 
           {step === 2 && (
             <div className="w-full flex flex-col items-center justify-center">
-              {/* ROLE BUTTONS */}
               <label className="w-[58%] text-sm mb-1">Role</label>
               <div className="w-[58%] flex gap-2 mb-3">
                 <button
@@ -220,7 +248,6 @@ export default function RegisterPage() {
                 </button>
               </div>
 
-              {/* STUDY PROGRAM DROPDOWN (styled like InputField) */}
               <div className="w-[58%] mb-2">
                 <label className="text-sm">Study program</label>
 
@@ -253,7 +280,6 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              {/* ROLE-SPECIFIC FIELDS */}
               {form.role === "STUDENT" && (
                 <>
                   <InputField
@@ -331,20 +357,14 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={handleRegister}
-                  disabled={registerMutation.isPending}
+                  disabled={saving}
                   className="bg-blue-500 border w-1/2 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
                   <span className="text-white">
-                    {registerMutation.isPending ? "Registering..." : "Register"}
+                    {saving ? "Registering..." : "Register"}
                   </span>
                 </button>
               </div>
-
-              {registerMutation.isError && (
-                <div className="text-red-600 text-sm mt-3 w-[58%]">
-                  {(registerMutation.error as Error).message}
-                </div>
-              )}
             </div>
           )}
         </div>

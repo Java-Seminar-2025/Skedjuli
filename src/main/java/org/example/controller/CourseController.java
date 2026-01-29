@@ -12,7 +12,6 @@ import org.example.service.business.LecturerCourseService;
 import org.example.service.business.StudentCourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseController {
     private final StudentCourseService service;
-
     private final CourseTrialService courseTrialService;
-
     private final LecturerCourseService lecturerCourseService;
 
     @GetMapping("/enrolled/{id}")
@@ -40,54 +37,34 @@ public class CourseController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<CourseDto>> mine(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String email = authentication.getName();
-        return ResponseEntity.ok(courseTrialService.getMyCourses(email));
+    public ResponseEntity<List<CourseDto>> mine(@RequestParam Long lecturerId) {
+        return ResponseEntity.ok(courseTrialService.getCoursesByLecturerId(lecturerId));
     }
 
     @PostMapping
-    public ResponseEntity<CourseDto> create(
-            @Valid @RequestBody CourseCreateRequest request,
-            Authentication authentication
-    ) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String email = authentication.getName();
-        CourseDto created = courseTrialService.createCourseAsLecturer(email, request);
+    public ResponseEntity<CourseDto> create(@Valid @RequestBody CourseCreateRequest request) {
+        CourseDto created = courseTrialService.createCourseByLecturerId(request.lecturerId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CourseDto> update(
             @PathVariable Long id,
-            @Valid @RequestBody CourseCreateRequest request,
-            Authentication authentication
+            @Valid @RequestBody CourseCreateRequest request
     ) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String email = authentication.getName();
-        return ResponseEntity.ok(courseTrialService.updateMyCourse(email, id, request));
+        return ResponseEntity.ok(courseTrialService.updateCourseByLecturerId(request.lecturerId(), id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
-            Authentication authentication
+            @RequestParam Long lecturerId
     ) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String email = authentication.getName();
-        courseTrialService.deleteMyCourse(email, id);
+        courseTrialService.deleteCourseByLecturerId(lecturerId, id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping ("/{courseId}/students")
+    @GetMapping("/{courseId}/students")
     public List<StudentResponse> getStudentsForCourse(@PathVariable Long courseId) {
         return lecturerCourseService.getStudentsForCourseLockedAndApproved(courseId);
     }

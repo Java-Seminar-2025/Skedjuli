@@ -1,8 +1,8 @@
 import { httpPost } from "../http/httpClient";
-import { endpoints } from "../http/endpoints";
-import { LoginRequestDto, LoginResponseDto } from "../dto/auth.dto";
+import type { LoginRequestDto, LoginResponseDto } from "../dto/auth.dto";
 
-export const LoginApi = {
-  login: (payload: LoginRequestDto) =>
-    httpPost<LoginResponseDto, LoginRequestDto>(endpoints.auth.login, payload),
-};
+export async function login(payload: LoginRequestDto): Promise<LoginResponseDto> {
+  return httpPost<LoginResponseDto>("/api/auth/login", payload);
+}
+
+export const LoginApi = { login };
