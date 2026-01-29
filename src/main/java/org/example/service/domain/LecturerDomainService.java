@@ -67,6 +67,12 @@ public class LecturerDomainService {
         repository.delete(getEntityOrThrow(id));
     }
 
+    public long getLecturerIdByUserId(Long userId) {
+        return repository.findByUser_Id(userId)
+                .orElseThrow(()->new EntityNotFoundException("Lecturer not found for user id: " + userId))
+                .getId();
+    }
+
     private LecturerEntity getEntityOrThrow(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Lecturer not found with id: " + id));

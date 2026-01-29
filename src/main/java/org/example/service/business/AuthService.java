@@ -69,16 +69,23 @@ public class AuthService {
     public AuthLoginResponse login(AuthRequest req) {
 
         var email = req.email().trim().toLowerCase();
-        // basic param validation (throws EnrollmentValidationException if invalid)
         authValidator.validateLogin(email, req.password());
 
-        // fetch user DTO from domain
         var userDto = userDomainService.getUserDtoByEmail(email);
-
-        // check password (throws EnrollmentValidationException on failure)
         authValidator.validatePassword(userDto, req.password());
 
         var user = userDomainService.getUserResponseByEmail(email);
-        return new AuthLoginResponse(user);
+
+        Long studentId = null;
+        Long lecturerId = null;
+
+        if (user.role() == Role.STUDENT) {
+            studentId = studentDomainService.getStudentIdByUserId(user.id());
+        }
+        else {
+            lecturerId = lecturerDomainService.getLecturerIdByUserId(user.id());
+        }
+
+        return new AuthLoginResponse(user, studentId, lecturerId);
     }
 }
