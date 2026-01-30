@@ -93,6 +93,12 @@ public class StudentDomainService {
         return students.map(mapper::toStudentResponse);
     }
 
+    public Long getStudentIdByUserId(Long userId) {
+        return repository.findByUser_Id(userId)
+                .orElseThrow(()->new EntityNotFoundException("Student not found for user id: " + userId))
+                .getId();
+    }
+
     private StudentEntity getStudentOrThrow(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found: " + id));
