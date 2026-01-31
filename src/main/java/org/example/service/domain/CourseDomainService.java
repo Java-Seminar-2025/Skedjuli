@@ -1,6 +1,8 @@
 package org.example.service.domain;
 
 import jakarta.persistence.EntityManager;
+import org.example.model.dto.response.StudyProgramResponse;
+import org.example.model.mapper.StudyProgramMapper;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.CourseCreateRequest;
@@ -22,6 +24,7 @@ public class CourseDomainService {
     private final CourseRepository repository;
     private final CourseMapper mapper;
     private final EntityManager entityManager;
+    private final StudyProgramMapper studyProgramMapper;
 
     public CourseResponse createCourse(CourseCreateRequest request) {
         var course = new CourseEntity();
@@ -128,5 +131,12 @@ public class CourseDomainService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Course not found with id: " + courseId)
                 );
+    }
+
+    public List<StudyProgramResponse> getStudyProgramsForLecturer(Long lecturerId) {
+        return repository.findDistinctStudyProgramByLecturerId(lecturerId)
+                .stream()
+                .map(studyProgramMapper::toStudyProgramResponse)
+                .toList();
     }
 }

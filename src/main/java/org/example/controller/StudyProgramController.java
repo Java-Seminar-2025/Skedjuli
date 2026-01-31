@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.StudyProgramCreateRequest;
 import org.example.model.dto.request.patch.StudyProgramPatchRequest;
 import org.example.model.dto.response.StudyProgramResponse;
+import org.example.service.business.LecturerStudyProgramService;
 import org.example.service.domain.StudyProgramDomainService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.List;
 public class StudyProgramController {
 
     private final StudyProgramDomainService service;
+    private final LecturerStudyProgramService lecturerStudyProgramService;
 
     @PostMapping
     public ResponseEntity<StudyProgramResponse> createStudyProgram(@Valid @RequestBody StudyProgramCreateRequest request) {
@@ -47,5 +49,10 @@ public class StudyProgramController {
     public ResponseEntity<Void> deleteStudyProgram(@PathVariable Long id) {
         service.deleteStudyProgram(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/by-lecturer")
+    public ResponseEntity<List<StudyProgramResponse>> getByLecturer(@RequestParam Long lecturerId) {
+        return ResponseEntity.ok(lecturerStudyProgramService.getStudyProgramsForLecturer(lecturerId));
     }
 }
