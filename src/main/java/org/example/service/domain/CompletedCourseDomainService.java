@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -78,6 +79,13 @@ public class CompletedCourseDomainService {
     @Transactional
     public void deleteCompletedCourse(Long id) {
         repository.delete(getCompletedCourseOrThrow(id));
+    }
+
+    public List<CompletedCourseResponse> getByStudentId(Long studentId) {
+        return repository.findByStudent_Id(studentId)
+                .stream()
+                .map(mapper::toCompletedCourseDto)
+                .toList();
     }
 
     private CompletedCourseEntity getCompletedCourseOrThrow(Long id) {

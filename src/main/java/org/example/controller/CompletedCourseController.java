@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @Validated
@@ -41,5 +42,10 @@ public class CompletedCourseController {
     public ResponseEntity<Void> deleteCompletedCourse(@PathVariable Long id) {
         service.deleteCompletedCourse(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/student")
+    public ResponseEntity<List<CompletedCourseResponse>> getAllCompletedCoursesByStudent(@RequestParam Long studentId) {
+        return ResponseEntity.ok(service.getByStudentId(studentId));
     }
 }

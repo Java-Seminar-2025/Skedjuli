@@ -19,4 +19,6 @@ public interface CourseRepository extends JpaRepository<CourseEntity, Long> {
 
     @Query("select distinct c.studyProgram from CourseEntity c where c.lecturer.id = :lecturerId and c.academicYear.active = true and c.studyProgram.active = true")
     List<StudyProgramEntity> findDistinctStudyProgramByLecturerId(@Param("lecturerId") Long lecturerId);
+
+    List<CourseEntity> findByStudyProgram_IdAndAcademicYear_ActiveTrueAndActiveTrueOrderBySemesterAsc(Long studyProgramId);
 }

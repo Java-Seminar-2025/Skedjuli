@@ -1,6 +1,7 @@
 package org.example.service.domain;
 
 import jakarta.persistence.EntityManager;
+import org.example.model.dto.response.SemesterCoursesResponse;
 import org.example.model.dto.response.StudyProgramResponse;
 import org.example.model.mapper.StudyProgramMapper;
 import org.example.repository.AcademicYearRepository;
