@@ -118,4 +118,8 @@ public class EnrollmentFormItemDomainService {
                 .map(studentMapper::toStudentResponse)
                 .toList();
     }
+
+    public long getStudentCountForCourseInYearWithFormStatuses(Long courseId, Long academicYearId, List<Integer> statuses) {
+        return enrollmentFormItemRepository.countDistinctStudentsByCourseAndYearAndFormStatuses(courseId, academicYearId, statuses);
+    }
 }

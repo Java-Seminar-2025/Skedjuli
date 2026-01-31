@@ -68,4 +68,9 @@ public class CourseController {
     public List<StudentResponse> getStudentsForCourse(@PathVariable Long courseId) {
         return lecturerCourseService.getStudentsForCourseLockedAndApproved(courseId);
     }
+
+    @GetMapping("/students/count")
+    public long getStudentCountForCourse(@RequestParam Long courseId) {
+        return lecturerCourseService.getStudentCountForCourseLockedAndApproved(courseId);
+    }
 }

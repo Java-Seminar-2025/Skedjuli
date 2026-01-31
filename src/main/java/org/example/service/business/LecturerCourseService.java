@@ -28,4 +28,14 @@ public class LecturerCourseService {
 
         return enrollmentFormItemDomainService.getStudentsForCourseInYearWithFormStatuses(courseId, activeYear.id(), statuses);
     }
+
+    public long getStudentCountForCourseLockedAndApproved(Long courseId) {
+        var activeYear = academicYearDomainService.getActiveAcademicYear();
+
+        var statuses = List.of(
+                EnrollmentFormStatus.LOCKED.getValue(),
+                EnrollmentFormStatus.APPROVED.getValue()
+        );
+        return enrollmentFormItemDomainService.getStudentCountForCourseInYearWithFormStatuses(courseId, activeYear.id(), statuses);
+    }
 }
