@@ -20,6 +20,13 @@ public interface CourseMapper {
     @Mapping(target = "prerequisiteIds", expression = "java(java.util.Set.of())")
     CourseResponse toCourseResponse(CourseEntity entity);
 
+    @Mapping(target = "lecturerId", source = "lecturer", qualifiedByName = "mapLecturerId")
+    @Mapping(target = "studyProgramId", source = "studyProgram", qualifiedByName = "mapStudyProgramId")
+    @Mapping(target = "academicYearId", source = "academicYear", qualifiedByName = "mapAcademicYearId")
+    CourseReadRequestDto toCourseReadRequestDto(CourseEntity course);
+
+    CourseInfo toCourseInfo(CourseEntity course);
+
     @Named("mapStudyProgramId")
     default Long mapStudyProgramId(StudyProgramEntity entity) {
         return entity == null ? null : entity.getId();
@@ -35,6 +42,4 @@ public interface CourseMapper {
         return entity == null ? null : entity.getId();
     }
 
-    CourseReadRequestDto toCourseReadRequestDto(CourseEntity course);
-    CourseInfo toCourseInfo(CourseEntity course);
 }
