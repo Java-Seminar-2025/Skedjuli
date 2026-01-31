@@ -16,6 +16,7 @@ import org.example.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +28,7 @@ public class CourseDomainService {
     private final EntityManager entityManager;
     private final StudyProgramMapper studyProgramMapper;
     private final AcademicYearRepository academicYearRepository;
+    private final CourseRequirementDomainService courseRequirementDomainService;
 
     public CourseResponse createCourse(CourseCreateRequest request) {
         var course = new CourseEntity();
@@ -47,15 +49,8 @@ public class CourseDomainService {
         course.setSemester(request.semester());
         course.setActive(request.active());
 
-        if (request.prerequisiteCourseIds() != null) {
-            var prereqs = request.prerequisiteCourseIds().stream()
-                    .map(id -> entityManager.getReference(CourseEntity.class, id))
-                    .collect(Collectors.toSet());
-            course.setPrerequisites(prereqs);
-        }
-
         var saved = repository.save(course);
-        return mapper.toCourseResponse(saved);
+        return withDirectPrereqIds(mapper.toCourseResponse(saved), saved.getId());
     }
 
     public List<Long> getMandatoryCourseIds(Long studyProgramId, Integer semester) {
@@ -69,7 +64,7 @@ public class CourseDomainService {
         return semesters.stream()
                 .flatMap(sem -> repository.findByStudyProgram_IdAndSemesterAndMandatoryTrue(studyProgramId, sem).stream())
                 .distinct()
-                .map(mapper::toCourseResponse)
+                .map(c -> withDirectPrereqIds(mapper.toCourseResponse(c), c.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -79,12 +74,13 @@ public class CourseDomainService {
         return sems.stream()
                 .flatMap(sem -> repository.findByStudyProgram_IdAndSemesterAndMandatoryFalse(studyProgramId, sem).stream())
                 .distinct()
-                .map(mapper::toCourseResponse)
+                .map(c -> withDirectPrereqIds(mapper.toCourseResponse(c), c.getId()))
                 .collect(Collectors.toList());
     }
 
     public CourseResponse getCourseById(Long courseId) {
-        return mapper.toCourseResponse(getCourseOrThrow(courseId));
+        var entity = getCourseOrThrow(courseId);
+        return withDirectPrereqIds(mapper.toCourseResponse(entity), entity.getId());
     }
 
     @Transactional
@@ -112,7 +108,7 @@ public class CourseDomainService {
             );
         }
 
-        return mapper.toCourseResponse(course);
+        return withDirectPrereqIds(mapper.toCourseResponse(course), course.getId());
     }
 
     public void deleteCourse(Long courseId) {
@@ -135,5 +131,24 @@ public class CourseDomainService {
                 .stream()
                 .map(studyProgramMapper::toStudyProgramResponse)
                 .toList();
+    }
+
+    private CourseResponse withDirectPrereqIds(CourseResponse base, Long courseId) {
+        var prereqIds = Set.copyOf(courseRequirementDomainService.getDirectPrerequisiteIds(courseId));
+        return new CourseResponse(
+                base.id(),
+                base.code(),
+                base.name(),
+                base.description(),
+                base.ects(),
+                base.mandatory(),
+                base.enrollmentLimit(),
+                base.lecturerId(),
+                base.studyProgramId(),
+                base.academicYearId(),
+                base.semester(),
+                base.active(),
+                prereqIds
+        );
     }
 }

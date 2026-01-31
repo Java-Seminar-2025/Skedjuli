@@ -11,16 +11,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-@Mapper(componentModel = "spring", imports = {Collectors.class})
+@Mapper(componentModel = "spring")
 public interface CourseMapper {
 
     @Mapping(target = "lecturerId", source = "lecturer", qualifiedByName = "mapLecturerId")
     @Mapping(target = "studyProgramId", source = "studyProgram", qualifiedByName = "mapStudyProgramId")
     @Mapping(target = "academicYearId", source = "academicYear", qualifiedByName = "mapAcademicYearId")
-    @Mapping(target = "prerequisiteIds", expression = "java(mapPrerequisites(entity))")
+    @Mapping(target = "prerequisiteIds", expression = "java(java.util.Set.of())")
     CourseResponse toCourseResponse(CourseEntity entity);
 
     @Named("mapStudyProgramId")
@@ -38,12 +35,6 @@ public interface CourseMapper {
         return entity == null ? null : entity.getId();
     }
 
-    default Set<Long> mapPrerequisites(CourseEntity entity) {
-        if (entity == null || entity.getPrerequisites() == null) return Set.of();
-        return entity.getPrerequisites().stream()
-                .map(CourseEntity::getId)
-                .collect(Collectors.toSet());
-    }
     CourseReadRequestDto toCourseReadRequestDto(CourseEntity course);
     CourseInfo toCourseInfo(CourseEntity course);
 }

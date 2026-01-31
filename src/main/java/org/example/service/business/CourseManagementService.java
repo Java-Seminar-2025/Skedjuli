@@ -43,7 +43,7 @@ public class CourseManagementService {
                 )
                 .forEach(courseRequirementDomainService::createCourseRequirement);
 
-        return course;
+        return courseDomainService.getCourseById(course.id());
     }
 
 
@@ -55,7 +55,7 @@ public class CourseManagementService {
     @Transactional
     public CourseResponse patchCourseWithRequirements(Long courseId, CoursePatchRequest request) {
 
-        var updatedCourse = courseDomainService.patchCourse(courseId, request);
+        courseDomainService.patchCourse(courseId, request);
 
         Optional.ofNullable(request.prerequisiteCourseIds())
                 .ifPresent(prereqs -> {
@@ -83,7 +83,7 @@ public class CourseManagementService {
                             .forEach(courseRequirementDomainService::createCourseRequirement);
                 });
 
-        return updatedCourse;
+        return courseDomainService.getCourseById(courseId);
     }
 
 
