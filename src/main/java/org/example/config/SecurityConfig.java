@@ -45,9 +45,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/students/**").permitAll()
                         .requestMatchers("/api/studyPrograms/**").permitAll()
                         .requestMatchers("/api/courses/**").permitAll()
+                        .requestMatchers("/api/coursesManagement/**").permitAll()
+                        .requestMatchers("/lecturers/**").permitAll()
 
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/login", "/register", "/dashboard").permitAll()
+                        .requestMatchers("/login", "/register", "/api/dashboard").permitAll()
 
                         .anyRequest().authenticated()
                 );
