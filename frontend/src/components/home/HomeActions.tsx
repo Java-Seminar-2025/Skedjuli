@@ -13,7 +13,11 @@ export default function HomeActions({ navigate }: Props) {
       description: "A fresh start....",
       path: "/newCourse",
     },
-    { title: "Settings", description: "App preferences", path: "/settings" },
+    {
+      title: "Your courses",
+      description: "Click for more!",
+      path: "/courseList",
+    },
     { title: "About", description: "Project info", path: "/about" },
   ] as const;
 

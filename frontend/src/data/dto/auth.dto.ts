@@ -5,8 +5,12 @@ export type LoginRequestDto = {
   password: string;
 };
 
+export type Role = "PROFESSOR" | "STUDENT" | "ADMIN";
+
 export type LoginResponseDto = {
   user: LoginUserDetailsDto;
+  studentId: number | null;
+  lecturerId: number | null;
 };
 
 export type LoginUserDetailsDto = {
@@ -15,8 +19,9 @@ export type LoginUserDetailsDto = {
   username: string;
   firstName: string;
   lastName: string;
-  role: string;
+  role: Role;
 };
+
 export type RegisterRequestDto = {
   email: string;
   password: string;

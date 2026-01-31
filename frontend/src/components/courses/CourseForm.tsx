@@ -1,8 +1,25 @@
-import { useMemo, useState } from "react";
-import type { CreateCourseRequest } from "../../data/dto/course.dto";
+import { useEffect, useMemo, useState } from "react";
+import type { CreateCourseRequestDto } from "../../data/dto/course.dto";
 
-type FixedIds = Pick<CreateCourseRequest, "lecturerId" | "studyProgramId" | "academicYearId">;
-type FormValues = Omit<CreateCourseRequest, "lecturerId" | "studyProgramId" | "academicYearId">;
+type FixedIds = {
+  lecturerId: number;
+  studyProgramId: number;
+};
+
+type FormValues = Omit<
+  CreateCourseRequestDto,
+  "lecturerId" | "studyProgramId" | "active" | "prerequisiteCourseIds"
+> & {
+  description: string;
+};
+
+import {
+  getErrorMessage,
+  toNumberOrNull,
+  toNumber,
+  genCode,
+} from "../../helpers/courseFormHelpers";
+type CreateCourseRequest = CreateCourseRequestDto;
 
 type Props = {
   fixed: FixedIds;
@@ -11,28 +28,12 @@ type Props = {
   onSubmit: (payload: CreateCourseRequest) => Promise<void> | void;
 };
 
-function toNumber(v: string) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : 0;
-}
-
-function getErrorMessage(err: unknown) {
-  const e = err as any;
-  return (
-    e?.response?.data?.message ||
-    e?.response?.data?.error ||
-    (typeof e?.response?.data === "string" ? e.response.data : null) ||
-    e?.message ||
-    "Request failed"
-  );
-}
-
-function genCode() {
-  const n = Math.floor((Date.now() / 1000) % 1000000);
-  return `CS${n}`;
-}
-
-export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Props) {
+export default function CourseForm({
+  fixed,
+  initial,
+  submitLabel,
+  onSubmit,
+}: Props) {
   const init = useMemo<FormValues>(() => {
     return {
       code: initial?.code ?? genCode(),
@@ -46,6 +47,11 @@ export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Pr
   }, [initial]);
 
   const [form, setForm] = useState<FormValues>(init);
+
+  useEffect(() => {
+    setForm(init);
+  }, [init]);
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,8 +63,19 @@ export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Pr
     e.preventDefault();
     setError(null);
     setSaving(true);
+
+    const payload: CreateCourseRequestDto = {
+      ...form,
+      lecturerId: fixed.lecturerId,
+      studyProgramId: fixed.studyProgramId,
+
+      active: true,
+      prerequisiteCourseIds: [],
+      description: form.description.trim() ? form.description.trim() : null,
+    };
+
     try {
-      await onSubmit({ ...form, ...fixed });
+      await onSubmit(payload);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -76,7 +93,9 @@ export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Pr
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Code</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Code
+          </label>
           <div className="flex gap-2">
             <input
               className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-gray-200"
@@ -96,7 +115,9 @@ export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Pr
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Name
+          </label>
           <input
             className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-gray-200"
             value={form.name}
@@ -107,7 +128,9 @@ export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Pr
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Description
+        </label>
         <textarea
           className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-gray-200"
           value={form.description}
@@ -118,7 +141,9 @@ export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Pr
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">ECTS</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            ECTS
+          </label>
           <input
             type="number"
             className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-gray-200"
@@ -130,11 +155,13 @@ export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Pr
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Enrollment limit</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Enrollment limit
+          </label>
           <input
             type="number"
             className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-gray-200"
-            value={form.enrollmentLimit}
+            value={form.enrollmentLimit!}
             onChange={(e) => set("enrollmentLimit", toNumber(e.target.value))}
             min={0}
             required
@@ -142,7 +169,9 @@ export default function CourseForm({ fixed, initial, submitLabel, onSubmit }: Pr
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Semester
+          </label>
           <input
             type="number"
             className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-gray-200"

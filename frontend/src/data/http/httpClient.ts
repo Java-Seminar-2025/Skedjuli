@@ -9,17 +9,6 @@ export const httpClient: AxiosInstance = axios.create({
   timeout: 10000,
 });
 
-httpClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-
-  if (token) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
 httpClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<any>) => {
@@ -52,5 +41,31 @@ export const httpPost = async <TResponse, TBody = unknown>(
   config?: AxiosRequestConfig
 ): Promise<TResponse> => {
   const res = await httpClient.post<TResponse>(url, body, config);
+  return res.data;
+};
+
+export const httpPut = async <TResponse, TBody = unknown>(
+  url: string,
+  body?: TBody,
+  config?: AxiosRequestConfig
+): Promise<TResponse> => {
+  const res = await httpClient.put<TResponse>(url, body, config);
+  return res.data;
+};
+
+export const httpPatch = async <TResponse, TBody = unknown>(
+  url: string,
+  body?: TBody,
+  config?: AxiosRequestConfig
+): Promise<TResponse> => {
+  const res = await httpClient.patch<TResponse>(url, body, config);
+  return res.data;
+};
+
+export const httpDelete = async <TResponse = void>(
+  url: string,
+  config?: AxiosRequestConfig
+): Promise<TResponse> => {
+  const res = await httpClient.delete<TResponse>(url, config);
   return res.data;
 };

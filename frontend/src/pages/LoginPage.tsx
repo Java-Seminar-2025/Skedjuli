@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import type { LoginRequestDto } from "../data/dto/auth.dto";
 import { LoginApi } from "../data/services/LoginApi";
-
+import { setStoredUser } from "../helpers/StoredUserHelper";
 function getErrorMessage(err: unknown) {
   const e = err as any;
   return (
@@ -31,11 +31,7 @@ export default function LoginPage() {
 
     try {
       const res = await LoginApi.login(form);
-      localStorage.setItem("user", JSON.stringify(res.user));
-      localStorage.setItem("userId", String(res.user.id));
-
-      localStorage.removeItem("lecturerId");
-      localStorage.removeItem("studyProgramId");
+      setStoredUser(res);
 
       navigate("/home");
     } catch (err) {

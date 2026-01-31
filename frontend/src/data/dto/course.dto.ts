@@ -1,16 +1,15 @@
 export type CreateCourseRequestDto = {
   code: string;
   name: string;
-  description?: string | null;
+  description: string | null;
   ects: number;
   semester: number;
   mandatory: boolean;
-  enrollmentLimit?: number | null;
-  lecturerId?: number | null;
-  studyProgramId?: number | null;
-  academicYearId?: number | null;
+  enrollmentLimit: number | null;
+  lecturerId: number;
+  studyProgramId: number;
   active: boolean;
-  prerequisiteCourseIds?: number[];
+  prerequisiteCourseIds: number[];
 };
 
 export type CourseDto = {

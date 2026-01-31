@@ -1,70 +1,22 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import InputField from "../../components/InputField";
 import type { CreateCourseRequestDto } from "../../data/dto/course.dto";
 import { createCourse } from "../../data/services/CoursesApi";
-
-function getErrorMessage(err: unknown) {
-  const e = err as any;
-  return (
-    e?.response?.data?.message ||
-    e?.response?.data?.error ||
-    (typeof e?.response?.data === "string" ? e.response.data : null) ||
-    e?.message ||
-    "Create course failed"
-  );
-}
-
-function parseIdsCsv(v: string): number[] | undefined {
-  const t = v.trim();
-  if (!t) return undefined;
-
-  const ids = t
-    .split(",")
-    .map((x) => x.trim())
-    .filter(Boolean)
-    .map((x) => Number(x))
-    .filter((n) => Number.isFinite(n));
-
-  return ids.length ? ids : undefined;
-}
-
-function toNumberRequired(v: string): number | null {
-  const t = v.trim();
-  if (!t) return null;
-  const n = Number(t);
-  return Number.isFinite(n) ? n : null;
-}
-
-function toNumberOrNull(v: string): number | null {
-  const t = v.trim();
-  if (!t) return null;
-  const n = Number(t);
-  return Number.isFinite(n) ? n : null;
-}
+import { getLecturerId } from "../../helpers/StoredUserHelper";
+import { lecturerProgramsList } from "../../data/services/lecturerProgramsApi";
+import type { StudyProgramDto } from "../../helpers/courseFormHelpers";
+import {
+  getErrorMessage,
+  parseIdsCsv,
+  toNumberRequired,
+  toNumberOrNull,
+} from "../../helpers/courseFormHelpers";
 
 export default function CreateNewCourse() {
   const navigate = useNavigate();
-
-  const lecturerIdFromLogin = useMemo(() => {
-    const rawUserId = localStorage.getItem("userId");
-    if (rawUserId) {
-      const n = Number(rawUserId);
-      return Number.isFinite(n) ? n : null;
-    }
-
-    const rawUser = localStorage.getItem("user");
-    if (!rawUser) return null;
-
-    try {
-      const u = JSON.parse(rawUser);
-      const n = Number(u?.id);
-      return Number.isFinite(n) ? n : null;
-    } catch {
-      return null;
-    }
-  }, []);
+  const lecturerIdFromLogin = useMemo(() => getLecturerId(), []);
 
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
@@ -74,16 +26,42 @@ export default function CreateNewCourse() {
   const [semester, setSemester] = useState("1");
   const [enrollmentLimit, setEnrollmentLimit] = useState("");
 
-  const [studyProgramId, setStudyProgramId] = useState("");
-  const [academicYearId, setAcademicYearId] = useState("");
-
   const [mandatory, setMandatory] = useState(true);
   const [active, setActive] = useState(true);
 
   const [prereqCsv, setPrereqCsv] = useState("");
 
+  const [programs, setPrograms] = useState<StudyProgramDto[]>([]);
+  const [studyProgramId, setStudyProgramId] = useState<number | "">("");
+
   const [saving, setSaving] = useState(false);
+  const [loadingPrograms, setLoadingPrograms] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!lecturerIdFromLogin) return;
+
+    (async () => {
+      setLoadingPrograms(true);
+      try {
+        const resp = await lecturerProgramsList({
+          lecturerId: lecturerIdFromLogin,
+        } as any);
+
+        const list: StudyProgramDto[] = Array.isArray(resp)
+          ? resp
+          : (resp as any)?.items ?? [];
+
+        setPrograms(list);
+
+        if (list.length > 0) setStudyProgramId(list[0].id);
+      } catch (err) {
+        setError(getErrorMessage(err));
+      } finally {
+        setLoadingPrograms(false);
+      }
+    })();
+  }, [lecturerIdFromLogin]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -91,8 +69,6 @@ export default function CreateNewCourse() {
 
     const ectsNum = toNumberRequired(ects);
     const semNum = toNumberRequired(semester);
-    const spIdNum = toNumberRequired(studyProgramId);
-    const ayIdNum = toNumberRequired(academicYearId);
 
     if (!code.trim()) return setError("Code is required");
     if (!name.trim()) return setError("Name is required");
@@ -102,8 +78,7 @@ export default function CreateNewCourse() {
       return setError("ECTS must be a positive number");
     if (!semNum || semNum <= 0)
       return setError("Semester must be a positive number");
-    if (!spIdNum) return setError("StudyProgramId is required");
-    if (!ayIdNum) return setError("AcademicYearId is required");
+    if (!studyProgramId) return setError("Study program is required");
 
     const enrollmentLimitNum = toNumberOrNull(enrollmentLimit);
 
@@ -116,10 +91,10 @@ export default function CreateNewCourse() {
       mandatory,
       enrollmentLimit: enrollmentLimitNum,
       lecturerId: lecturerIdFromLogin,
-      studyProgramId: spIdNum,
-      academicYearId: ayIdNum,
       active,
       prerequisiteCourseIds: parseIdsCsv(prereqCsv),
+
+      studyProgramId: Number(studyProgramId),
     };
 
     setSaving(true);
@@ -155,6 +130,37 @@ export default function CreateNewCourse() {
         )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Study program</label>
+            <select
+              value={studyProgramId}
+              onChange={(e) =>
+                setStudyProgramId(e.target.value ? Number(e.target.value) : "")
+              }
+              disabled={loadingPrograms || programs.length === 0}
+              className="w-full rounded-lg border px-3 py-2 bg-white disabled:opacity-60"
+            >
+              {loadingPrograms && <option>Loading...</option>}
+
+              {!loadingPrograms && programs.length === 0 && (
+                <option value="">No programs found</option>
+              )}
+
+              {!loadingPrograms &&
+                programs.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+            </select>
+
+            {!loadingPrograms && programs.length > 0 && (
+              <p className="text-xs text-gray-500">
+                Selected program ID: {studyProgramId}
+              </p>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InputField
               label="Code"
@@ -197,33 +203,6 @@ export default function CreateNewCourse() {
               label="Enrollment limit (optional)"
               value={enrollmentLimit}
               onValueChange={setEnrollmentLimit}
-              type="number"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium">
-                Lecturer ID (from login)
-              </label>
-              <input
-                value={lecturerIdFromLogin ?? ""}
-                disabled
-                className="w-full rounded-lg border px-3 py-2 bg-gray-50"
-              />
-            </div>
-
-            <InputField
-              label="Study program ID"
-              value={studyProgramId}
-              onValueChange={setStudyProgramId}
-              type="number"
-            />
-
-            <InputField
-              label="Academic year ID"
-              value={academicYearId}
-              onValueChange={setAcademicYearId}
               type="number"
             />
           </div>
