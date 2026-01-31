@@ -35,8 +35,7 @@ public class CourseTrialService {
         StudyProgramEntity studyProgram = studyProgramRepository.findById(request.studyProgramId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Study program not found"));
 
-        AcademicYearEntity academicYear = academicYearRepository.findById(request.academicYearId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Academic year not found"));
+        AcademicYearEntity academicYear = getActiveAcademicYear();
 
         if (courseRepository.existsByCode(request.code())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Course code already exists");
@@ -72,8 +71,7 @@ public class CourseTrialService {
         StudyProgramEntity studyProgram = studyProgramRepository.findById(request.studyProgramId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Study program not found"));
 
-        AcademicYearEntity academicYear = academicYearRepository.findById(request.academicYearId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Academic year not found"));
+        AcademicYearEntity academicYear = getActiveAcademicYear();
 
         if (course.getCode() != null && !course.getCode().equals(request.code()) && courseRepository.existsByCode(request.code())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Course code already exists");
@@ -155,8 +153,7 @@ public class CourseTrialService {
         StudyProgramEntity studyProgram = studyProgramRepository.findById(request.studyProgramId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Study program not found"));
 
-        AcademicYearEntity academicYear = academicYearRepository.findById(request.academicYearId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Academic year not found"));
+        AcademicYearEntity academicYear = getActiveAcademicYear();
 
         if (courseRepository.existsByCode(request.code())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Course code already exists");
@@ -208,8 +205,7 @@ public class CourseTrialService {
         StudyProgramEntity studyProgram = studyProgramRepository.findById(request.studyProgramId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Study program not found"));
 
-        AcademicYearEntity academicYear = academicYearRepository.findById(request.academicYearId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Academic year not found"));
+        AcademicYearEntity academicYear = getActiveAcademicYear();
 
         course.setCode(request.code());
         course.setName(request.name());
@@ -260,5 +256,10 @@ public class CourseTrialService {
         dto.setStudyProgramId(c.getStudyProgram() == null ? null : c.getStudyProgram().getId());
         dto.setAcademicYearId(c.getAcademicYear() == null ? null : c.getAcademicYear().getId());
         return dto;
+    }
+
+    private AcademicYearEntity getActiveAcademicYear() {
+        return academicYearRepository.getByActiveTrue()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Academic year not found"));
     }
 }

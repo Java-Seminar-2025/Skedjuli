@@ -16,7 +16,6 @@ public record CourseCreateRequest(
         Integer enrollmentLimit,
         @NotNull Long lecturerId,
         @NotNull Long studyProgramId,
-        @NotNull Long academicYearId,
         Boolean active,
         Set<Long> prerequisiteCourseIds
 ) {}

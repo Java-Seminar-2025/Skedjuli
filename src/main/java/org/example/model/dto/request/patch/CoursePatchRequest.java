@@ -12,7 +12,6 @@ public record CoursePatchRequest(
         Boolean active,
         Integer enrollmentLimit,
         Long studyProgramId,
-        Long academicYearId,
         Long lecturerId,
         Set<Long> prerequisiteCourseIds
 ) {}

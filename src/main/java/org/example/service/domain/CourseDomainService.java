@@ -3,6 +3,7 @@ package org.example.service.domain;
 import jakarta.persistence.EntityManager;
 import org.example.model.dto.response.StudyProgramResponse;
 import org.example.model.mapper.StudyProgramMapper;
+import org.example.repository.AcademicYearRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.CourseCreateRequest;
@@ -25,12 +26,14 @@ public class CourseDomainService {
     private final CourseMapper mapper;
     private final EntityManager entityManager;
     private final StudyProgramMapper studyProgramMapper;
+    private final AcademicYearRepository academicYearRepository;
 
     public CourseResponse createCourse(CourseCreateRequest request) {
         var course = new CourseEntity();
         var lecturer = entityManager.getReference(LecturerEntity.class, request.lecturerId());
         var studyProgram = entityManager.getReference(StudyProgramEntity.class, request.studyProgramId());
-        var academicYear = entityManager.getReference(AcademicYearEntity.class, request.academicYearId());
+        var academicYear = academicYearRepository.getByActiveTrue()
+                        .orElseThrow(()->new IllegalArgumentException("No academic year found"));
 
         course.setCode(request.code());
         course.setName(request.name());
@@ -100,12 +103,6 @@ public class CourseDomainService {
         if (request.studyProgramId() != null) {
             course.setStudyProgram(
                     entityManager.getReference(StudyProgramEntity.class, request.studyProgramId())
-            );
-        }
-
-        if (request.academicYearId() != null) {
-            course.setAcademicYear(
-                    entityManager.getReference(AcademicYearEntity.class, request.academicYearId())
             );
         }
 
