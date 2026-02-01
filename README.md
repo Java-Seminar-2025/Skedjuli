@@ -3,7 +3,7 @@
 ## 👩‍🎓 Student
 
 ### ✅ Implementirano
-- Registracija / Prijava (API + UI)
+- Registracija / Prijava
 - Pregled osobnih podataka
 - Kreiranje upisnog lista (enrollment form)
 - Spremanje i ažuriranje odabira kolegija
@@ -14,7 +14,7 @@
   - tip kolegija (izborni / obavezni)
   - preduvjete za upis
   - limit upisa
-  - predavača _(dostupno preko ID-a)_
+  - predavača
 - PDF export upisnog lista
 - Pregled prethodnih upisnih listova  
 
@@ -44,36 +44,13 @@
 
 ---
 
-## 👩‍💼 Administrator
-
-### ✅ Implementirano
-- Puni pristup sustavu (funkcionalno):
-  - korisnici
-  - studenti
-  - predavači
-  - studijski programi
-  - akademske godine
-  - kolegiji
-- Upravljanje akademskim godinama (uključujući aktivnu godinu)
-- Upravljanje studijskim programima
-
-### 🚧 U razvoju (WIP)
-- Role-based autorizacija 
-
-### 📝 Zadaci
-- Ručno dodavanje studenata na kolegije _(nije implementirano)_
-
----
-
 ## 🧩 Dodatne funkcionalnosti
 
 ### ✅ Implementirano
-- Automatska provjera preduvjeta  
-  _(direktni i tranzitivni preduvjeti, uz provjeru položenih kolegija)_
 - PDF export upisnih listova
-- Zaključavanje upisa (potpuno korištenje `approvedBy`, `approvedAt`, `isLocked`)
+- Zaključavanje upisa
+- Analitika uspješnosti studenata
 
 ### 🚧 U razvoju (WIP)
 
 ### 📝 Zadaci
-- Analitika uspješnosti studenata
