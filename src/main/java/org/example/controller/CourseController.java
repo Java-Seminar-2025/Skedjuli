@@ -8,6 +8,7 @@ import org.example.model.dto.request.create.LecturerCourseAddStudentRequest;
 import org.example.model.dto.request.create.StudentCreateRequest;
 import org.example.model.dto.response.CompletedCourseResponse;
 import org.example.model.dto.response.CourseResponse;
+import org.example.model.dto.response.SimpleStatusResponse;
 import org.example.model.dto.response.StudentResponse;
 import org.example.model.dto.unsorted.CourseDto;
 import org.example.model.dto.unsorted.CourseReadRequestDto;
@@ -89,8 +90,13 @@ public class CourseController {
     }
 
     @PostMapping("/my-course/grade")
-    public ResponseEntity<CompletedCourseResponse> gradeStudent(@Valid @RequestBody CourseGradeCreateRequest request) {
-        return ResponseEntity.ok(lecturerGradingService.upsertGrade(request));
+    public ResponseEntity<SimpleStatusResponse> gradeStudent(@Valid @RequestBody CourseGradeCreateRequest request) {
+        try {
+            lecturerGradingService.upsertGrade(request);
+            return ResponseEntity.ok(new SimpleStatusResponse(1));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new SimpleStatusResponse(0));
+        }
     }
 
     @PostMapping("/my-course/students/add")
