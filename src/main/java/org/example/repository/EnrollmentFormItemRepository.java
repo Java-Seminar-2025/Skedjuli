@@ -37,9 +37,14 @@ public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFo
     FROM EnrollmentFormItemEntity efi
     JOIN efi.enrollmentForm ef
     JOIN ef.student s
+    LEFT JOIN CompletedCourseEntity cc
+        ON cc.student.id = s.id
+        AND cc.course.id = efi.course.id
+        AND cc.grade IS NOT NULL
     WHERE efi.course.id = :courseId
         AND ef.academicYear.id = :academicYearId
         AND ef.status IN :statuses
+        AND cc.id IS NULL
     """)
 
     List<StudentEntity> findDistinctStudentsByCourseAndYearAndFormStatuses (
@@ -53,9 +58,14 @@ public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFo
     FROM EnrollmentFormItemEntity efi
     JOIN efi.enrollmentForm ef
     JOIN ef.student s
+    LEFT JOIN CompletedCourseEntity cc
+        ON cc.student.id = s.id
+        AND cc.course.id = efi.course.id
+        AND cc.grade IS NOT NULL
     WHERE efi.course.id = :courseId
     AND ef.academicYear.id = :academicYearId
     AND ef.status IN :statuses
+    AND cc.id IS NULL   
     """)
     long countDistinctStudentsByCourseAndYearAndFormStatuses(
             @Param("courseId") Long courseId,
