@@ -73,4 +73,14 @@ public class CourseController {
     public long getStudentCountForCourse(@RequestParam Long courseId) {
         return lecturerCourseService.getStudentCountForCourseLockedAndApproved(courseId);
     }
+
+    @GetMapping("/my-course/students")
+    public List<StudentResponse> getMyCourseStudents(@RequestParam Long courseId, @RequestParam Long lecturerId) {
+        return lecturerCourseService.getStudentsForCourseLockedAndApprovedForLecturer(lecturerId, courseId);
+    }
+
+    @GetMapping("/my-course/count")
+    public long getMyCourseCountForCourse(@RequestParam Long courseId, @RequestParam Long lecturerId) {
+        return lecturerCourseService.getStudentCountForCourseLockedAndApprovedForLecturer(lecturerId, courseId);
+    }
 }

@@ -17,6 +17,7 @@ import org.example.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -151,5 +152,9 @@ public class CourseDomainService {
                 base.active(),
                 prereqIds
         );
+    }
+
+    public Optional<CourseEntity> getCourse(Long courseId) {
+        return repository.findById(courseId);
     }
 }
