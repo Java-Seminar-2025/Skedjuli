@@ -1,50 +1,44 @@
-👩‍🎓 Student
-Implemented
-- Register/Login
-WIP
-/
-Tasks
-Kreirati upisni list (enrollment form)
-Pregled prethodnih upisnih listova
-Pregled položenih kolegija i dostupnih kolegija za upis (uključuje):
-informacije o predavaču
-preduvjete za upis
-tip kolegija (izborni / obavezni)
-Pregled osobnih podataka
-👨‍🏫 Lecturer
-Implemented
-/
-WIP
-/
-Tasks
-Dodati nove kolegije
-Urediti:
-preduvjete kolegija
-ECTS bodove
-tip kolegija
-Postaviti:
-limit upisa
-preduvjete za upis
-Pregled liste upisanih studenata (nakon što je upisni list zaključan)
-👩‍💼 Administrator
-Implemented
-/
-WIP
-/
-Tasks
-Puni pristup sustavu (ovlasti za izmjenu svih podataka)
-Ručno dodati studente na kolegije
-Dodati novo:
-studijske programe
-akademske godine
-kolegije
-🧩 Additional Features (TBD)
-Implemented
-/
-WIP
-/
-Tasks
-Notifikacije za rokove upisa
-Automatska provjera preduvjeta
-PDF export upisnih listova
-Analitika uspješnosti studenata
+# 🎓 Sustav za upravljanje studentskim upisima
+
+## 👩‍🎓 Student
+
+### ✅ Implementirano
+- Registracija / Prijava - Duje Spajic
+- Pregled osobnih podataka - Toma Kliskinic
+
+- Pregled upisanih kolegija za tekuću godinu - Toma Kliskinic
+- Pregled položenih kolegija - Toma Kliskinic
+- Pregled dostupnih kolegija za upis - Toma Kliskinic
+- PDF export upisnog lista - Ivan Plavcic
+- Pregled prethodnih upisnih listova   - Luka Jurinovic
+- Enrollment - Luka Jurinovic
+
+### Nedovrseno
+- Kreiranje upisnog lista (enrollment form) - nedovrseno
+- Spremanje i ažuriranje odabira kolegija - nedovrseno
+
+---
+
+## 👨‍🏫 Lecturer (Predavač)
+
+### ✅ Implementirano
+- Dodavanje novih kolegija - Toma Kliskinic
+- Uređivanje kolegija - Duje Spajic
+- Pregled i upravljanje vlastitim kolegijima - Toma Kliskinic
+- Zaključavanje upisnog lista - Toma Kliskinic
+- Pregled liste upisanih studenata po kolegiju - Toma Kliskinic
+
+---
+
+## 🧩 Dodatne funkcionalnosti
+
+### ✅ Implementirano
+- Zaključavanje upisa - Toma Kliskinic
+- Analitika uspješnosti studenata - Toma Kliskinic
+
+### Uloge u projektu
+## Prioriteti : 
+- Toma api/logika
+- Ivan : baza i migracijske skripte
+- Luka : refaktoranje/ciscenje projekta
+- Duje : api/frontend
