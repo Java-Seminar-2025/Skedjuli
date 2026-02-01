@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -200,5 +201,9 @@ public class EnrollmentFormDomainService {
         form.setApprovedAt(LocalDateTime.now());
         form.setIsLocked(true);
         enrollmentFormRepository.save(form);
+    }
+
+    public List<EnrollmentFormEntity> findByStatus(Integer status) {
+        return enrollmentFormRepository.findAllByStatusOrderBySubmittedAtDesc(status);
     }
 }

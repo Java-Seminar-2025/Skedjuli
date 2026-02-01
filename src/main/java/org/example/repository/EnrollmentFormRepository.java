@@ -12,4 +12,6 @@ public interface EnrollmentFormRepository extends JpaRepository<EnrollmentFormEn
     Optional<EnrollmentFormEntity> findTopByStudent_IdAndSemesterOrderByIdDesc(Long studentId, int semester);
 
     List<EnrollmentFormEntity> findAllByStudent_IdAndStatusOrderByCreatedAtDesc(Long studentId, int status);
+
+    List<EnrollmentFormEntity> findAllByStatusOrderBySubmittedAtDesc(Integer status);
 }

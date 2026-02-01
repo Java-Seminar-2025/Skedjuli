@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFormItemEntity, Long> {
@@ -55,4 +56,6 @@ public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFo
     AND ef.status IN :statuses
     """)
     long countDistinctStudentsByCourseAndYearAndFormStatuses(Long courseId, Long academicYearId, List<Integer> statuses);
+
+    List<EnrollmentFormItemEntity> findByEnrollmentForm_IdIn(Collection<Long> enrollmentFormIds);
 }
