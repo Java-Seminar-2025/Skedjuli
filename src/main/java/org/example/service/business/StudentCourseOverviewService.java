@@ -23,6 +23,7 @@ public class StudentCourseOverviewService {
     private final CompletedCourseDomainService completedCourseDomainService;
     private final EnrollmentFormItemDomainService enrollmentFormItemDomainService;
     private final CourseRepository courseRepository;
+    private final EnrollmentFormDomainService enrollmentFormDomainService;
 
     public List<SemesterCoursesResponse> getCoursesBySemesterWithStatus(Long studentId) {
         var studyProgramId = studentDomainService.getStudyProgramIdByStudentId(studentId);
@@ -69,7 +70,18 @@ public class StudentCourseOverviewService {
     }
 
     public List<SemesterCoursesResponse> getAvailableCoursesBySemester(Long studentId) {
-        return filterByStatus(studentId, StudentCourseStatus.AVAILABLE);
+        var availableBySemester = filterByStatus(studentId, StudentCourseStatus.AVAILABLE);
+
+        var activeYear = academicYearDomainService.getActiveAcademicYear();
+        var approvedSemesterInActiveYear = enrollmentFormDomainService
+                .findAllByStudentAndAcademicYearAndStatus(studentId, activeYear.id(), EnrollmentFormStatus.APPROVED.getValue())
+                .stream()
+                .map(f -> f.getSemester())
+                .collect(Collectors.toSet());
+        return availableBySemester
+                .stream()
+                .filter(s -> approvedSemesterInActiveYear.contains(s.semester()))
+                .toList();
     }
 
     private List<SemesterCoursesResponse> filterByStatus(Long studentId, StudentCourseStatus status) {
