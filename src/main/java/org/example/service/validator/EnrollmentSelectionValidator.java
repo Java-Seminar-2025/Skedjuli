@@ -12,10 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Validator for enrollment selections: void methods, streams-only control flow,
- * no recursion and no explicit for/while loops.
- */
 @Component
 @RequiredArgsConstructor
 public class EnrollmentSelectionValidator {

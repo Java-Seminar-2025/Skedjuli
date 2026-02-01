@@ -20,9 +20,6 @@ public class AuthValidator {
     private final StudyProgramDomainService studyProgramDomainService;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Validate registration request. Void API — throws IllegalArgumentException on failure.
-     */
     public void validateRegister(UserCreateRequest req) {
         var request = Optional.ofNullable(req)
                 .orElseThrow(() -> new IllegalArgumentException("Register request is null"));
@@ -65,9 +62,6 @@ public class AuthValidator {
         }
     }
 
-    /**
-     * Validate login request parameters (email + password). Void API.
-     */
     public void validateLogin(String email, String password) {
         var e = Optional.ofNullable(email).orElse("").trim();
         var p = Optional.ofNullable(password).orElse("");
@@ -76,10 +70,6 @@ public class AuthValidator {
             throw new IllegalArgumentException("Email and password are required");
     }
 
-    /**
-     * Validate that the provided raw password matches the stored password hash.
-     * Void API — throws IllegalArgumentException on failure.
-     */
     public void validatePassword(UserDto userDto, String rawPassword) {
         var user = Optional.ofNullable(userDto)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
