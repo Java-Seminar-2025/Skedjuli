@@ -3,54 +3,41 @@
 ## 👩‍🎓 Student
 
 ### ✅ Implementirano
-- Registracija / Prijava
-- Pregled osobnih podataka
-- Kreiranje upisnog lista (enrollment form)
-- Spremanje i ažuriranje odabira kolegija
-- Pregled upisanih kolegija za tekuću godinu
-- Pregled položenih kolegija
-- Pregled dostupnih kolegija za upis, uključujući:
-  - ECTS bodove
-  - tip kolegija (izborni / obavezni)
-  - preduvjete za upis
-  - limit upisa
-  - predavača
-- PDF export upisnog lista
-- Pregled prethodnih upisnih listova  
+- Registracija / Prijava - Duje Spajic
+- Pregled osobnih podataka - Toma Kliskinic
 
-### 🚧 U razvoju (WIP)
+- Pregled upisanih kolegija za tekuću godinu - Toma Kliskinic
+- Pregled položenih kolegija - Toma Kliskinic
+- Pregled dostupnih kolegija za upis - Toma Kliskinic
+- PDF export upisnog lista - Ivan Plavcic
+- Pregled prethodnih upisnih listova   - Luka Jurinovic
 
-### 📝 Zadaci
+### Nedovrseno
+- Kreiranje upisnog lista (enrollment form) - nedovrseno
+- Spremanje i ažuriranje odabira kolegija - nedovrseno
 
 ---
 
 ## 👨‍🏫 Lecturer (Predavač)
 
 ### ✅ Implementirano
-- Dodavanje novih kolegija
-- Uređivanje kolegija:
-  - preduvjeti
-  - ECTS bodovi
-  - tip kolegija (izborni / obavezni)
-  - limit upisa
-- Pregled i upravljanje vlastitim kolegijima
-- Upravljanje preduvjetima kolegija
-- Zaključavanje upisnog lista
-- Pregled liste upisanih studenata po kolegiju  
-
-### 🚧 U razvoju (WIP)
-
-### 📝 Zadaci
+- Dodavanje novih kolegija - Toma Kliskinic
+- Uređivanje kolegija - Duje Spajic
+- Pregled i upravljanje vlastitim kolegijima - Toma Kliskinic
+- Zaključavanje upisnog lista - Toma Kliskinic
+- Pregled liste upisanih studenata po kolegiju - Toma Kliskinic
 
 ---
 
 ## 🧩 Dodatne funkcionalnosti
 
 ### ✅ Implementirano
-- PDF export upisnih listova
-- Zaključavanje upisa
-- Analitika uspješnosti studenata
+- Zaključavanje upisa - Toma Kliskinic
+- Analitika uspješnosti studenata - Toma Kliskinic
 
-### 🚧 U razvoju (WIP)
-
-### 📝 Zadaci
+### Uloge u projektu
+## Prioriteti : 
+- Toma api/logika
+- Ivan : baza i migracijske skripte
+- Luka : refaktoranje/ciscenje projekta
+- Duje spajic : api/frontend
