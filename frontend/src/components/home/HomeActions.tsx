@@ -7,7 +7,6 @@ type Props = {
 
 export default function HomeActions({ navigate }: Props) {
   const actions = [
-    { title: "Profile", description: "View account details", path: "/profile" },
     {
       title: "Create a new Course",
       description: "A fresh start....",
@@ -18,7 +17,11 @@ export default function HomeActions({ navigate }: Props) {
       description: "Click for more!",
       path: "/courseList",
     },
-    { title: "About", description: "Project info", path: "/about" },
+    {
+      title: "Enrollment forms",
+      description: "forms are waiting...",
+      path: "/enrollmentForms",
+    },
   ] as const;
 
   return (

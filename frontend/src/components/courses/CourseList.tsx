@@ -333,11 +333,6 @@ export default function CourseList() {
           </div>
 
           <div className="flex items-center gap-3">
-            <AppButton
-              label="Create"
-              variant="primary"
-              onClick={() => navigate("/courses/create")}
-            />
             <AppButton label="Back" onClick={() => navigate(-1)} />
           </div>
         </div>
@@ -402,12 +397,7 @@ export default function CourseList() {
                       disabled={deletingId === c.id}
                       className="px-3 py-2 text-sm"
                     />
-                    <AppButton
-                      label="Edit"
-                      onClick={() => navigate(`/courses/${c.id}/edit`)}
-                      disabled={deletingId === c.id}
-                      className="px-3 py-2 text-sm"
-                    />
+
                     <AppButton
                       label={deletingId === c.id ? "Deleting..." : "Delete"}
                       onClick={() => onDelete(c.id)}

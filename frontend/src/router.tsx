@@ -9,7 +9,7 @@ import HomePage from "./pages/HomePage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import CreateNewCourse from "./pages/courses/CreateNewCourse";
 import CourseList from "./components/courses/CourseList";
-
+import LecturerEnrollmentForms from "./components/enrollmentForms/LecturerEnrollmentForms";
 export const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -27,6 +27,10 @@ export const router = createBrowserRouter([
       {
         path: "/courseList",
         element: <CourseList />,
+      },
+      {
+        path: "/enrollmentForms",
+        element: <LecturerEnrollmentForms />,
       },
       { path: "/profile", element: <PlaceholderPage title="Profile" /> },
       { path: "/settings", element: <PlaceholderPage title="Settings" /> },
