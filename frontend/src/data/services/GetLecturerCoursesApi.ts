@@ -12,7 +12,7 @@ export async function getMyCourses(
   const res = await httpClient.get<CoursesMineResponseDto>(
     "/api/courses/mine",
     {
-      params: { lecturerId: payload.lecturerId }, // => ?lecturerId=1
+      params: { lecturerId: payload.lecturerId },
     }
   );
   return res.data;
