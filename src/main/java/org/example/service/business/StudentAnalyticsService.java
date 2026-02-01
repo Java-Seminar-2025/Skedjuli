@@ -85,8 +85,12 @@ public class StudentAnalyticsService {
                 .sorted(Comparator.comparing(CourseResponse::name))
                 .toList();
 
-        Double deltaThisYear = (avgThisYear != null && cohortAvgThisYear != null) ? avgThisYear - cohortAvgThisYear : null;
-        Double deltaOverall = (avgOverall != null && cohortAvgOverall != null) ? avgOverall - cohortAvgOverall : null;
+        Double deltaThisYear = normalize(
+                (avgThisYear != null && cohortAvgThisYear != null) ? avgThisYear - cohortAvgThisYear : null
+                );
+        Double deltaOverall = normalize(
+                (avgOverall != null && cohortAvgOverall != null) ? avgOverall - cohortAvgOverall : null
+        );
 
         return new StudentAnalyticsResponse(
                 studentId,

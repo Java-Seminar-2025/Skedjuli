@@ -60,4 +60,12 @@ public interface CompletedCourseRepository extends JpaRepository<CompletedCourse
             @Param("enrollmentYear") Integer enrollmentYear,
             @Param("academicYearId") Long academicYearId
     );
+
+    @Query("""
+        SELECT COALESCE(SUM(cc.course.ects), 0)
+        FROM CompletedCourseEntity cc
+        WHERE cc.student.id = :studentId
+          AND cc.grade IS NOT NULL
+    """)
+    Double totalEctsEarnedForStudent(@Param("studentId") Long studentId);
 }
