@@ -4,15 +4,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.CourseCreateRequest;
 import org.example.model.dto.request.create.CourseGradeCreateRequest;
+import org.example.model.dto.request.create.LecturerCourseAddStudentRequest;
+import org.example.model.dto.request.create.StudentCreateRequest;
 import org.example.model.dto.response.CompletedCourseResponse;
 import org.example.model.dto.response.CourseResponse;
 import org.example.model.dto.response.StudentResponse;
 import org.example.model.dto.unsorted.CourseDto;
 import org.example.model.dto.unsorted.CourseReadRequestDto;
-import org.example.service.business.CourseTrialService;
-import org.example.service.business.LecturerCourseService;
-import org.example.service.business.LecturerGradingService;
-import org.example.service.business.StudentCourseService;
+import org.example.service.business.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +28,7 @@ public class CourseController {
     private final CourseTrialService courseTrialService;
     private final LecturerCourseService lecturerCourseService;
     private final LecturerGradingService lecturerGradingService;
+    private final LecturerManualEnrollmentService lecturerManualEnrollmentService;
 
     @GetMapping("/enrolled/{id}")
     public List<CourseResponse> getStudentEnrolledCourses(@PathVariable Long id) {
@@ -91,5 +91,15 @@ public class CourseController {
     @PostMapping("/my-course/grade")
     public ResponseEntity<CompletedCourseResponse> gradeStudent(@Valid @RequestBody CourseGradeCreateRequest request) {
         return ResponseEntity.ok(lecturerGradingService.upsertGrade(request));
+    }
+
+    @PostMapping("/my-course/students/add")
+    public ResponseEntity<Void> addStudentToMyCourse(@Valid @RequestBody LecturerCourseAddStudentRequest request) {
+        lecturerManualEnrollmentService.addStudentToMyCourse(
+                request.lecturerId(),
+                request.courseId(),
+                request.studentId()
+        );
+        return ResponseEntity.noContent().build();
     }
 }

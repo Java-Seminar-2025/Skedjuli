@@ -229,6 +229,12 @@ public class EnrollmentService {
 
     @Transactional
     public Long createOrUpdateSelectionForStudent(Long studentId, List<Long> selectedCourseIds) {
+        if (selectedCourseIds == null || selectedCourseIds.isEmpty()) {
+            var year = studentDomainService.getCurrentYearById(studentId);
+            var activeYearId = academicYearDomainService.getActiveAcademicYear().id();
+            var semStart = (year - 1) * 2 + 1;
+            return enrollmentFormDomainService.findOrCreateFormId(studentId, activeYearId, semStart);
+        }
         var year = studentDomainService.getCurrentYearById(studentId);
         var activeYearId = academicYearDomainService.getActiveAcademicYear().id();
         var semStart = (year - 1) * 2 + 1;

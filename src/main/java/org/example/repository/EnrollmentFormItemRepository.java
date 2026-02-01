@@ -14,6 +14,8 @@ import java.util.List;
 public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFormItemEntity, Long> {
     List<EnrollmentFormItemEntity> findByEnrollmentForm_Id(Long enrollmentFormId);
 
+    Boolean existsByEnrollmentForm_IdAndCourse_Id(Long enrollmentFormId, Long courseId);
+
     @Query("""
         SELECT DISTINCT c
         FROM EnrollmentFormItemEntity efi

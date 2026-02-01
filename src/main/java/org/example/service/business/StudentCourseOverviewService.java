@@ -29,7 +29,10 @@ public class StudentCourseOverviewService {
         var activeYear = academicYearDomainService.getActiveAcademicYear();
         var allCourses = courseRepository.findByStudyProgram_IdAndAcademicYear_ActiveTrueAndActiveTrueOrderBySemesterAsc(studyProgramId);
         var completedIds = completedCourseDomainService.getCompletedCourseIdSet(studentId);
-        var enrolledIds = enrollmentFormItemDomainService.findEnrolledCoursesForStudent(studentId, EnrollmentFormStatus.APPROVED.getValue(), activeYear.id());
+        var enrolledIds = enrollmentFormItemDomainService.findEnrolledCoursesForStudent(studentId, EnrollmentFormStatus.APPROVED.getValue(), activeYear.id())
+                .stream()
+                .map(CourseResponse::id)
+                .collect(Collectors.toSet());
 
         var withStatus = allCourses.stream()
                 .map(c-> {
