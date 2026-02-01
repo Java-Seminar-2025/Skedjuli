@@ -50,4 +50,37 @@ public class StudentEnrollmentFormService {
             );
         }).toList();
     }
+
+    public List<EnrollmentFormLockedResponse> getPendingForms(Long studentId) {
+        var student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("student not found"));
+
+        var lockedForms = enrollmentFormDomainService
+                .findAllByStudentAndStatus(studentId, EnrollmentFormStatus.PENDING.getValue());
+
+        return lockedForms.stream().map(lockedForm -> {
+            var items = enrollmentFormItemRepository.findByEnrollmentForm_Id(lockedForm.getId())
+                    .stream()
+                    .map(it -> {
+                        var course = it.getCourse();
+                        return new EnrollmentFormItemReviewResponse(
+                                course != null ? course.getCode() : null,
+                                course != null ? course.getName() : null,
+                                course != null ? course.getEcts() : null,
+                                it.getStatus()
+                        );
+                    }).toList();
+            var user = student.getUser();
+            return new EnrollmentFormLockedResponse(
+                    lockedForm.getId(),
+                    user != null ? user.getFirstName() : null,
+                    user != null ? user.getLastName() : null,
+                    user != null ? user.getUsername() : null,
+                    lockedForm.getAcademicYear() != null ? lockedForm.getAcademicYear().getId() : null,
+                    lockedForm.getSemester(),
+                    lockedForm.getSubmittedAt(),
+                    items
+            );
+        }).toList();
+    }
 }

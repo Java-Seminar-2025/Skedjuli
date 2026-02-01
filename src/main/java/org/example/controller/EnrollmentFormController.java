@@ -68,4 +68,9 @@ public class EnrollmentFormController {
         return studentEnrollmentFormService.getLockedForms(studentId);
     }
 
+    @GetMapping("student/pending")
+    public List<EnrollmentFormLockedResponse> getStudentPendingForms(@RequestParam Long studentId) {
+        return studentEnrollmentFormService.getPendingForms(studentId);
+    }
+
 }
