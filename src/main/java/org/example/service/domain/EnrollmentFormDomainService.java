@@ -238,4 +238,9 @@ public class EnrollmentFormDomainService {
 
         enrollmentFormRepository.save(form);
     }
+
+    @Transactional(readOnly = true)
+    public List<EnrollmentFormEntity> findAllByStudentAndStatus(Long studentId, Integer status) {
+        return enrollmentFormRepository.findAllByStudent_IdAndStatusOrderByCreatedAtDesc(studentId, status);
+    }
 }

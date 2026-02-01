@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.model.dto.response.EnrollmentFormLockedResponse;
 import org.example.service.business.EnrollmentPdfService;
 import org.example.service.business.LecturerEnrollmentFormService;
+import org.example.service.business.StudentEnrollmentFormService;
 import org.example.service.domain.EnrollmentFormDomainService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ public class EnrollmentFormController {
     private final EnrollmentFormDomainService enrollmentFormDomainService;
     private final EnrollmentPdfService enrollmentPdfService;
     private final LecturerEnrollmentFormService lecturerEnrollmentFormService;
+    private final StudentEnrollmentFormService studentEnrollmentFormService;
 
     @PostMapping("/{formId}/approve")
     public void approveForm (@PathVariable Long formId, @RequestParam Long approverUserId) {
@@ -59,6 +61,11 @@ public class EnrollmentFormController {
     @GetMapping("lecturer/locked")
     public List<EnrollmentFormLockedResponse> getLockedForms(@RequestParam Long lecturerId) {
         return lecturerEnrollmentFormService.getLockedForms(lecturerId);
+    }
+
+    @GetMapping("student/locked")
+    public List<EnrollmentFormLockedResponse> getStudentLockedForms(@RequestParam Long studentId) {
+        return studentEnrollmentFormService.getLockedForms(studentId);
     }
 
 }
