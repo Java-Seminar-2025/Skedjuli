@@ -10,7 +10,6 @@
 - Pregled položenih kolegija - Toma Kliskinic
 - Pregled dostupnih kolegija za upis - Toma Kliskinic
 - PDF export upisnog lista - Ivan Plavcic
-- Pregled prethodnih upisnih listova   - Luka Jurinovic
 - Enrollment - Luka Jurinovic
 
 ### Nedovrseno
