@@ -3,12 +3,15 @@ package org.example.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.request.create.CourseCreateRequest;
+import org.example.model.dto.request.create.CourseGradeCreateRequest;
+import org.example.model.dto.response.CompletedCourseResponse;
 import org.example.model.dto.response.CourseResponse;
 import org.example.model.dto.response.StudentResponse;
 import org.example.model.dto.unsorted.CourseDto;
 import org.example.model.dto.unsorted.CourseReadRequestDto;
 import org.example.service.business.CourseTrialService;
 import org.example.service.business.LecturerCourseService;
+import org.example.service.business.LecturerGradingService;
 import org.example.service.business.StudentCourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,7 @@ public class CourseController {
     private final StudentCourseService service;
     private final CourseTrialService courseTrialService;
     private final LecturerCourseService lecturerCourseService;
+    private final LecturerGradingService lecturerGradingService;
 
     @GetMapping("/enrolled/{id}")
     public List<CourseResponse> getStudentEnrolledCourses(@PathVariable Long id) {
@@ -82,5 +86,10 @@ public class CourseController {
     @GetMapping("/my-course/count")
     public long getMyCourseCountForCourse(@RequestParam Long courseId, @RequestParam Long lecturerId) {
         return lecturerCourseService.getStudentCountForCourseLockedAndApprovedForLecturer(lecturerId, courseId);
+    }
+
+    @PostMapping("/my-course/grade")
+    public ResponseEntity<CompletedCourseResponse> gradeStudent(@Valid @RequestBody CourseGradeCreateRequest request) {
+        return ResponseEntity.ok(lecturerGradingService.upsertGrade(request));
     }
 }

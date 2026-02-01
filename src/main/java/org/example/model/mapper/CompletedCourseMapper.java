@@ -7,6 +7,13 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CompletedCourseMapper {
-    @Mapping(target = "grade", source = "grade", defaultValue = "0")
+    @Mapping(target = "studentId", source = "student.id")
+    @Mapping(target = "courseId", source = "course.id")
+    @Mapping(target = "academicYearId", source = "academicYear.id")
     CompletedCourseResponse toCompletedCourseDto(CompletedCourseEntity entity);
+
+    @Mapping(target = "studentId", source = "student.id")
+    @Mapping(target = "courseId", source = "course.id")
+    @Mapping(target = "academicYearId", source = "academicYear.id")
+    CompletedCourseResponse toResponse(CompletedCourseEntity entity);
 }

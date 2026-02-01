@@ -55,7 +55,26 @@ public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFo
     AND ef.academicYear.id = :academicYearId
     AND ef.status IN :statuses
     """)
-    long countDistinctStudentsByCourseAndYearAndFormStatuses(Long courseId, Long academicYearId, List<Integer> statuses);
+    long countDistinctStudentsByCourseAndYearAndFormStatuses(
+            @Param("courseId") Long courseId,
+            @Param("academicYearId") Long academicYearId,
+            @Param("statuses") List<Integer> statuses);
 
     List<EnrollmentFormItemEntity> findByEnrollmentForm_IdIn(Collection<Long> enrollmentFormIds);
+
+    @Query("""
+    SELECT CASE WHEN COUNT(efi) > 0 THEN true ELSE false END
+    FROM EnrollmentFormItemEntity efi
+      JOIN efi.enrollmentForm ef
+    WHERE ef.student.id = :studentId
+      AND efi.course.id = :courseId
+      AND ef.academicYear.id = :academicYearId
+      AND ef.status IN :statuses
+    """)
+    boolean existsEnrollmentForStudentCourseYearStatuses(
+            @Param("studentId") Long studentId,
+            @Param("courseId") Long courseId,
+            @Param("academicYearId") Long academicYearId,
+            @Param("statuses") List<Integer> statuses
+    );
 }

@@ -6,8 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CompletedCourseRepository extends JpaRepository<CompletedCourseEntity, Long> {
+    Optional<CompletedCourseEntity> findByStudent_IdAndCourse_Id(Long studentId, Long courseId);
+
     boolean existsByStudent_IdAndCourse_Id(Long studentId, Long courseId);
 
     List<CompletedCourseEntity> findByStudent_Id(Long studentId);
