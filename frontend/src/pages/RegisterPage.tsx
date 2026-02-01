@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import InputField from "../components/InputField";
 import { StudyProgramApi } from "../data/services/StudyProgramsApi";
-
 import { registerApi } from "../data/services/RegisterApi";
 import type {
-  StudyProgram,
   RegisterRequestDto,
+  StudyProgram,
   UserRole,
 } from "../data/dto/auth.dto";
 
@@ -84,13 +84,18 @@ export default function RegisterPage() {
     };
   }, []);
 
+  const passwordsMismatch =
+    !!form.password &&
+    !!form.confirmPassword &&
+    form.password !== form.confirmPassword;
+
   const canNext =
     (form.firstName ?? "").trim() &&
     (form.lastName ?? "").trim() &&
     form.email.trim() &&
     form.password.trim() &&
     (form.confirmPassword ?? "").trim() &&
-    form.password === form.confirmPassword;
+    !passwordsMismatch;
 
   function handleNext() {
     if (!canNext) return;
@@ -114,7 +119,10 @@ export default function RegisterPage() {
   };
 
   async function handleRegister() {
-    if (!form.studyProgramId || form.studyProgramId <= 0) return;
+    if (!form.studyProgramId || form.studyProgramId <= 0) {
+      setError("Study program is required");
+      return;
+    }
 
     setSaving(true);
     setError(null);
@@ -144,22 +152,47 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="bg-gray-100 flex-1 flex flex-row">
-      <div className="justify-center flex w-full bg-white ml-4 my-4 rounded-l-lg border">
-        <h1 className="self-start p-4 font-semibold">Skedjuli</h1>
+    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+      <div className="w-full max-w-4xl bg-white border rounded-2xl p-6 shadow-sm">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="text-sm text-gray-500">Skedjuli</div>
+            <h1 className="font-bold text-xl mt-1">Create an account</h1>
+            <p className="text-sm text-gray-500 mt-1">Step {step} of 2</p>
+          </div>
 
-        <div className="w-[32%] h-[82%] self-center bg-white rounded-2xl flex flex-col items-center justify-center">
-          <h1 className="text-3xl font-bold">Create an Account</h1>
-          <p className="text-sm font-light mb-4">
-            Start your academic journey today
-          </p>
+          <div className="flex items-center gap-3">
+            {step === 2 && (
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-50"
+                disabled={saving}
+              >
+                Back
+              </button>
+            )}
 
-          {error && (
-            <div className="text-red-600 text-sm mb-3 w-[58%]">{error}</div>
-          )}
+            <button
+              type="button"
+              onClick={() => navigate("/login")}
+              className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-50"
+              disabled={saving}
+            >
+              Login
+            </button>
+          </div>
+        </div>
 
-          {step === 1 && (
-            <div className="w-full flex flex-col items-center justify-center">
+        {error && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {error}
+          </div>
+        )}
+
+        {step === 1 && (
+          <div className="mt-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 name="firstName"
                 label="Name"
@@ -174,13 +207,17 @@ export default function RegisterPage() {
                 value={form.lastName ?? ""}
                 onValueChange={(v) => set("lastName", v)}
               />
-              <InputField
-                name="email"
-                label="Email"
-                placeholder="john.doe@example.com"
-                value={form.email}
-                onValueChange={(v) => set("email", v)}
-              />
+            </div>
+
+            <InputField
+              name="email"
+              label="Email"
+              placeholder="john.doe@example.com"
+              value={form.email}
+              onValueChange={(v) => set("email", v)}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 name="password"
                 label="Password"
@@ -197,39 +234,50 @@ export default function RegisterPage() {
                 value={form.confirmPassword ?? ""}
                 onValueChange={(v) => set("confirmPassword", v)}
               />
+            </div>
 
-              {form.password &&
-                form.confirmPassword &&
-                form.password !== form.confirmPassword && (
-                  <div className="text-red-600 text-sm w-[58%]">
-                    Password i confirmPassword moraju biti isti.
-                  </div>
-                )}
+            {passwordsMismatch && (
+              <div className="text-sm text-red-700">
+                Password i confirmPassword moraju biti isti.
+              </div>
+            )}
+
+            <div className="pt-2 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+                className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-50"
+              >
+                Cancel
+              </button>
 
               <button
                 type="button"
                 onClick={handleNext}
                 disabled={!canNext}
-                className="bg-blue-500 border w-[58%] self-center mt-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="px-4 py-2 rounded-lg border bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-60"
               >
-                <span className="text-white">Next</span>
+                Next
               </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {step === 2 && (
-            <div className="w-full flex flex-col items-center justify-center">
-              <label className="w-[58%] text-sm mb-1">Role</label>
-              <div className="w-[58%] flex gap-2 mb-3">
+        {step === 2 && (
+          <div className="mt-6 space-y-4">
+            <div className="rounded-2xl border bg-gray-50 p-4">
+              <div className="text-sm font-medium mb-2">Role</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setRole("STUDENT")}
                   className={[
-                    "w-1/2 py-2 rounded-lg border",
+                    "px-4 py-2 rounded-lg border text-sm",
                     form.role === "STUDENT"
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-white text-gray-700 hover:bg-gray-50",
+                      ? "bg-gray-900 text-white border-gray-900"
+                      : "bg-white hover:bg-gray-50",
                   ].join(" ")}
+                  disabled={saving}
                 >
                   STUDENT
                 </button>
@@ -238,53 +286,61 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setRole("PROFESSOR")}
                   className={[
-                    "w-1/2 py-2 rounded-lg border",
+                    "px-4 py-2 rounded-lg border text-sm",
                     form.role === "PROFESSOR"
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-white text-gray-700 hover:bg-gray-50",
+                      ? "bg-gray-900 text-white border-gray-900"
+                      : "bg-white hover:bg-gray-50",
                   ].join(" ")}
+                  disabled={saving}
                 >
                   PROFESSOR
                 </button>
               </div>
+            </div>
 
-              <div className="w-[58%] mb-2">
-                <label className="text-sm">Study program</label>
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Study program</label>
 
-                {programsLoading && (
-                  <p className="text-sm mt-1">Učitavanje programa...</p>
-                )}
-                {programsError && (
-                  <p className="text-sm mt-1 text-red-600">{programsError}</p>
-                )}
+              {programsLoading && (
+                <div className="text-sm text-gray-600">
+                  Učitavanje programa...
+                </div>
+              )}
+              {programsError && (
+                <div className="text-sm text-red-700">{programsError}</div>
+              )}
 
-                {!programsLoading && !programsError && (
-                  <select
-                    className="border rounded p-2 w-full bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    value={form.studyProgramId || ""}
-                    onChange={(e) =>
-                      set("studyProgramId", Number(e.target.value))
-                    }
-                    disabled={programs.length === 0}
-                  >
-                    {programs.length === 0 ? (
-                      <option value="">Nema dostupnih programa</option>
-                    ) : (
-                      programs.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                )}
-              </div>
+              {!programsLoading && !programsError && (
+                <select
+                  className="w-full rounded-lg border px-3 py-2 bg-white disabled:opacity-60"
+                  value={form.studyProgramId || ""}
+                  onChange={(e) =>
+                    set("studyProgramId", Number(e.target.value))
+                  }
+                  disabled={saving || programs.length === 0}
+                >
+                  {programs.length === 0 ? (
+                    <option value="">Nema dostupnih programa</option>
+                  ) : (
+                    programs.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+              )}
+            </div>
 
-              {form.role === "STUDENT" && (
-                <>
+            {form.role === "STUDENT" && (
+              <div className="rounded-2xl border bg-gray-50 p-4 space-y-4">
+                <div className="text-sm font-medium">
+                  Student details (optional)
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InputField
                     name="enrollmentYear"
-                    label="Enrollment Year (optional)"
+                    label="Enrollment Year"
                     placeholder="2023"
                     value={
                       form.enrollmentYear ? String(form.enrollmentYear) : ""
@@ -295,81 +351,87 @@ export default function RegisterPage() {
                   />
                   <InputField
                     name="currentYear"
-                    label="Current Year (optional)"
+                    label="Current Year"
                     placeholder="2"
                     value={form.currentYear ? String(form.currentYear) : ""}
                     onValueChange={(v) =>
                       set("currentYear", v ? Number(v) : undefined)
                     }
                   />
-                  <InputField
-                    name="dateOfBirth"
-                    label="Date of Birth (optional)"
-                    placeholder="2004-05-10"
-                    value={form.dateOfBirth ?? ""}
-                    onValueChange={(v) => set("dateOfBirth", v || undefined)}
-                  />
-                </>
-              )}
+                </div>
 
-              {form.role === "PROFESSOR" && (
-                <>
+                <InputField
+                  name="dateOfBirth"
+                  label="Date of Birth"
+                  placeholder="2004-05-10"
+                  value={form.dateOfBirth ?? ""}
+                  onValueChange={(v) => set("dateOfBirth", v || undefined)}
+                />
+              </div>
+            )}
+
+            {form.role === "PROFESSOR" && (
+              <div className="rounded-2xl border bg-gray-50 p-4 space-y-4">
+                <div className="text-sm font-medium">
+                  Professor details (optional)
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InputField
                     name="department"
-                    label="Department (optional)"
+                    label="Department"
                     placeholder="Computer Science"
                     value={form.department ?? ""}
                     onValueChange={(v) => set("department", v || undefined)}
                   />
                   <InputField
                     name="academicTitle"
-                    label="Academic Title (optional)"
+                    label="Academic Title"
                     placeholder="Assistant"
                     value={form.academicTitle ?? ""}
                     onValueChange={(v) => set("academicTitle", v || undefined)}
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InputField
                     name="officeLocation"
-                    label="Office Location (optional)"
+                    label="Office Location"
                     placeholder="Room 203"
                     value={form.officeLocation ?? ""}
                     onValueChange={(v) => set("officeLocation", v || undefined)}
                   />
                   <InputField
                     name="phoneNumber"
-                    label="Phone Number (optional)"
+                    label="Phone Number"
                     placeholder="+123456789"
                     value={form.phoneNumber ?? ""}
                     onValueChange={(v) => set("phoneNumber", v || undefined)}
                   />
-                </>
-              )}
-
-              <div className="w-[58%] flex gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="border w-1/2 py-2 rounded-lg"
-                >
-                  Back
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleRegister}
-                  disabled={saving}
-                  className="bg-blue-500 border w-1/2 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  <span className="text-white">
-                    {saving ? "Registering..." : "Register"}
-                  </span>
-                </button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
 
-        <div className="bg-primary justify-end w-[52%] rounded-2xl my-8 ml-8" />
+            <div className="pt-2 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-50"
+                disabled={saving}
+              >
+                Back
+              </button>
+
+              <button
+                type="button"
+                onClick={handleRegister}
+                disabled={saving}
+                className="px-4 py-2 rounded-lg border bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-60"
+              >
+                {saving ? "Registering..." : "Register"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
