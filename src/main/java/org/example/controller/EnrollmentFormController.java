@@ -50,9 +50,10 @@ public class EnrollmentFormController {
                 .body(pdf);
     }
 
-    @PostMapping("/{formId}/lock")
-    public void lockForm(@PathVariable Long formId){
-        enrollmentFormDomainService.lockForm(formId);
+    @PostMapping("/lock/student")
+    public ResponseEntity<Void> lockForm (@RequestParam Long formId, @RequestParam Long studentId) {
+        enrollmentFormDomainService.lockFormForStudent(formId, studentId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("lecturer/locked")

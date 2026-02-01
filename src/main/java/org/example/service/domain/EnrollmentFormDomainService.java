@@ -206,4 +206,36 @@ public class EnrollmentFormDomainService {
     public List<EnrollmentFormEntity> findByStatus(Integer status) {
         return enrollmentFormRepository.findAllByStatusOrderBySubmittedAtDesc(status);
     }
+
+    @Transactional
+    public void lockFormForStudent(Long formId, Long studentId) {
+        var form = enrollmentFormRepository.findById(formId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + formId));
+
+        if (form.getStudent() == null || form.getStudent().getId() == null) {
+            throw new IllegalStateException("Not correct student");
+        }
+
+        if (!form.getStudent().getId().equals(studentId)) {
+            throw new IllegalStateException("Not correct student");
+        }
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form already approved");
+        }
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.REJECTED) {
+            throw new IllegalStateException("Enrollment form already rejected");
+        }
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.LOCKED || Boolean.TRUE.equals(form.getIsLocked())) {
+            throw new IllegalStateException("Enrollment form already locked");
+        }
+
+        form.setStatusEnum(EnrollmentFormStatus.LOCKED);
+        form.setIsLocked(true);
+        form.setSubmittedAt(LocalDateTime.now());
+
+        enrollmentFormRepository.save(form);
+    }
 }
