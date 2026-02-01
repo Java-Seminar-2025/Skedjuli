@@ -2,6 +2,7 @@ package org.example.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.service.business.EnrollmentPdfService;
+import org.example.service.business.LecturerEnrollmentFormService;
 import org.example.service.domain.EnrollmentFormDomainService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,10 +15,23 @@ import org.springframework.web.bind.annotation.*;
 public class EnrollmentFormController {
     private final EnrollmentFormDomainService enrollmentFormDomainService;
     private final EnrollmentPdfService enrollmentPdfService;
+    private final LecturerEnrollmentFormService lecturerEnrollmentFormService;
 
     @PostMapping("/{formId}/approve")
     public void approveForm (@PathVariable Long formId, @RequestParam Long approverUserId) {
         enrollmentFormDomainService.approveForm(formId, approverUserId);
+    }
+
+    @PostMapping("/lecturer/approve")
+    public ResponseEntity<Void> approveFormAsLecturer (@RequestParam Long formId, @RequestParam Long approverUserId) {
+        lecturerEnrollmentFormService.approveFormAsLecturer(approverUserId, formId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/lecturer/reject")
+    public ResponseEntity<Void> rejectFormAsLecturer (@RequestParam Long formId, @RequestParam Long approverUserId) {
+        lecturerEnrollmentFormService.rejectFormAsLecturer(approverUserId, formId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{formId}/pdf")

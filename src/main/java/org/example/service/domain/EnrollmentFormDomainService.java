@@ -176,4 +176,29 @@ public class EnrollmentFormDomainService {
     public Collection<EnrollmentFormEntity> getApprovedFormsHistory(Long studentId) {
         return enrollmentFormRepository.findAllByStudent_IdAndStatusOrderByCreatedAtDesc(studentId, EnrollmentFormStatus.APPROVED.getValue());
     }
+
+    @Transactional
+    public void rejectForm(Long enrollmentFormId, Long approverUserId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        var approver = userRepository.findById(approverUserId)
+                .orElseThrow(() -> new RuntimeException("Approver not found: id=" + approverUserId));
+
+        if (form.getStatusEnum() != EnrollmentFormStatus.LOCKED && !Boolean.TRUE.equals(form.getIsLocked())) {
+            throw new IllegalStateException("Cannot reject unlocked form");
+        }
+        if (form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form already approved");
+        }
+        if (form.getStatusEnum() == EnrollmentFormStatus.REJECTED) {
+            throw new IllegalStateException("Enrollment form already rejected");
+        }
+
+        form.setApprovedBy(approver);
+        form.setStatusEnum(EnrollmentFormStatus.REJECTED);
+        form.setApprovedAt(LocalDateTime.now());
+        form.setIsLocked(true);
+        enrollmentFormRepository.save(form);
+    }
 }
