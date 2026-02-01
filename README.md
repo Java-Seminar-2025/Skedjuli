@@ -41,4 +41,4 @@
 - Toma api/logika
 - Ivan : baza i migracijske skripte
 - Luka : refaktoranje/ciscenje projekta
-- Duje spajic : api/frontend
+- Duje : api/frontend
