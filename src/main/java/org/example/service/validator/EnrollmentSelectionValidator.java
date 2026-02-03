@@ -1,7 +1,7 @@
 package org.example.service.validator;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.CourseInfo;
+import org.example.model.dto.response.CourseResponse;
 import org.example.service.domain.CompletedCourseDomainService;
 import org.example.service.domain.CourseDomainService;
 import org.example.service.domain.CourseRequirementDomainService;
@@ -12,10 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Validator for enrollment selections: void methods, streams-only control flow,
- * no recursion and no explicit for/while loops.
- */
 @Component
 @RequiredArgsConstructor
 public class EnrollmentSelectionValidator {
@@ -39,10 +35,10 @@ public class EnrollmentSelectionValidator {
                 .filter(Objects::nonNull)
                 .distinct()
                 .map(id -> {
-                    try { return courseDomainService.getCourseInfoById(id); }
+                    try { return courseDomainService.getCourseById(id); }
                     catch (RuntimeException ex) { throw new IllegalArgumentException("Selected course not found: " + id); }
                 })
-                .collect(Collectors.toMap(CourseInfo::id, c -> c, (a,b)->a, LinkedHashMap::new));
+                .collect(Collectors.toMap(CourseResponse::id, c -> c, (a,b)->a, LinkedHashMap::new));
 
         var selectedIds = new LinkedHashSet<>(selectedResolved.keySet());
         var completed = completedCourseDomainService.getCompletedCourseIdSet(studentId);
@@ -53,7 +49,7 @@ public class EnrollmentSelectionValidator {
 
         var higherYearOffenders = selectedResolved.values().stream()
                 .filter(c -> { int courseYear = (c.semester() + 1) / 2; return !allowHigherYearSelection && courseYear > year; })
-                .map(CourseInfo::id)
+                .map(CourseResponse::id)
                 .toList();
         if (!higherYearOffenders.isEmpty())
             throw new IllegalArgumentException("Higher-year selection not allowed for courses: " + higherYearOffenders);

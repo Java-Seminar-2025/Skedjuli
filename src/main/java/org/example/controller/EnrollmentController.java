@@ -2,10 +2,11 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.example.model.dto.CourseInfo;
+import org.example.model.dto.response.CourseResponse;
 import org.example.model.dto.EnrollmentResult;
-import org.example.model.dto.EnrollmentSelectionRequest;
+import org.example.model.dto.request.selection.EnrollmentSelectionRequest;
 import org.example.model.dto.EnrollmentSelectionResponse;
+import org.example.model.dto.response.EnrollmentFormHistoryResponse;
 import org.example.service.business.EnrollmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +24,7 @@ public class EnrollmentController {
     private final EnrollmentService enrollmentService;
 
     @GetMapping("/student/{studentId}/courses")
-    public ResponseEntity<List<CourseInfo>> getEnrolledCourses(@PathVariable Long studentId) {
+    public ResponseEntity<List<CourseResponse>> getEnrolledCourses(@PathVariable Long studentId) {
         var courses = enrollmentService.getEnrolledCoursesForYear(studentId);
         return ResponseEntity.ok(courses);
     }
@@ -63,5 +64,10 @@ public class EnrollmentController {
         enrollmentService.enrollYear(studentId, selectedIds, allowHigher);
 
         return ResponseEntity.ok(new EnrollmentResult("OK", "Enrollment successful"));
+    }
+
+    @GetMapping("/student/{studentId}/history")
+    public ResponseEntity<List<EnrollmentFormHistoryResponse>> getApprovedHistory(@PathVariable Long studentId) {
+        return ResponseEntity.ok(enrollmentService.getApprovedEnrollmentHistory(studentId));
     }
 }

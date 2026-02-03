@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.NonNull;
 import org.example.model.converter.RoleConverter;
 import org.example.model.enums.Role;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,8 +55,10 @@ public class UserEntity {
     private LocalDate dateOfBirth;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

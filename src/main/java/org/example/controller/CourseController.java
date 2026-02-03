@@ -1,0 +1,111 @@
+package org.example.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.example.model.dto.request.create.CourseCreateRequest;
+import org.example.model.dto.request.create.CourseGradeCreateRequest;
+import org.example.model.dto.request.create.LecturerCourseAddStudentRequest;
+import org.example.model.dto.request.create.StudentCreateRequest;
+import org.example.model.dto.response.CompletedCourseResponse;
+import org.example.model.dto.response.CourseResponse;
+import org.example.model.dto.response.SimpleStatusResponse;
+import org.example.model.dto.response.StudentResponse;
+import org.example.model.dto.unsorted.CourseDto;
+import org.example.model.dto.unsorted.CourseReadRequestDto;
+import org.example.service.business.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/courses")
+@Validated
+@RequiredArgsConstructor
+public class CourseController {
+    private final StudentCourseService service;
+    private final CourseTrialService courseTrialService;
+    private final LecturerCourseService lecturerCourseService;
+    private final LecturerGradingService lecturerGradingService;
+    private final LecturerManualEnrollmentService lecturerManualEnrollmentService;
+
+    @GetMapping("/enrolled/{id}")
+    public List<CourseResponse> getStudentEnrolledCourses(@PathVariable Long id) {
+        return service.getEnrolledCourses(id);
+    }
+
+    @GetMapping("/{id}")
+    public CourseReadRequestDto getCourseReadRequestDto(@PathVariable Long id) {
+        return courseTrialService.getCourseReadRequestDtoById(id);
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<CourseDto>> mine(@RequestParam Long lecturerId) {
+        return ResponseEntity.ok(courseTrialService.getCoursesByLecturerId(lecturerId));
+    }
+
+    @PostMapping
+    public ResponseEntity<CourseDto> create(@Valid @RequestBody CourseCreateRequest request) {
+        CourseDto created = courseTrialService.createCourseByLecturerId(request.lecturerId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CourseDto> update(
+            @PathVariable Long id,
+            @Valid @RequestBody CourseCreateRequest request
+    ) {
+        return ResponseEntity.ok(courseTrialService.updateCourseByLecturerId(request.lecturerId(), id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @RequestParam Long lecturerId
+    ) {
+        courseTrialService.deleteCourseByLecturerId(lecturerId, id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{courseId}/students")
+    public List<StudentResponse> getStudentsForCourse(@PathVariable Long courseId) {
+        return lecturerCourseService.getStudentsForCourseLockedAndApproved(courseId);
+    }
+
+    @GetMapping("/students/count")
+    public long getStudentCountForCourse(@RequestParam Long courseId) {
+        return lecturerCourseService.getStudentCountForCourseLockedAndApproved(courseId);
+    }
+
+    @GetMapping("/my-course/students")
+    public List<StudentResponse> getMyCourseStudents(@RequestParam Long courseId, @RequestParam Long lecturerId) {
+        return lecturerCourseService.getStudentsForCourseLockedAndApprovedForLecturer(lecturerId, courseId);
+    }
+
+    @GetMapping("/my-course/count")
+    public long getMyCourseCountForCourse(@RequestParam Long courseId, @RequestParam Long lecturerId) {
+        return lecturerCourseService.getStudentCountForCourseLockedAndApprovedForLecturer(lecturerId, courseId);
+    }
+
+    @PostMapping("/my-course/grade")
+    public ResponseEntity<SimpleStatusResponse> gradeStudent(@Valid @RequestBody CourseGradeCreateRequest request) {
+        try {
+            lecturerGradingService.upsertGrade(request);
+            return ResponseEntity.ok(new SimpleStatusResponse(1));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new SimpleStatusResponse(0));
+        }
+    }
+
+    @PostMapping("/my-course/students/add")
+    public ResponseEntity<Void> addStudentToMyCourse(@Valid @RequestBody LecturerCourseAddStudentRequest request) {
+        lecturerManualEnrollmentService.addStudentToMyCourse(
+                request.lecturerId(),
+                request.courseId(),
+                request.studentId()
+        );
+        return ResponseEntity.noContent().build();
+    }
+}

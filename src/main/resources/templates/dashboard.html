@@ -90,7 +90,6 @@
     /*<![CDATA[*/
     const newToken = /*[[${token}]]*/ '';
     if (newToken) {
-        localStorage.setItem('jwt', newToken);
         console.log("Stored JWT from backend:", newToken);
     }
     /*]]>*/
@@ -99,8 +98,6 @@
 
 <script>
     function fetchUserData() {
-        const token = localStorage.getItem('jwt');
-        console.log("Using JWT:", token);
 
         if (!token) {
             document.getElementById('error-message').style.display = 'block';
@@ -110,7 +107,6 @@
         fetch('/api/dashboard', {
             method: 'GET',
             headers: {
-                'Authorization': 'Bearer ' + token
             }
         })
         .then(res => {
@@ -131,7 +127,6 @@
     }
 
     function logout() {
-        localStorage.removeItem('jwt');
         window.location.href = '/login';
     }
 

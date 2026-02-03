@@ -1,7 +1,7 @@
 package org.example.service.validator;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.dto.RegisterRequest;
+import org.example.model.dto.request.create.UserCreateRequest;
 import org.example.model.dto.UserDto;
 import org.example.model.enums.Role;
 import org.example.service.domain.StudyProgramDomainService;
@@ -20,10 +20,7 @@ public class AuthValidator {
     private final StudyProgramDomainService studyProgramDomainService;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Validate registration request. Void API — throws IllegalArgumentException on failure.
-     */
-    public void validateRegister(RegisterRequest req) {
+    public void validateRegister(UserCreateRequest req) {
         var request = Optional.ofNullable(req)
                 .orElseThrow(() -> new IllegalArgumentException("Register request is null"));
 
@@ -55,12 +52,9 @@ public class AuthValidator {
         if (userDomainService.existsByEmail(email))
             throw new IllegalArgumentException("Email already exists");
 
-        if (userDomainService.existsByUsername(email))
-            throw new IllegalArgumentException("Username already exists");
-
         if (role == Role.STUDENT) {
             var sp = request.studyProgramId();
-            if (sp <= 0L)
+            if (sp == null || sp <= 0L)
                 throw new IllegalArgumentException("Study program id must be set for student");
 
             if (!studyProgramDomainService.existsById(sp))
@@ -68,9 +62,6 @@ public class AuthValidator {
         }
     }
 
-    /**
-     * Validate login request parameters (email + password). Void API.
-     */
     public void validateLogin(String email, String password) {
         var e = Optional.ofNullable(email).orElse("").trim();
         var p = Optional.ofNullable(password).orElse("");
@@ -79,10 +70,6 @@ public class AuthValidator {
             throw new IllegalArgumentException("Email and password are required");
     }
 
-    /**
-     * Validate that the provided raw password matches the stored password hash.
-     * Void API — throws IllegalArgumentException on failure.
-     */
     public void validatePassword(UserDto userDto, String rawPassword) {
         var user = Optional.ofNullable(userDto)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));

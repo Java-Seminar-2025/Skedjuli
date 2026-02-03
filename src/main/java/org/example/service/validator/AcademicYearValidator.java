@@ -1,54 +1,65 @@
 package org.example.service.validator;
 
-import lombok.RequiredArgsConstructor;
-import org.example.model.dto.AcademicYearCreateRequest;
-import org.example.service.domain.AcademicYearDomainService;
-import org.springframework.stereotype.Component;
+import org.example.model.dto.request.create.AcademicYearCreateRequest;
+import org.example.model.dto.request.patch.AcademicYearPatchRequest;
 
-import java.util.Optional;
+import java.time.LocalDate;
 
-@Component
-@RequiredArgsConstructor
 public class AcademicYearValidator {
 
-    private final AcademicYearDomainService academicYearDomainService;
+    private AcademicYearValidator() {}
 
-    public void validateCreate(AcademicYearCreateRequest request) {
-        Optional.ofNullable(request)
-                .orElseThrow(() -> new IllegalArgumentException("Request must not be null"));
+    public static void validateCreate(AcademicYearCreateRequest request) {
+        require(request != null, "Request must not be null");
+        require(request.startDate() != null, "startDate must not be null");
+        require(request.endDate() != null, "endDate must not be null");
 
-        Optional.ofNullable(request.yearCode())
-                .filter(v -> !v.isBlank())
-                .orElseThrow(() -> new IllegalArgumentException("yearCode must not be blank"));
+        validateDates(
+                request.startDate(),
+                request.endDate(),
+                request.enrollmentStart(),
+                request.enrollmentEnd()
+        );
+    }
 
-        Optional.ofNullable(request.startDate())
-                .orElseThrow(() -> new IllegalArgumentException("startDate must not be null"));
+    public static void validatePatch(AcademicYearPatchRequest request) {
+        require(request != null, "Request must not be null");
 
-        Optional.ofNullable(request.endDate())
-                .orElseThrow(() -> new IllegalArgumentException("endDate must not be null"));
+        validateDates(
+                request.startDate(),
+                request.endDate(),
+                request.enrollmentStart(),
+                request.enrollmentEnd()
+        );
 
-        Optional.of(request.startDate().isBefore(request.endDate()))
-                .filter(Boolean::booleanValue)
-                .orElseThrow(() -> new IllegalArgumentException("startDate must be before endDate"));
+        if ((request.startDate() != null && request.endDate() == null) ||
+                (request.startDate() == null && request.endDate() != null)) {
+            throw new IllegalArgumentException("Both startDate and endDate must be provided together");
+        }
+    }
 
-        Optional.ofNullable(request.enrollmentStart())
-                .ifPresent(es -> Optional.of(es.isAfter(request.startDate()) || es.isEqual(request.startDate()))
-                        .filter(Boolean::booleanValue)
-                        .orElseThrow(() -> new IllegalArgumentException("enrollmentStart must be on/after startDate")));
+    private static void validateDates(
+            LocalDate start,
+            LocalDate end,
+            LocalDate enrollmentStart,
+            LocalDate enrollmentEnd
+    ) {
+        require(start.isBefore(end), "startDate must be before endDate");
 
-        Optional.ofNullable(request.enrollmentEnd())
-                .ifPresent(ee -> Optional.of(ee.isBefore(request.endDate()) || ee.isEqual(request.endDate()))
-                        .filter(Boolean::booleanValue)
-                        .orElseThrow(() -> new IllegalArgumentException("enrollmentEnd must be on/before endDate")));
+        if (enrollmentStart != null)
+            require(!enrollmentStart.isBefore(start),
+                    "enrollmentStart must be on or after startDate");
 
-        Optional.ofNullable(request.enrollmentStart())
-                .flatMap(es -> Optional.ofNullable(request.enrollmentEnd()).map(ee -> es.isBefore(ee) || es.isEqual(ee)))
-                .ifPresent(ok -> Optional.of(ok)
-                        .filter(Boolean::booleanValue)
-                        .orElseThrow(() -> new IllegalArgumentException("enrollmentStart must be before or equal to enrollmentEnd")));
+        if (enrollmentEnd != null)
+            require(!enrollmentEnd.isAfter(end),
+                    "enrollmentEnd must be on or before endDate");
 
-        Optional.of(academicYearDomainService.existsByYearCode(request.yearCode()))
-                .filter(exists -> !exists)
-                .orElseThrow(() -> new IllegalStateException("Academic year with this yearCode already exists"));
+        if (enrollmentStart != null && enrollmentEnd != null)
+            require(!enrollmentStart.isAfter(enrollmentEnd),
+                    "enrollmentStart must be before or equal to enrollmentEnd");
+    }
+
+    private static void require(boolean condition, String message) {
+        if (!condition) throw new IllegalArgumentException(message);
     }
 }

@@ -1,27 +1,45 @@
 package org.example.model.mapper;
 
-import org.example.model.dto.CourseInfo;
+import org.example.model.dto.response.CourseResponse;
+import org.example.model.dto.unsorted.CourseInfo;
+import org.example.model.dto.unsorted.CourseReadRequestDto;
+import org.example.model.entity.AcademicYearEntity;
 import org.example.model.entity.CourseEntity;
+import org.example.model.entity.LecturerEntity;
+import org.example.model.entity.StudyProgramEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+@Mapper(componentModel = "spring")
+public interface CourseMapper {
 
-public final class CourseMapper {
+    @Mapping(target = "lecturerId", source = "lecturer", qualifiedByName = "mapLecturerId")
+    @Mapping(target = "studyProgramId", source = "studyProgram", qualifiedByName = "mapStudyProgramId")
+    @Mapping(target = "academicYearId", source = "academicYear", qualifiedByName = "mapAcademicYearId")
+    @Mapping(target = "prerequisiteIds", expression = "java(java.util.Set.of())")
+    CourseResponse toCourseResponse(CourseEntity entity);
 
-    private CourseMapper() {}
+    @Mapping(target = "lecturerId", source = "lecturer", qualifiedByName = "mapLecturerId")
+    @Mapping(target = "studyProgramId", source = "studyProgram", qualifiedByName = "mapStudyProgramId")
+    @Mapping(target = "academicYearId", source = "academicYear", qualifiedByName = "mapAcademicYearId")
+    CourseReadRequestDto toCourseReadRequestDto(CourseEntity course);
 
-    public static CourseInfo toCourseInfo(CourseEntity course) {
-        if (course == null) return null;
-        return new CourseInfo(course.getId(), course.getName(), course.getEcts(), course.getSemester());
+    CourseInfo toCourseInfo(CourseEntity course);
+
+    @Named("mapStudyProgramId")
+    default Long mapStudyProgramId(StudyProgramEntity entity) {
+        return entity == null ? null : entity.getId();
     }
 
-    public static List<CourseInfo> toCourseInfoList(Collection<CourseEntity> entities) {
-        if (entities == null || entities.isEmpty()) return List.of();
-        return entities.stream()
-                .filter(Objects::nonNull)
-                .map(CourseMapper::toCourseInfo)
-                .collect(Collectors.toList());
+    @Named("mapAcademicYearId")
+    default Long mapAcademicYearId(AcademicYearEntity entity) {
+        return entity == null ? null : entity.getId();
     }
+
+    @Named("mapLecturerId")
+    default Long mapLecturerId(LecturerEntity entity) {
+        return entity == null ? null : entity.getId();
+    }
+
 }

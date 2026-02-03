@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,9 +45,10 @@ public class AcademicYearEntity {
     private LocalDate enrollmentEnd;
 
     @Column(name = "is_active")
-    private Boolean active = true;
+    private Boolean active;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "academicYear")

@@ -9,10 +9,13 @@ import org.example.model.entity.StudentEntity;
 import org.example.model.enums.EnrollmentFormItemStatus;
 import org.example.model.enums.EnrollmentFormStatus;
 import org.example.repository.EnrollmentFormRepository;
+import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,6 +27,8 @@ import java.util.Optional;
 public class EnrollmentFormDomainService {
 
     private final EnrollmentFormRepository enrollmentFormRepository;
+
+    private final UserRepository userRepository;
 
     /**
      * Create a minimal enrollment form (student/academic-year references by id) and return its id.
@@ -42,7 +47,6 @@ public class EnrollmentFormDomainService {
 
         f.setSemester(semester);
         f.setStatusEnum(EnrollmentFormStatus.PENDING);
-        f.setCreatedAt(LocalDateTime.now());
 
         var saved = enrollmentFormRepository.save(f);
         return saved.getId();
@@ -86,6 +90,10 @@ public class EnrollmentFormDomainService {
         var form = enrollmentFormRepository.findById(enrollmentFormId)
                 .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
 
+        if (Boolean.TRUE.equals(form.getIsLocked()) || form.getStatusEnum() == EnrollmentFormStatus.LOCKED || form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form has been locked and cannot be modified");
+        }
+
         var item = new EnrollmentFormItemEntity();
         item.setEnrollmentForm(form);
 
@@ -94,7 +102,6 @@ public class EnrollmentFormDomainService {
         item.setCourse(courseRef);
 
         item.setStatusEnum(EnrollmentFormItemStatus.PENDING);
-        item.setCreatedAt(LocalDateTime.now());
 
         form.getItems().add(item);
         enrollmentFormRepository.save(form);
@@ -113,5 +120,132 @@ public class EnrollmentFormDomainService {
     public Optional<Long> findCurrentFormIdForStudent(Long studentId, Long academicYearId, int semStart) {
         return findFormIdByStudentAndAcademicYearAndSemester(studentId, academicYearId, semStart)
                 .or(() -> findFormIdByStudentAndAcademicYearAndSemester(studentId, academicYearId, semStart + 1));
+    }
+
+    @Transactional
+    public void approveForm(Long enrollmentFormId, Long approverUserId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        var approver = userRepository.findById(approverUserId)
+                .orElseThrow(() -> new RuntimeException("Approver not found: id=" + approverUserId));
+
+        if (form.getStatusEnum() != EnrollmentFormStatus.LOCKED && !Boolean.TRUE.equals(form.getIsLocked())) {
+            throw new IllegalStateException("Cannot approve unlocked form");
+        }
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form already approved");
+        }
+
+        form.setApprovedBy(approver);
+        form.setStatusEnum(EnrollmentFormStatus.APPROVED);
+        form.setApprovedAt(LocalDateTime.now());
+        form.setIsLocked(true);
+
+        enrollmentFormRepository.save(form);
+    }
+
+    @Transactional
+    public void lockForm(Long enrollmentFormId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form already approved");
+        }
+        if (form.getStatusEnum() == EnrollmentFormStatus.LOCKED || Boolean.TRUE.equals(form.getIsLocked())) {
+            throw new IllegalStateException("Enrollment form already locked");
+        }
+
+        form.setStatusEnum(EnrollmentFormStatus.LOCKED);
+        form.setIsLocked(true);
+        form.setSubmittedAt(LocalDateTime.now());
+
+        enrollmentFormRepository.save(form);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isLocked (Long enrollmentFormId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        return Boolean.TRUE.equals(form.getIsLocked()) || form.getStatusEnum() == EnrollmentFormStatus.LOCKED || form.getStatusEnum() == EnrollmentFormStatus.APPROVED;
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<EnrollmentFormEntity> getApprovedFormsHistory(Long studentId) {
+        return enrollmentFormRepository.findAllByStudent_IdAndStatusOrderByCreatedAtDesc(studentId, EnrollmentFormStatus.APPROVED.getValue());
+    }
+
+    @Transactional
+    public void rejectForm(Long enrollmentFormId, Long approverUserId) {
+        var form = enrollmentFormRepository.findById(enrollmentFormId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + enrollmentFormId));
+
+        var approver = userRepository.findById(approverUserId)
+                .orElseThrow(() -> new RuntimeException("Approver not found: id=" + approverUserId));
+
+        if (form.getStatusEnum() != EnrollmentFormStatus.LOCKED && !Boolean.TRUE.equals(form.getIsLocked())) {
+            throw new IllegalStateException("Cannot reject unlocked form");
+        }
+        if (form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form already approved");
+        }
+        if (form.getStatusEnum() == EnrollmentFormStatus.REJECTED) {
+            throw new IllegalStateException("Enrollment form already rejected");
+        }
+
+        form.setApprovedBy(approver);
+        form.setStatusEnum(EnrollmentFormStatus.REJECTED);
+        form.setApprovedAt(LocalDateTime.now());
+        form.setIsLocked(true);
+        enrollmentFormRepository.save(form);
+    }
+
+    public List<EnrollmentFormEntity> findByStatus(Integer status) {
+        return enrollmentFormRepository.findAllByStatusOrderBySubmittedAtDesc(status);
+    }
+
+    @Transactional
+    public void lockFormForStudent(Long formId, Long studentId) {
+        var form = enrollmentFormRepository.findById(formId)
+                .orElseThrow(() -> new RuntimeException("Enrollment form not found: id=" + formId));
+
+        if (form.getStudent() == null || form.getStudent().getId() == null) {
+            throw new IllegalStateException("Not correct student");
+        }
+
+        if (!form.getStudent().getId().equals(studentId)) {
+            throw new IllegalStateException("Not correct student");
+        }
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.APPROVED) {
+            throw new IllegalStateException("Enrollment form already approved");
+        }
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.REJECTED) {
+            throw new IllegalStateException("Enrollment form already rejected");
+        }
+
+        if (form.getStatusEnum() == EnrollmentFormStatus.LOCKED || Boolean.TRUE.equals(form.getIsLocked())) {
+            throw new IllegalStateException("Enrollment form already locked");
+        }
+
+        form.setStatusEnum(EnrollmentFormStatus.LOCKED);
+        form.setIsLocked(true);
+        form.setSubmittedAt(LocalDateTime.now());
+
+        enrollmentFormRepository.save(form);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EnrollmentFormEntity> findAllByStudentAndStatus(Long studentId, Integer status) {
+        return enrollmentFormRepository.findAllByStudent_IdAndStatusOrderByCreatedAtDesc(studentId, status);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EnrollmentFormEntity> findAllByStudentAndAcademicYearAndStatus(Long studentId, Long academicYearId, Integer status) {
+        return enrollmentFormRepository.findAllByStudent_IdAndAcademicYear_IdAndStatusOrderByCreatedAtDesc(studentId, academicYearId, status);
     }
 }

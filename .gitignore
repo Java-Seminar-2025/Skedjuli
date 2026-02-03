@@ -75,3 +75,5 @@
     </build>
 </project>target/
 target/
+
+src/main/resources/application-local.properties

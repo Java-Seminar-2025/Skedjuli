@@ -1,39 +1,25 @@
 package org.example.model.mapper;
 
-import org.example.model.dto.CourseRequirementDto;
+import org.example.model.dto.response.CourseRequirementResponse;
+import org.example.model.entity.AcademicYearEntity;
 import org.example.model.entity.CourseEntity;
 import org.example.model.entity.CourseRequirementEntity;
+import org.example.model.entity.StudyProgramEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-public final class CourseRequirementMapper {
+@Mapper(componentModel = "spring", imports = {Collectors.class})
+public interface CourseRequirementMapper {
 
-    private CourseRequirementMapper() { }
+    @Mapping(target = "courseId", source = "course", qualifiedByName = "mapCourseId")
+    @Mapping(target = "requiredCourseId", source = "requiredCourse", qualifiedByName = "mapCourseId")
+    CourseRequirementResponse toCourseRequirementResponse(CourseRequirementEntity entity);
 
-    public static CourseRequirementDto toDto(CourseRequirementEntity e) {
-        if (e == null) return null;
-
-        Long courseId = Optional.of(e.getCourse())
-                .map(CourseEntity::getId)
-                .orElse(null);
-
-        Long reqId = Optional.of(e.getRequiredCourse())
-                .map(CourseEntity::getId)
-                .orElse(null);
-
-        return new CourseRequirementDto(e.getId(), courseId, reqId, e.getCreatedAt());
-    }
-
-    public static List<CourseRequirementDto> toDtoList(Collection<CourseRequirementEntity> entities) {
-        return Optional.ofNullable(entities)
-                .map(list -> list.stream()
-                        .filter(Objects::nonNull)
-                        .map(CourseRequirementMapper::toDto)
-                        .collect(Collectors.toList()))
-                .orElse(List.of());
+    @Named("mapCourseId")
+    default Long mapCourseId(CourseEntity entity) {
+        return entity == null ? null : entity.getId();
     }
 }

@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background / surfaces */
+    --background: 252 253 253; /* #FCFDFD */
+    --foreground: 23 23 23; /* #171717 */
+
+    --card: 254 254 254; /* #FEFEFE */
+    --card-foreground: 23 23 23; /* #171717 */
+
+    --popover: 254 254 254; /* #FEFEFE */
+    --popover-foreground: 23 23 23; /* #171717 */
+
+    --muted: 238 241 245; /* #EEF1F5 */
+    --muted-foreground: 87 87 87; /* #575757 */
+
+    --secondary: 227 229 232; /* #E3E5E8 */
+    --secondary-foreground: 23 23 23; /* #171717 */
+
+    /* Brand */
+    --primary: 62 62 242; /* #9E9HF9*/
+    --primary-foreground: 254 254 254; /* #FEFEFE */
+    --primary-hover: 56 56 235; /* #3838EB */
+
+    /* Borders / inputs / ring */
+    --border: 222 224 228; /* #DEE0E4 */
+    --input: 213 215 219; /* #D5D7DB */
+    --ring: 62 62 242; /* #3E3EF2 */
+
+    /* Status */
+    --destructive: 170 37 27; /* #AA251B */
+    --destructive-foreground: 254 254 254; /* #FEFEFE */
+
+    --success: 69 161 101; /* #45A165 */
+    --warning: 253 222 162; /* #FDDEA2 */
+    --accent: 91 92 243; /* #5B5CF3 */
+
+    --chart-1: 91 92 243; /* #5B5CF3 */
+    --chart-2: 69 161 101; /* #45A165 */
+    --chart-3: 253 222 162; /* #FDDEA2 */
+    --chart-4: 255 131 148; /* #FF8394 */
+    --chart-5: 249 105 208; /* #F969D0 */
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

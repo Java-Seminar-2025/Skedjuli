@@ -7,10 +7,10 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "courses")
@@ -68,19 +68,10 @@ public class CourseEntity {
     private Boolean active = true;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @ManyToMany
-    @JoinTable(
-            name = "course_req",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "req_course_id")
-    )
-    private Set<CourseEntity> prerequisites = new HashSet<>();
-
-    @ManyToMany(mappedBy = "prerequisites")
-    private Set<CourseEntity> dependentCourses = new HashSet<>();
 }

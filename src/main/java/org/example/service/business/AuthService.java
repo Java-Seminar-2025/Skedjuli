@@ -2,19 +2,25 @@ package org.example.service.business;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.example.model.dto.AuthLoginResponse;
 import org.example.model.dto.AuthRequest;
 import org.example.model.dto.AuthResponse;
-import org.example.model.dto.RegisterRequest;
+import org.example.model.dto.request.create.UserCreateRequest;
+import org.example.model.dto.request.create.LecturerCreateRequest;
+import org.example.model.dto.request.create.StudentCreateRequest;
+import org.example.model.enums.EnrollmentFormStatus;
 import org.example.model.enums.Role;
 import org.example.service.domain.LecturerDomainService;
 import org.example.service.domain.StudentDomainService;
 import org.example.service.domain.StudyProgramDomainService;
 import org.example.service.domain.UserDomainService;
-import org.example.service.infrastructure.JwtService;
 import org.example.service.validator.AuthValidator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @Getter
@@ -25,47 +31,61 @@ public class AuthService {
     private final StudentDomainService studentDomainService;
     private final LecturerDomainService lecturerDomainService;
     private final StudyProgramDomainService studyProgramDomainService;
-    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthValidator authValidator;
+    private final EnrollmentService enrollmentService;
 
     @Transactional
-    public AuthResponse register(RegisterRequest req) {
+    public AuthResponse register(UserCreateRequest request) {
         // validate input; will throw EnrollmentValidationException on failure
-        authValidator.validateRegister(req);
+        authValidator.validateRegister(request);
 
-        var role = Role.fromString(req.role());
-        var encodedPassword = passwordEncoder.encode(req.password());
+        var role = Role.fromString(request.role());
+        var email = request.email().trim().toLowerCase();
 
         // create user via domain service (domain service returns userId)
-        var userId = userDomainService.createUser(req, encodedPassword, role);
+        var user = userDomainService.createUser(request);
 
         // create domain-specific entity for student/lecturer using domain services
         if (role == Role.STUDENT) {
+            var enrollmentYear = Optional.ofNullable(request.enrollmentYear())
+                    .orElse(LocalDate.now().getYear());
+
             // studyProgramId may be int/long depending on your DTO — cast if needed
-            studentDomainService.createStudent(userId, req.studyProgramId(), req.enrollmentYear(), req.currentYear());
+            var studentCreateRequest = new StudentCreateRequest(user.id(), request.studyProgramId(), enrollmentYear, 1);
+            var createdStudent = studentDomainService.createStudent(studentCreateRequest);
+            enrollmentService.enrollYear(createdStudent.id());
         } else {
-            lecturerDomainService.createLecturer(userId, req.department(), req.academicTitle(), req.officeLocation(), req.phoneNumber());
+            var lecturerCreateRequest = new LecturerCreateRequest(user.id(), request.department(), request.academicTitle(), request.officeLocation(), request.phoneNumber());
+            lecturerDomainService.createLecturer(lecturerCreateRequest);
         }
 
-        var token = jwtService.generateToken(req.email());
-        return new AuthResponse(token, req.email());
+        return new AuthResponse(email);
     }
 
     /**
      * Login: validate parameters, verify password via AuthValidator, then return token.
      */
-    public AuthResponse login(AuthRequest req) {
-        // basic param validation (throws EnrollmentValidationException if invalid)
-        authValidator.validateLogin(req.email(), req.password());
+    public AuthLoginResponse login(AuthRequest req) {
 
-        // fetch user DTO from domain
-        var userDto = userDomainService.getUserDtoByEmail(req.email());
+        var email = req.email().trim().toLowerCase();
+        authValidator.validateLogin(email, req.password());
 
-        // check password (throws EnrollmentValidationException on failure)
+        var userDto = userDomainService.getUserDtoByEmail(email);
         authValidator.validatePassword(userDto, req.password());
 
-        var token = jwtService.generateToken(userDto.email());
-        return new AuthResponse(token, userDto.email());
+        var user = userDomainService.getUserResponseByEmail(email);
+
+        Long studentId = null;
+        Long lecturerId = null;
+
+        if (user.role() == Role.STUDENT) {
+            studentId = studentDomainService.getStudentIdByUserId(user.id());
+        }
+        else {
+            lecturerId = lecturerDomainService.getLecturerIdByUserId(user.id());
+        }
+
+        return new AuthLoginResponse(user, studentId, lecturerId);
     }
 }

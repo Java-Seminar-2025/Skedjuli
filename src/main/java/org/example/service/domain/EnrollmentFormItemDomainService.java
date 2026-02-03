@@ -1,12 +1,14 @@
 package org.example.service.domain;
 
 import lombok.AllArgsConstructor;
-import org.example.model.dto.CourseInfo;
+import org.example.model.dto.response.CourseResponse;
+import org.example.model.dto.response.StudentResponse;
 import org.example.model.entity.CourseEntity;
 import org.example.model.entity.EnrollmentFormEntity;
 import org.example.model.entity.EnrollmentFormItemEntity;
 import org.example.model.enums.EnrollmentFormItemStatus;
 import org.example.model.mapper.CourseMapper;
+import org.example.model.mapper.StudentMapper;
 import org.example.repository.EnrollmentFormItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,16 +27,15 @@ import java.util.Objects;
 public class EnrollmentFormItemDomainService {
 
     private final EnrollmentFormItemRepository enrollmentFormItemRepository;
+    private final CourseMapper courseMapper;
+    private final StudentMapper studentMapper;
 
-    /**
-     * Return CourseInfo DTOs for items on the given enrollment form.
-     */
     @Transactional(readOnly = true)
-    public List<CourseInfo> getEnrollmentFormItems(Long enrollmentFormId) {
+    public List<CourseResponse> getEnrollmentFormItems(Long enrollmentFormId) {
         return enrollmentFormItemRepository.findByEnrollmentForm_Id(enrollmentFormId)
                 .stream()
                 .map(EnrollmentFormItemEntity::getCourse)
-                .map(CourseMapper::toCourseInfo)
+                .map(courseMapper::toCourseResponse)
                 .filter(Objects::nonNull)
                 .toList();
     }
@@ -96,5 +97,29 @@ public class EnrollmentFormItemDomainService {
                 .filter(Objects::nonNull)
                 .mapToInt(CourseEntity::getEcts)
                 .sum();
+    }
+
+    public List<CourseResponse> findEnrolledCoursesForStudent(Long studentId, int value, Long id) {
+        return enrollmentFormItemRepository.findEnrolledCoursesForStudent(studentId, value, id)
+                .stream()
+                .map(courseMapper::toCourseResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudentResponse> getStudentsForCourseInYearWithFormStatuses(
+            Long courseId,
+            Long academicYearId,
+            List<Integer> statuses
+    ) {
+        return enrollmentFormItemRepository
+                .findDistinctStudentsByCourseAndYearAndFormStatuses(courseId, academicYearId, statuses)
+                .stream()
+                .map(studentMapper::toStudentResponse)
+                .toList();
+    }
+
+    public long getStudentCountForCourseInYearWithFormStatuses(Long courseId, Long academicYearId, List<Integer> statuses) {
+        return enrollmentFormItemRepository.countDistinctStudentsByCourseAndYearAndFormStatuses(courseId, academicYearId, statuses);
     }
 }

@@ -1,10 +1,92 @@
 package org.example.repository;
 
+import org.example.model.dto.response.CourseResponse;
+import org.example.model.entity.CourseEntity;
 import org.example.model.entity.EnrollmentFormItemEntity;
+import org.example.model.entity.StudentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface EnrollmentFormItemRepository extends JpaRepository<EnrollmentFormItemEntity, Long> {
     List<EnrollmentFormItemEntity> findByEnrollmentForm_Id(Long enrollmentFormId);
+
+    Boolean existsByEnrollmentForm_IdAndCourse_Id(Long enrollmentFormId, Long courseId);
+
+    @Query("""
+        SELECT DISTINCT c
+        FROM EnrollmentFormItemEntity efi
+        JOIN efi.enrollmentForm ef
+        JOIN efi.course c
+        WHERE ef.student.id = :studentId
+          AND ef.status = :approvedStatus
+          AND ef.academicYear.id = :academicYearId
+    """)
+    List<CourseEntity> findEnrolledCoursesForStudent(
+            @Param("studentId") Long studentId,
+            @Param("approvedStatus") Integer approvedStatus,
+            @Param("academicYearId") Long academicYearId
+    );
+
+    @Query("""
+
+    SELECT DISTINCT s
+    FROM EnrollmentFormItemEntity efi
+    JOIN efi.enrollmentForm ef
+    JOIN ef.student s
+    LEFT JOIN CompletedCourseEntity cc
+        ON cc.student.id = s.id
+        AND cc.course.id = efi.course.id
+        AND cc.grade IS NOT NULL
+    WHERE efi.course.id = :courseId
+        AND ef.academicYear.id = :academicYearId
+        AND ef.status IN :statuses
+        AND cc.id IS NULL
+    """)
+
+    List<StudentEntity> findDistinctStudentsByCourseAndYearAndFormStatuses (
+            @Param("courseId") Long courseId,
+            @Param("academicYearId") Long academicYearId,
+            @Param("statuses") List<Integer> statuses
+    );
+
+    @Query("""
+    SELECT COUNT(DISTINCT s)
+    FROM EnrollmentFormItemEntity efi
+    JOIN efi.enrollmentForm ef
+    JOIN ef.student s
+    LEFT JOIN CompletedCourseEntity cc
+        ON cc.student.id = s.id
+        AND cc.course.id = efi.course.id
+        AND cc.grade IS NOT NULL
+    WHERE efi.course.id = :courseId
+    AND ef.academicYear.id = :academicYearId
+    AND ef.status IN :statuses
+    AND cc.id IS NULL   
+    """)
+    long countDistinctStudentsByCourseAndYearAndFormStatuses(
+            @Param("courseId") Long courseId,
+            @Param("academicYearId") Long academicYearId,
+            @Param("statuses") List<Integer> statuses);
+
+    List<EnrollmentFormItemEntity> findByEnrollmentForm_IdIn(Collection<Long> enrollmentFormIds);
+
+    @Query("""
+    SELECT CASE WHEN COUNT(efi) > 0 THEN true ELSE false END
+    FROM EnrollmentFormItemEntity efi
+      JOIN efi.enrollmentForm ef
+    WHERE ef.student.id = :studentId
+      AND efi.course.id = :courseId
+      AND ef.academicYear.id = :academicYearId
+      AND ef.status IN :statuses
+    """)
+    boolean existsEnrollmentForStudentCourseYearStatuses(
+            @Param("studentId") Long studentId,
+            @Param("courseId") Long courseId,
+            @Param("academicYearId") Long academicYearId,
+            @Param("statuses") List<Integer> statuses
+    );
 }

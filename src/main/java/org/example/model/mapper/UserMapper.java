@@ -1,17 +1,17 @@
 package org.example.model.mapper;
 
 import org.example.model.dto.UserDto;
-import org.example.model.dto.UserInfo;
+import org.example.model.dto.response.UserResponse;
 import org.example.model.entity.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 
-@Mapper(componentModel="spring")
+@Mapper(componentModel = "spring")
 public interface UserMapper {
 
     @Mapping(source = "password", target = "passwordHash")
-    UserDto toUserDto(UserEntity user);
+    UserDto toUserDto(UserEntity entity);
 
-    UserInfo toUserInfo(UserEntity user);
+    UserResponse toUserResponse(UserEntity entity);
 }
